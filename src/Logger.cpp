@@ -9,17 +9,17 @@
 #include "Logger.hpp"
 #include "FileInterface.hpp"
 
-Logger *Logger::lgr = NULL;
+Logger *Logger::lgr = nullptr;
 
 Logger* Logger::Inst() {
-    if (NULL == lgr) {
+    if (nullptr == lgr) {
         Logger::Init("messages.log");
     }
     return lgr;
 }
 
 void Logger::Close() {
-    if (NULL == lgr) {
+    if (nullptr == lgr) {
         lgr->Closer();
     }
 }

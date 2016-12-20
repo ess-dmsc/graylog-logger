@@ -11,11 +11,17 @@
 #include <string>
 #include <map>
 #include <memory>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+
+typedef std::chrono::time_point<std::chrono::system_clock> system_time;
 
 enum class Severity {Emergency, Alert, Critical, Error, Warning, Notice, Info, Debug};
 struct LogMessage {
     std::string message;
-    time_t timestamp;
+    system_time timestamp;
     int processId;
     std::string processName;
     std::string host;

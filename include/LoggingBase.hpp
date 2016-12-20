@@ -10,7 +10,7 @@
 
 #include <string>
 #include "ConcurrentQueue.hpp"
-#include <ctime>
+#include <chrono>
 #include <vector>
 #include <unistd.h>
 #include <sys/types.h>
@@ -24,7 +24,7 @@ class LoggingBase {
 public:
     LoggingBase();
     ~LoggingBase();
-    void Log(Severity sev, std::string &message);
+    void Log(Severity sev, std::string message);
     void AddLogHandler(LogHandler_P handler);
     void RemoveAllHandlers();
     std::vector<LogHandler_P> GetHandlers();

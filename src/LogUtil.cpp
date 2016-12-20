@@ -8,8 +8,7 @@
 
 #include "LogUtil.hpp"
 
-BaseLogHandler::BaseLogHandler() : msgParser(NULL) {
-    
+BaseLogHandler::BaseLogHandler() : msgParser(nullptr) {
 }
 
 void BaseLogHandler::SetMessageStringCreatorFunction(std::string (*MsgParser)(LogMessage &msg)) {
@@ -21,9 +20,12 @@ BaseLogHandler::~BaseLogHandler() {
 }
 
 std::string BaseLogHandler::MsgStringCreator(LogMessage &msg) {
-    if (NULL != msgParser) {
+    if (nullptr != msgParser) {
         return (*msgParser)(msg);
     }
     static std::map<Severity,std::string> sevToStr = {{Severity::Emergency,"EMERGENCY"}, {Severity::Alert,"ALERT"}, {Severity::Critical,"CRITICAL"}, {Severity::Error,"ERROR"}, {Severity::Warning,"WARNING"}, {Severity::Notice,"Notice"}, {Severity::Info,"Info"}, {Severity::Debug,"Debug"}};
-    return std::string("(") + msg.host + std::string(") ") + sevToStr[msg.severity] + std::string(": ") + msg.message;
+    std::time_t cTime = std::chrono::system_clock::to_time_t(msg.timestamp);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&cTime), "%F %T");
+    return ss.str() + std::string(" (") + msg.host + std::string(") ") + sevToStr[msg.severity] + std::string(": ") + msg.message;
 }

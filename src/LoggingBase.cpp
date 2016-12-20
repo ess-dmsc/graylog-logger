@@ -25,8 +25,9 @@ LoggingBase::~LoggingBase() {
     handlers.clear();
 }
 
-void LoggingBase::Log(Severity sev, std::string &message) {
+void LoggingBase::Log(Severity sev, std::string message) {
     LogMessage cMsg(baseMsg);
+    cMsg.timestamp = std::chrono::system_clock::now();
     cMsg.message = message;
     cMsg.severity = sev;
     std::ostringstream ss;

@@ -16,13 +16,13 @@ GraylogInterface::~GraylogInterface() {
     
 }
 
-GraylogConnection::GraylogConnection(std::string host, int port, int queueLength) : closeThread(false), host(host), port(std::to_string(port)), queueLength(queueLength), socketFd(-1), conAddresses(NULL), connectionTries(0), firstMessage(true), connectionThread(&GraylogConnection::ThreadFunction, this) {
+GraylogConnection::GraylogConnection(std::string host, int port, int queueLength) : closeThread(false), host(host), port(std::to_string(port)), queueLength(queueLength), socketFd(-1), conAddresses(nullptr), connectionTries(0), firstMessage(true), connectionThread(&GraylogConnection::ThreadFunction, this) {
 }
 
 GraylogConnection::~GraylogConnection() {
     closeThread = true;
     connectionThread.join();
-    if (NULL != conAddresses) {
+    if (nullptr != conAddresses) {
         freeaddrinfo(conAddresses);
     }
 }
@@ -34,7 +34,7 @@ void GraylogConnection::MakeConnectionHints() {
 }
 
 void GraylogConnection::GetServerAddr() {
-    if (NULL != conAddresses) {
+    if (nullptr != conAddresses) {
         freeaddrinfo(conAddresses);
     }
     int res = getaddrinfo(host.c_str(), port.c_str(), &hints, &conAddresses);
