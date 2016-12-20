@@ -12,8 +12,9 @@ file(GLOB UnitTest_SRC "*.cpp")
 
 add_executable(LogTests ${UnitTest_SRC} "../src/LogUtil.cpp" "../src/LoggingBase.cpp")
 
-set(needed_features cxx_strong_enums cxx_constexpr)
-target_compile_features(LogTests PRIVATE ${needed_features})
+# set(needed_features cxx_strong_enums cxx_constexpr)
+# target_compile_features(LogTests PRIVATE ${needed_features})
+add_compile_options(-std=c++11)
 
 target_link_libraries(LogTests ${GTEST_BOTH_LIBRARIES})
 
