@@ -22,7 +22,7 @@ LoggingBase::LoggingBase() {
 
 LoggingBase::~LoggingBase() {
     std::lock_guard<std::mutex> guard(vectorMutex);
-    std::for_each(handlers.begin(), handlers.end(), [](BaseLogHandler *lg){delete lg;});
+    handlers.clear();
 }
 
 void LoggingBase::Log(Severity sev, std::string &message) {
@@ -33,21 +33,20 @@ void LoggingBase::Log(Severity sev, std::string &message) {
     ss << std::this_thread::get_id();
     cMsg.threadId = ss.str();
     std::lock_guard<std::mutex> guard(vectorMutex);
-    std::for_each(handlers.begin(), handlers.end(), [&](BaseLogHandler *lg){lg->AddMessage(cMsg);});
+    std::for_each(handlers.begin(), handlers.end(), [&](LogHandler_P ptr){ptr.get()->AddMessage(cMsg);});
 }
 
-void LoggingBase::AddLogHandler(BaseLogHandler *handler) {
+void LoggingBase::AddLogHandler(LogHandler_P handler) {
     std::lock_guard<std::mutex> guard(vectorMutex);
     handlers.push_back(handler);
 }
 
 void LoggingBase::RemoveAllHandlers() {
     std::lock_guard<std::mutex> guard(vectorMutex);
-    std::for_each(handlers.begin(), handlers.end(), [](BaseLogHandler *lg){delete lg;});
     handlers.clear();
 }
 
-std::vector<BaseLogHandler*> LoggingBase::GetHandlers() {
+std::vector<LogHandler_P> LoggingBase::GetHandlers() {
     std::lock_guard<std::mutex> guard(vectorMutex);
     return handlers;
 }

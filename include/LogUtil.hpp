@@ -7,8 +7,10 @@
 //
 
 #pragma once
+
 #include <string>
 #include <map>
+#include <memory>
 
 enum class Severity {Emergency, Alert, Critical, Error, Warning, Notice, Info, Debug};
 struct LogMessage {
@@ -25,9 +27,11 @@ class BaseLogHandler {
 public:
     BaseLogHandler();
     virtual ~BaseLogHandler();
-    virtual void AddMessage(LogMessage msg) = 0;
+    virtual void AddMessage(LogMessage &msg) = 0;
     void SetMessageStringCreatorFunction(std::string (*MsgParser)(LogMessage &msg));
 protected:
     std::string (*msgParser)(LogMessage &msg);
     std::string MsgStringCreator(LogMessage &msg);
 };
+
+typedef std::shared_ptr<BaseLogHandler>  LogHandler_P;

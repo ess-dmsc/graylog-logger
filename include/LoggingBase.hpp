@@ -25,11 +25,11 @@ public:
     LoggingBase();
     ~LoggingBase();
     void Log(Severity sev, std::string &message);
-    void AddLogHandler(BaseLogHandler *handler);
+    void AddLogHandler(LogHandler_P handler);
     void RemoveAllHandlers();
-    std::vector<BaseLogHandler*> GetHandlers();
+    std::vector<LogHandler_P> GetHandlers();
 protected:
     std::mutex vectorMutex;
-    std::vector<BaseLogHandler*> handlers;
+    std::vector<LogHandler_P> handlers;
     LogMessage baseMsg;
 };

@@ -6,17 +6,7 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-//#include <gtest/gtest.h>
-//#include "GraylogInterfaceTest.cpp"
-
 #include <gtest/gtest.h>
-#include <iostream>
-#include <string>
-#include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include "GraylogInterface.hpp"
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
