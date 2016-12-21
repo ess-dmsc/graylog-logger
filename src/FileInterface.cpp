@@ -12,7 +12,7 @@ FileInterface::FileInterface(std::string fileName) : BaseLogHandler(), fileName(
     
 }
 
-void FileInterface::AddMessage(LogMessage msg) {
+void FileInterface::AddMessage(LogMessage &msg) {
     msgQueue.push(msg);
 }
 

@@ -6,16 +6,16 @@ include_directories("../src" "../tests")
 
 enable_testing()
 
-find_package(Boost COMPONENTS system thread regex REQUIRED)
+find_package(Boost COMPONENTS system thread regex filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 
-find_package(GTest)
+find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS} "../include")
 
 file(GLOB UnitTest_SRC "*.cpp")
 
-add_executable(LogTests ${UnitTest_SRC} "../src/LogUtil.cpp" "../src/LoggingBase.cpp")
+add_executable(LogTests ${UnitTest_SRC} "../src/LogUtil.cpp" "../src/LoggingBase.cpp" "../src/FileInterface.cpp")
 
 # set(needed_features cxx_strong_enums cxx_constexpr)
 # target_compile_features(LogTests PRIVATE ${needed_features})

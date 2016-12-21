@@ -36,6 +36,11 @@ TEST(BaseLogHandler, SetStringCreatorTest) {
     ASSERT_EQ(standIn.msgParser, nullptr);
     standIn.SetMessageStringCreatorFunction(&MyStringCreator);
     ASSERT_EQ(standIn.msgParser, &MyStringCreator);
+}
+
+TEST(BaseLogHandler, NewStringCreatorTest) {
+    LogMessage msg;
+    BaseLogHandlerStandIn standIn;
+    standIn.SetMessageStringCreatorFunction(&MyStringCreator);
     ASSERT_EQ(standIn.MsgStringCreator(msg), testString);
-    
 }
