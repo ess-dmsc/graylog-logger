@@ -19,7 +19,6 @@ public:
     using FileInterface::fileName;
     using FileInterface::msgQueue;
     using FileInterface::fileThread;
-    std::atomic_bool threadRunning;
 };
 
 class FileInterfaceTest : public ::testing::Test {
