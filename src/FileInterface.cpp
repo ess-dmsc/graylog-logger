@@ -34,7 +34,6 @@ void FileInterface::ThreadFunction() {
         }
         if (outStream.good() and outStream.is_open()) {
             outStream << MsgStringCreator(tmpMsg) << std::endl;
-            
         }
     }
 }

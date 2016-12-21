@@ -21,7 +21,7 @@ public:
     void AddMessage(LogMessage &msg);
 protected:
     std::string fileName;
-    virtual void ThreadFunction();
+    void ThreadFunction();
     ConcurrentQueue<LogMessage> msgQueue;
     std::thread fileThread;
 };

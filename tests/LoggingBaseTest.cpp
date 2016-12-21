@@ -69,7 +69,9 @@ TEST(LoggingBase, MachineInfoTest) {
     log.Log(Severity::Critical, "No message");
     LogMessage msg = standIn.get()->cMsg;
     ASSERT_EQ(msg.host, boost::asio::ip::host_name()) << "Incorrect host name.";
-    ASSERT_EQ(msg.threadId, boost::lexical_cast<std::string>(boost::this_thread::get_id())) << "Incorrect thread id.";
+    std::ostringstream ss;
+    ss << std::this_thread::get_id();
+    ASSERT_EQ(msg.threadId, ss.str()) << "Incorrect thread id.";
     ASSERT_EQ(msg.processId, getpid()) << "Incorrect process id.";
 }
 
