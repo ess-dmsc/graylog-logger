@@ -15,7 +15,7 @@ include_directories(${GTEST_INCLUDE_DIRS} "../include")
 
 file(GLOB UnitTest_SRC "*.cpp")
 
-add_executable(LogTests ${UnitTest_SRC} "../src/LogUtil.cpp" "../src/LoggingBase.cpp" "../src/FileInterface.cpp")
+add_executable(LogTests ${UnitTest_SRC} "../src/LogUtil.cpp" "../src/LoggingBase.cpp" "../src/FileInterface.cpp" "../src/ConsoleInterface.cpp")
 
 # set(needed_features cxx_strong_enums cxx_constexpr)
 # target_compile_features(LogTests PRIVATE ${needed_features})
