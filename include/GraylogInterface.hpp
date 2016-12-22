@@ -63,7 +63,7 @@ protected:
     int socketFd;       //Socket id (file descriptor)
     addrinfo hints;     //Connection hints
     addrinfo *conAddresses;
-    struct sockaddr_in serverConInfo;//
+    //struct sockaddr_in serverConInfo;//
 #ifdef MSG_NOSIGNAL
     const int sendOpt = MSG_NOSIGNAL;
 #else

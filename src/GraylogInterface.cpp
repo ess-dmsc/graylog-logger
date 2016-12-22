@@ -37,6 +37,7 @@ void GraylogConnection::EndThread() {
     connectionThread.join();
     if (nullptr != conAddresses) {
         freeaddrinfo(conAddresses);
+        conAddresses = nullptr;
     }
 }
 
@@ -49,6 +50,7 @@ void GraylogConnection::MakeConnectionHints() {
 void GraylogConnection::GetServerAddr() {
     if (nullptr != conAddresses) {
         freeaddrinfo(conAddresses);
+        conAddresses = nullptr;
     }
     int res = getaddrinfo(host.c_str(), port.c_str(), &hints, &conAddresses);
     if (-1 == res) {
@@ -60,24 +62,9 @@ void GraylogConnection::GetServerAddr() {
         stateMachine = ConStatus::CONNECT;
     }
 }
-
-void *get_in_addr(struct sockaddr *sa)
-{
-    if (sa->sa_family == AF_INET) {
-        return &(((struct sockaddr_in*)sa)->sin_addr);
-    }
-    
-    return &(((struct sockaddr_in6*)sa)->sin6_addr);
-}
-
 void GraylogConnection::ConnectToServer() {
     addrinfo *p;
     int response;
-//    char s[INET6_ADDRSTRLEN];
-//    for (p = conAddresses; p != NULL; p = p->ai_next) {
-//        sockaddr_in *addr = (sockaddr_in*)p->ai_addr;
-//        std::cout << "IP: " << inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),s, sizeof s) << std::endl;
-//    }
     for (p = conAddresses; p != NULL; p = p->ai_next) {
         //std::cout << "GL: Connect addr. iteration." << std::endl;
         socketFd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
