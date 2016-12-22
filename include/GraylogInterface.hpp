@@ -46,6 +46,7 @@ protected:
     void ConnectWait();
     void NewMessage();
     void SendMessageLoop();
+    void CheckConnectionStatus();
     
     ConcurrentQueue<std::string> logMessages;
     int queueLength;
@@ -64,11 +65,11 @@ protected:
     addrinfo hints;     //Connection hints
     addrinfo *conAddresses;
     //struct sockaddr_in serverConInfo;//
-#ifdef MSG_NOSIGNAL
-    const int sendOpt = MSG_NOSIGNAL;
-#else
+//#ifdef MSG_NOSIGNAL
+//    const int sendOpt = MSG_NOSIGNAL;
+//#else
     const int sendOpt = 0;
-#endif
+//#endif
 };
 
 class GraylogInterface : public BaseLogHandler, private GraylogConnection {

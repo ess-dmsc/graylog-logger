@@ -11,6 +11,7 @@
 LogTestServer::LogTestServer(short port) : service(), acceptor(service, ip::tcp::endpoint(ip::tcp::v6(), port)){
     socketError = errc_t::success;
     connections = 0;
+    receivedBytes = 0;
     WaitForNewConnection();
     asioThread = std::thread(&LogTestServer::ThreadFunction, this);
 }
@@ -27,7 +28,8 @@ LogTestServer::~LogTestServer() {
 }
 
 void LogTestServer::CloseAllConnections() {
-    std::for_each(existingSockets.begin(), existingSockets.end(), [this](sock_ptr sock){sock->close();});
+    std::cout << "LTS: Closing sockets." << std::endl;
+    std::for_each(existingSockets.begin(), existingSockets.end(), [this](sock_ptr sock){sock->shutdown(socket_base::shutdown_both);sock->close();});
     existingSockets.clear();
 }
 
@@ -48,7 +50,7 @@ void LogTestServer::OnConnectionAccept(const boost::system::error_code &ec, sock
         //std::cout << "OnConnectionAccept(): " << ec.message() << std::endl;
         return;
     }
-    //std::cout << "Accepting connection." << std::endl;
+    std::cout << "LST: Accepting connection." << std::endl;
     existingSockets.push_back(cSock);
     connections++;
     cSock->async_read_some(buffer(receiveBuffer, bufferSize), boost::bind(&LogTestServer::HandleRead, this, placeholders::error, placeholders::bytes_transferred, cSock));
@@ -56,12 +58,13 @@ void LogTestServer::OnConnectionAccept(const boost::system::error_code &ec, sock
 
 void LogTestServer::HandleRead(boost::system::error_code ec, std::size_t bytesReceived, sock_ptr cSock) {
     if (errc_t::operation_canceled == ec) {
+        std::cout << "HandleRead(): " << ec.message() << std::endl;
         RemoveSocket(cSock);
         connections--;
         WaitForNewConnection();
         return;
     } else if (ec) {
-        //std::cout << "HandleRead(): " << ec.message() << std::endl;
+        std::cout << "HandleRead(): " << ec.message() << std::endl;
         RemoveSocket(cSock);
         connections--;
         WaitForNewConnection();
@@ -95,4 +98,12 @@ errc_t LogTestServer::GetLastSocketError() {
 
 int LogTestServer::GetNrOfConnections() {
     return connections;
+}
+
+int LogTestServer::GetReceivedBytes() {
+    return receivedBytes;
+}
+
+void LogTestServer::ClearReceivedBytes() {
+    receivedBytes = 0;
 }

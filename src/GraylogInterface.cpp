@@ -72,9 +72,9 @@ void GraylogConnection::ConnectToServer() {
             continue;
         }
         int value = 1;
-#ifdef SO_NOSIGPIPE
-        setsockopt(socketFd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
-#endif
+//#ifdef SO_NOSIGPIPE
+//        setsockopt(socketFd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
+//#endif
         response = fcntl(socketFd, F_SETFL, O_NONBLOCK);
         if (-1 == response) {
             close(socketFd);
@@ -143,15 +143,45 @@ void GraylogConnection::ConnectWait() {
 
 void GraylogConnection::NewMessage() {
     //std::cout << "GL: Waiting for message." << std::endl;
+    
     if (logMessages.time_out_peek(currentMessage, 50)) {
-        if (firstMessage) {
-            firstMessage = false;
-        } else {
-            assert(logMessages.try_pop());
-            bytesSent = 0;
-        }
+        bytesSent = 0;
         //std::cout << "GL: Got message to send." << std::endl;
         stateMachine = ConStatus::SEND_LOOP;
+    }
+}
+
+void GraylogConnection::CheckConnectionStatus() {
+    timeval selectTimeout;
+    selectTimeout.tv_sec = 0;
+    selectTimeout.tv_usec = 0;
+    fd_set exceptfds;
+    FD_ZERO(&exceptfds);
+    FD_SET(socketFd, &exceptfds);
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(socketFd, &readfds);
+    fd_set writefds;
+    FD_ZERO(&writefds);
+    FD_SET(socketFd, &writefds);
+    int selRes = select(socketFd + 1, &readfds, NULL, &exceptfds, &selectTimeout);
+    std::cout << "Connection check: " << selRes << std::endl;
+    if(selRes and FD_ISSET(socketFd, &exceptfds)) {
+        stateMachine = ConStatus::CONNECT;
+        shutdown(socketFd, SHUT_RDWR);
+        close(socketFd);
+        return;
+    }
+    if (FD_ISSET(socketFd, &readfds)) {
+        char b;
+        ssize_t peekRes = recv(socketFd, &b, 1, MSG_PEEK);
+        std::cout << "Peek check: " << peekRes << std::endl;
+        if (-1 == peekRes) {
+            perror("peek");
+            stateMachine = ConStatus::CONNECT;
+            shutdown(socketFd, SHUT_RDWR);
+            close(socketFd);
+        }
     }
 }
 
@@ -170,24 +200,23 @@ void GraylogConnection::SendMessageLoop() {
     //std::cout << "GL: Send message changes: " << selRes << std::endl;
     if (selRes > 0) {
         if (FD_ISSET(socketFd, &exceptfds)) { //Some error
-            //std::cout << "GL: Got send msg exception." << std::endl;
+            std::cout << "GL: Got send msg exception." << std::endl;
             stateMachine = ConStatus::CONNECT;
             shutdown(socketFd, SHUT_RDWR);
             close(socketFd);
             return;
         }
         if (FD_ISSET(socketFd, &writefds)) {
-            //std::cout << "GL: Ready to write." << std::endl;
-            if (bytesSent == currentMessage.size() + 1) {
-                stateMachine = ConStatus::NEW_MESSAGE;
-            } else {
+            std::cout << "GL: Ready to write." << std::endl;
+            {
                 ssize_t cBytes = send(socketFd, currentMessage.substr(bytesSent, currentMessage.size() - bytesSent).c_str(), currentMessage.size() - bytesSent + 1, sendOpt);
+                std::cout << "GL: Sent bytes: " << cBytes << std::endl;
                 if (-1 == cBytes) {
                     if (EAGAIN == errno or EWOULDBLOCK == errno) {
-                        //std::cout << "GL: Non blocking, got errno:" << errno << std::endl;
+                        std::cout << "GL: Non blocking, got errno:" << errno << std::endl;
                         //Should probably handle this
                     } else {
-                        //std::cout << "GL: Send error with errno:" << errno << std::endl;
+                        std::cout << "GL: Send error with errno:" << errno << std::endl;
                         //perror("send:");
                         stateMachine = ConStatus::CONNECT;
                         shutdown(socketFd, SHUT_RDWR);
@@ -195,13 +224,19 @@ void GraylogConnection::SendMessageLoop() {
                         return;
                     }
                 } else if (0 == cBytes) {
+                    std::cout << "No bytes sent." << std::endl;
                     //Do nothing
                 } else {
                     bytesSent += cBytes;
+                    if (bytesSent == currentMessage.size() + 1) {
+                        assert(logMessages.try_pop());
+                        stateMachine = ConStatus::NEW_MESSAGE;
+                    }
                 }
             }
         }
     } else if (0 == selRes) {
+        std::cout << "Got send timeout." << std::endl;
         //timeout
     } else if (-1 == selRes) {
         //error
@@ -249,6 +284,7 @@ void GraylogConnection::ThreadFunction() {
                 break;
             case ConStatus::NEW_MESSAGE:
                 NewMessage();
+                CheckConnectionStatus();
                 break;
             case ConStatus::SEND_LOOP:
                 SendMessageLoop();

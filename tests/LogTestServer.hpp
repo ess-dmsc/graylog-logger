@@ -34,6 +34,8 @@ public:
     errc_t GetLastSocketError();
     void CloseAllConnections();
     int GetNrOfConnections();
+    int GetReceivedBytes();
+    void ClearReceivedBytes();
 private:
     io_service service;
     void ThreadFunction();
@@ -52,6 +54,7 @@ private:
     
     errc_t socketError;
     int connections;
+    int receivedBytes;
     
     std::string currentMessage;
     std::string previousMessage;
