@@ -14,8 +14,9 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS} "../include")
 
 file(GLOB UnitTest_SRC "*.cpp")
+file(GLOB Graylog_SRC "../src/*.cpp")
 
-add_executable(LogTests ${UnitTest_SRC} "../src/LogUtil.cpp" "../src/LoggingBase.cpp" "../src/FileInterface.cpp" "../src/ConsoleInterface.cpp")
+add_executable(LogTests ${UnitTest_SRC} ${Graylog_SRC})
 
 # set(needed_features cxx_strong_enums cxx_constexpr)
 # target_compile_features(LogTests PRIVATE ${needed_features})

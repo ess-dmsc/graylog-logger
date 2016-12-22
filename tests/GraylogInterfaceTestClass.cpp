@@ -7,3 +7,4 @@
 //
 
 #include "GraylogInterfaceTestClass.hpp"
+

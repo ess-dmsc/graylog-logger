@@ -21,15 +21,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <iostream>
 #include "ConcurrentQueue.hpp"
-
-class GraylogInterface {
-public:
-    GraylogInterface(std::vector<std::pair<std::string, std::string> > servers, int queueLength);
-    ~GraylogInterface();
-private:
-    
-};
+#include "LogUtil.hpp"
 
 class GraylogConnection {
 public:
@@ -41,6 +35,8 @@ protected:
     int connectionTries;
     enum class ConStatus {NONE, ADDR_LOOKUP, ADDR_RETRY_WAIT, CONNECT, CONNECT_WAIT, CONNECT_RETRY_WAIT, SEND_LOOP, NEW_MESSAGE};
     ConStatus stateMachine;
+    
+    void EndThread();
     
     void ThreadFunction();
     void MakeConnectionHints();
@@ -67,4 +63,13 @@ protected:
     addrinfo hints;     //Connection hints
     addrinfo *conAddresses;
     struct sockaddr_in serverConInfo;//
+};
+
+class GraylogInterface : public BaseLogHandler, private GraylogConnection {
+public:
+    GraylogInterface(std::string host, int port, int queueLength = 100);
+    ~GraylogInterface();
+    virtual void AddMessage(LogMessage &msg);
+protected:
+    std::string LogMsgToJSON(LogMessage &msg);
 };

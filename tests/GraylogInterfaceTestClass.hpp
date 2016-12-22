@@ -8,10 +8,10 @@
 
 #pragma once
 
-//#include "GraylogInterface.hpp"
-//
-//class GraylogConnectionTestClass : GraylogConnection {
-//public:
-//    GraylogConnectionTestClass();
-//    
-//};
+#include "GraylogInterface.hpp"
+
+class GraylogConnectionTestClass : GraylogConnection {
+public:
+    GraylogConnectionTestClass();
+    
+};
