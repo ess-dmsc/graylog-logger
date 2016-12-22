@@ -6,6 +6,7 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
+#include <strings.h>
 #include "GraylogInterface.hpp"
 
 
