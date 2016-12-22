@@ -70,6 +70,7 @@ void LogTestServer::HandleRead(boost::system::error_code ec, std::size_t bytesRe
         WaitForNewConnection();
         return;
     }
+    receivedBytes += bytesReceived;
     for (int j = 0; j < bytesReceived; j++) {
         if ('\0' == receiveBuffer[j]) {
             previousMessage = currentMessage;

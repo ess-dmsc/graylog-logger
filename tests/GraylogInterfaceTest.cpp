@@ -20,7 +20,7 @@ public:
 };
 
 const int testPort = 2526;
-const std::chrono::milliseconds sleepTime(200);
+const std::chrono::milliseconds sleepTime(100);
 
 class GraylogConnectionCom : public ::testing::Test{
 public:
@@ -71,7 +71,7 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
     ASSERT_EQ(int(errc_t::success), logServer->GetLastSocketError());
 }
 
-TEST_F(GraylogConnectionCom, CloseConnectionTest) {
+TEST_F(GraylogConnectionCom, DISABLED_CloseConnectionTest) {
     {
         GraylogConnectionStandIn con("localhost", testPort);
         std::this_thread::sleep_for(sleepTime);
@@ -82,4 +82,17 @@ TEST_F(GraylogConnectionCom, CloseConnectionTest) {
     }
     std::this_thread::sleep_for(sleepTime);
     ASSERT_EQ(0, logServer->GetNrOfConnections());
+}
+
+TEST_F(GraylogConnectionCom, MessageTransmissionTest) {
+    {
+        std::string testString("This is a test string!");
+        GraylogConnectionStandIn con("localhost", testPort);
+        con.logMessages.push(testString);
+        std::this_thread::sleep_for(sleepTime);
+        ASSERT_EQ(int(errc_t::success),logServer->GetLastSocketError());
+        ASSERT_EQ(testString, logServer->GetLatestMessage());
+        ASSERT_EQ(testString.size() + 1, logServer->GetReceivedBytes());
+        ASSERT_EQ(1, logServer->GetNrOfConnections());
+    }
 }

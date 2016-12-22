@@ -54,11 +54,11 @@ void GraylogConnection::GetServerAddr() {
     }
     int res = getaddrinfo(host.c_str(), port.c_str(), &hints, &conAddresses);
     if (-1 == res) {
-        //std::cout << "GL: Failed to get addr.-info." << std::endl;
+        std::cout << "GL: Failed to get addr.-info." << std::endl;
         stateMachine = ConStatus::ADDR_RETRY_WAIT;
         endWait = time(NULL) + retryDelay;
     } else {
-        //std::cout << "GL: Changing state to CONNECT." << std::endl;
+        std::cout << "GL: Changing state to CONNECT." << std::endl;
         stateMachine = ConStatus::CONNECT;
     }
 }
@@ -66,15 +66,15 @@ void GraylogConnection::ConnectToServer() {
     addrinfo *p;
     int response;
     for (p = conAddresses; p != NULL; p = p->ai_next) {
-        //std::cout << "GL: Connect addr. iteration." << std::endl;
+        std::cout << "GL: Connect addr. iteration." << std::endl;
         socketFd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
         if (-1 == socketFd) {
             continue;
         }
         int value = 1;
-//#ifdef SO_NOSIGPIPE
-//        setsockopt(socketFd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
-//#endif
+#ifdef SO_NOSIGPIPE
+        setsockopt(socketFd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
+#endif
         response = fcntl(socketFd, F_SETFL, O_NONBLOCK);
         if (-1 == response) {
             close(socketFd);
@@ -83,7 +83,7 @@ void GraylogConnection::ConnectToServer() {
         }
         response = connect(socketFd, p->ai_addr, p->ai_addrlen);
         if (-1 == response and EINPROGRESS == errno) {
-            //std::cout << "GL: Now waiting for connection." << std::endl;
+            std::cout << "GL: Now waiting for connection." << std::endl;
             stateMachine = ConStatus::CONNECT_WAIT;
             break;
         } else {
@@ -93,7 +93,7 @@ void GraylogConnection::ConnectToServer() {
         }
     }
     if (-1 == socketFd) {
-        //std::cout << "GL: Failed all connections." << std::endl;
+        std::cout << "GL: Failed all connections." << std::endl;
         connectionTries++;
         stateMachine = ConStatus::CONNECT_RETRY_WAIT;
         if (5 < connectionTries) {
@@ -106,7 +106,7 @@ void GraylogConnection::ConnectToServer() {
 
 void GraylogConnection::ConnectWait() {
     if (endWait < time(NULL)) {
-        //std::cout << "GL: Timeout on waiting for connection." << std::endl;
+        std::cout << "GL: Timeout on waiting for connection." << std::endl;
         stateMachine = ConStatus::CONNECT;
         close(socketFd);
         socketFd = -1;
@@ -120,9 +120,9 @@ void GraylogConnection::ConnectWait() {
     FD_ZERO(&writefds);
     FD_SET(socketFd, &writefds);
     int changes = select(socketFd + 1, NULL, &writefds, NULL, &selectTimeout);
-    //std::cout << "GL: select changes: " << changes << std::endl;
+    std::cout << "GL: select changes: " << changes << std::endl;
     if (1 == changes and FD_ISSET(socketFd, &writefds)) {
-        //std::cout << "GL: Ready to write." << std::endl;
+        std::cout << "GL: Ready to write." << std::endl;
         bytesSent = 0;
         currentMessage = "";
         firstMessage = true;
@@ -142,11 +142,11 @@ void GraylogConnection::ConnectWait() {
 }
 
 void GraylogConnection::NewMessage() {
-    //std::cout << "GL: Waiting for message." << std::endl;
+    std::cout << "GL: Waiting for message." << std::endl;
     
     if (logMessages.time_out_peek(currentMessage, 50)) {
         bytesSent = 0;
-        //std::cout << "GL: Got message to send." << std::endl;
+        std::cout << "GL: Got message to send." << std::endl;
         stateMachine = ConStatus::SEND_LOOP;
     }
 }
@@ -165,7 +165,7 @@ void GraylogConnection::CheckConnectionStatus() {
     FD_ZERO(&writefds);
     FD_SET(socketFd, &writefds);
     int selRes = select(socketFd + 1, &readfds, NULL, &exceptfds, &selectTimeout);
-    //std::cout << "Connection check: " << selRes << std::endl;
+    std::cout << "Connection check: " << selRes << std::endl;
     if(selRes and FD_ISSET(socketFd, &exceptfds)) {
         stateMachine = ConStatus::CONNECT;
         shutdown(socketFd, SHUT_RDWR);
@@ -175,7 +175,7 @@ void GraylogConnection::CheckConnectionStatus() {
     char b;
     if (FD_ISSET(socketFd, &readfds)) {
         ssize_t peekRes = recv(socketFd, &b, 1, MSG_PEEK);
-        //std::cout << "Peek check: " << peekRes << std::endl;
+        std::cout << "Peek check: " << peekRes << std::endl;
         if (-1 == peekRes) {
             perror("peek");
             stateMachine = ConStatus::CONNECT;
@@ -187,18 +187,18 @@ void GraylogConnection::CheckConnectionStatus() {
     ufds[0].fd = socketFd;
     ufds[0].events = POLLIN | POLLOUT;
     int pollRes = poll(ufds, 1, 0);
-    //std::cout << "Number of poll results: " << pollRes << std::endl;
+    std::cout << "Number of poll results: " << pollRes << std::endl;
     if (pollRes == 1) {
-        //std::cout << "Poll result: " << ufds[0].revents << std::endl;
+        std::cout << "Poll result: " << ufds[0].revents << std::endl;
         if (ufds[0].revents & POLLERR) {
-            //std::cout << "Got poll error." << std::endl;
+            std::cout << "Got poll error." << std::endl;
         } else if (ufds[0].revents & POLLHUP) {
-            //std::cout << "Got poll hup." << std::endl;
+            std::cout << "Got poll hup." << std::endl;
             stateMachine = ConStatus::CONNECT;
             shutdown(socketFd, SHUT_RDWR);
             close(socketFd);
         } else if (ufds[0].revents & POLLNVAL) {
-            //std::cout << "Got poll nval." << std::endl;
+            std::cout << "Got poll nval." << std::endl;
         }
     }
 }
@@ -215,26 +215,26 @@ void GraylogConnection::SendMessageLoop() {
     FD_ZERO(&writefds);
     FD_SET(socketFd, &writefds);
     int selRes = select(socketFd + 1, NULL, &writefds, &exceptfds, &selectTimeout);
-    //std::cout << "GL: Send message changes: " << selRes << std::endl;
+    std::cout << "GL: Send message changes: " << selRes << std::endl;
     if (selRes > 0) {
         if (FD_ISSET(socketFd, &exceptfds)) { //Some error
-            //std::cout << "GL: Got send msg exception." << std::endl;
+            std::cout << "GL: Got send msg exception." << std::endl;
             stateMachine = ConStatus::CONNECT;
             shutdown(socketFd, SHUT_RDWR);
             close(socketFd);
             return;
         }
         if (FD_ISSET(socketFd, &writefds)) {
-            //std::cout << "GL: Ready to write." << std::endl;
+            std::cout << "GL: Ready to write." << std::endl;
             {
                 ssize_t cBytes = send(socketFd, currentMessage.substr(bytesSent, currentMessage.size() - bytesSent).c_str(), currentMessage.size() - bytesSent + 1, sendOpt);
-                //std::cout << "GL: Sent bytes: " << cBytes << std::endl;
+                std::cout << "GL: Sent bytes: " << cBytes << std::endl;
                 if (-1 == cBytes) {
                     if (EAGAIN == errno or EWOULDBLOCK == errno) {
-                        //std::cout << "GL: Non blocking, got errno:" << errno << std::endl;
+                        std::cout << "GL: Non blocking, got errno:" << errno << std::endl;
                         //Should probably handle this
                     } else {
-                        //std::cout << "GL: Send error with errno:" << errno << std::endl;
+                        std::cout << "GL: Send error with errno:" << errno << std::endl;
                         //perror("send:");
                         stateMachine = ConStatus::CONNECT;
                         shutdown(socketFd, SHUT_RDWR);
@@ -242,7 +242,7 @@ void GraylogConnection::SendMessageLoop() {
                         return;
                     }
                 } else if (0 == cBytes) {
-                    //std::cout << "No bytes sent." << std::endl;
+                    std::cout << "No bytes sent." << std::endl;
                     //Do nothing
                 } else {
                     bytesSent += cBytes;
@@ -254,7 +254,7 @@ void GraylogConnection::SendMessageLoop() {
             }
         }
     } else if (0 == selRes) {
-        //std::cout << "Got send timeout." << std::endl;
+        std::cout << "Got send timeout." << std::endl;
         //timeout
     } else if (-1 == selRes) {
         //error
