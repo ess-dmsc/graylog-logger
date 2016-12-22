@@ -20,7 +20,7 @@ public:
 };
 
 const int testPort = 2526;
-const std::chrono::milliseconds sleepTime(100);
+const std::chrono::milliseconds sleepTime(200);
 
 class GraylogConnectionCom : public ::testing::Test{
 public:
