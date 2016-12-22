@@ -64,6 +64,11 @@ protected:
     addrinfo hints;     //Connection hints
     addrinfo *conAddresses;
     struct sockaddr_in serverConInfo;//
+#ifdef MSG_NOSIGNAL
+    const int sendOpt = MSG_NOSIGNAL;
+#else
+    const int sendOpt = 0;
+#endif
 };
 
 class GraylogInterface : public BaseLogHandler, private GraylogConnection {

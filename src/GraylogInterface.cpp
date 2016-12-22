@@ -84,7 +84,9 @@ void GraylogConnection::ConnectToServer() {
             continue;
         }
         int value = 1;
+#ifndef MSG_NOSIGNAL
         setsockopt(socketFd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
+#endif
         response = fcntl(socketFd, F_SETFL, O_NONBLOCK);
         if (-1 == response) {
             close(socketFd);
@@ -191,7 +193,7 @@ void GraylogConnection::SendMessageLoop() {
             if (bytesSent == currentMessage.size() + 1) {
                 stateMachine = ConStatus::NEW_MESSAGE;
             } else {
-                ssize_t cBytes = send(socketFd, currentMessage.substr(bytesSent, currentMessage.size() - bytesSent).c_str(), currentMessage.size() - bytesSent + 1, 0);
+                ssize_t cBytes = send(socketFd, currentMessage.substr(bytesSent, currentMessage.size() - bytesSent).c_str(), currentMessage.size() - bytesSent + 1, sendOpt);
                 if (-1 == cBytes) {
                     if (EAGAIN == errno or EWOULDBLOCK == errno) {
                         //std::cout << "GL: Non blocking, got errno:" << errno << std::endl;
