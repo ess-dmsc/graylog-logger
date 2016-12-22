@@ -36,7 +36,7 @@ void GraylogConnection::EndThread() {
     closeThread = true;
     connectionThread.join();
     if (nullptr != conAddresses) {
-        freeaddrinfo(conAddresses);
+        //freeaddrinfo(conAddresses);
         conAddresses = nullptr;
     }
 }
@@ -49,7 +49,7 @@ void GraylogConnection::MakeConnectionHints() {
 
 void GraylogConnection::GetServerAddr() {
     if (nullptr != conAddresses) {
-        freeaddrinfo(conAddresses);
+        //freeaddrinfo(conAddresses);
         conAddresses = nullptr;
     }
     int res = getaddrinfo(host.c_str(), port.c_str(), &hints, &conAddresses);
