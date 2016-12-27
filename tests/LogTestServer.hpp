@@ -60,4 +60,6 @@ private:
     std::string previousMessage;
     
     std::vector<sock_ptr> existingSockets;
+    
+    void CloseFunction();
 };

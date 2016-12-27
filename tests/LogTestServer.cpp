@@ -28,10 +28,21 @@ LogTestServer::~LogTestServer() {
     asioThread.join();
 }
 
-void LogTestServer::CloseAllConnections() {
-    //std::cout << "LTS: Closing sockets." << std::endl;
-    std::for_each(existingSockets.begin(), existingSockets.end(), [this](sock_ptr sock){sock->shutdown(socket_base::shutdown_both);sock->close();});
+void LogTestServer::CloseFunction() {
+    std::for_each(existingSockets.begin(), existingSockets.end(), [this](sock_ptr sock){
+        if (sock->is_open()) {
+            try {
+                sock->shutdown(socket_base::shutdown_both);
+            } catch (std::exception &e) {
+                
+            }
+        }
+        sock->close();});
     existingSockets.clear();
+}
+
+void LogTestServer::CloseAllConnections() {
+    service.post(boost::bind(&LogTestServer::CloseFunction, this));
 }
 
 std::string LogTestServer::GetLatestMessage() {

@@ -87,6 +87,7 @@ void GraylogConnection::ConnectToServer() {
 #ifdef SO_NOSIGPIPE
         setsockopt(socketFd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
 #endif
+        //setsockopt(socketFd, SOL_SOCKET, SO_SNDTIMEO, const void *, socklen_t);
         response = fcntl(socketFd, F_SETFL, O_NONBLOCK);
         if (-1 == response) {
             close(socketFd);
