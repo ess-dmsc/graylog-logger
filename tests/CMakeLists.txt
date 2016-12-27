@@ -11,17 +11,19 @@ include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 
 find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS} "../include")
+find_package(GMock REQUIRED)
+
+include_directories(${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIRS} "../include" "../external/include")
 
 file(GLOB UnitTest_SRC "*.cpp")
 file(GLOB Graylog_SRC "../src/*.cpp")
 
-add_executable(LogTests ${UnitTest_SRC} ${Graylog_SRC})
+add_executable(LogTests ${UnitTest_SRC} ${Graylog_SRC} "../external/src/jsoncpp.cpp")
 
 # set(needed_features cxx_strong_enums cxx_constexpr)
 # target_compile_features(LogTests PRIVATE ${needed_features})
 
-target_link_libraries(LogTests ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(LogTests ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES})
 target_link_libraries(LogTests ${Boost_LIBRARIES})
 
 add_test(TestAll LogTests)

@@ -187,37 +187,6 @@ void TestJsonString(std::string jsonMsg) {
     EXPECT_EQ(tempStr, compLog.threadId);
 }
 
-//MATCHER_P(MatchJSON, testAgainst, "") {
-//    
-//    try {
-//        read_json(ss, pt);
-//    } catch (std::exception const& e) {
-//        return false;
-//    }
-//    try {
-//        std::string msg = pt.get<std::string>("short_message");
-//        if (msg != testAgainst.message) {
-//            return false;
-//        }
-//        std::string host = pt.get<std::string>("host");
-//        if (host != testAgainst.host) {
-//            return false;
-//        }
-//        std::string processName = pt.get<std::string>("processName");
-//        if (processName != testAgainst.processName) {
-//            return false;
-//        }
-//        double epochTime = pt.get<double>("timestamp");
-//        double diffTime = epochTime - double(std::chrono::system_clock::to_time_t(testAgainst.timestamp));
-//        if (diffTime > 0.1 or diffTime < -0.1) {
-//            return false;
-//        }
-//    } catch (std::exception const& e) {
-//        return false;
-//    }
-//    return true;
-//}
-
 TEST(GraylogInterfaceCom, MessageJSONContentTest) {
     LogMessage msg = GetPopulatedLogMsg();
     GraylogInterfaceStandIn con("localhost", testPort, 100);
