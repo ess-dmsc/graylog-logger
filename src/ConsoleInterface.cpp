@@ -9,8 +9,8 @@
 #include "ConsoleInterface.hpp"
 
 std::string ConsoleStringCreator(LogMessage &msg) {
-    static std::map<Severity,std::string> sevToStr = {{Severity::Emergency,"EMERGENCY"}, {Severity::Alert,"ALERT"}, {Severity::Critical,"CRITICAL"}, {Severity::Error,"ERROR"}, {Severity::Warning,"WARNING"}, {Severity::Notice,"Notice"}, {Severity::Info,"Info"}, {Severity::Debug,"Debug"}};
-    return sevToStr[msg.severity] + std::string(": ") + msg.message;
+    static std::map<int,std::string> sevToStr = {{0,"EMERGENCY"}, {1,"ALERT"}, {2,"CRITICAL"}, {3,"ERROR"}, {4,"WARNING"}, {5,"Notice"}, {6,"Info"}, {7,"Debug"}};
+    return sevToStr[int(msg.severity)] + std::string(": ") + msg.message;
 }
 
 ConsoleInterface::ConsoleInterface() : BaseLogHandler(), consoleThread(&ConsoleInterface::ThreadFunction, this) {

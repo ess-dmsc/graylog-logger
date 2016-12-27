@@ -18,7 +18,17 @@
 
 typedef std::chrono::time_point<std::chrono::system_clock> system_time;
 
-enum class Severity {Emergency, Alert, Critical, Error, Warning, Notice, Info, Debug};
+enum class Severity : int {
+    Emergency = 0,
+    Alert = 1,
+    Critical = 2,
+    Error = 3,
+    Warning = 4,
+    Notice = 5,
+    Informational = 6,
+    Debug = 7,
+};
+    
 struct LogMessage {
     std::string message;
     system_time timestamp;

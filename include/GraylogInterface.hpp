@@ -30,7 +30,8 @@
 class GraylogConnection {
 public:
     GraylogConnection(std::string host, int port, int queueLength = 100);
-    ~GraylogConnection();
+    virtual ~GraylogConnection();
+    virtual void SendMessage(std::string msg);
 protected:
     const time_t retryDelay = 10.0;
     time_t endWait;
@@ -49,7 +50,6 @@ protected:
     void SendMessageLoop();
     void CheckConnectionStatus();
     
-    ConcurrentQueue<std::string> logMessages;
     int queueLength;
     
     std::atomic_bool closeThread;
@@ -71,12 +71,14 @@ protected:
 #else
     const int sendOpt = 0;
 #endif
+private:
+    ConcurrentQueue<std::string> logMessages;
 };
 
 class GraylogInterface : public BaseLogHandler, private GraylogConnection {
 public:
     GraylogInterface(std::string host, int port, int queueLength = 100);
-    ~GraylogInterface();
+    virtual ~GraylogInterface();
     virtual void AddMessage(LogMessage &msg);
 protected:
     std::string LogMsgToJSON(LogMessage &msg);

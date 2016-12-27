@@ -7,15 +7,39 @@
 //
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <thread>
+#include <sstream>
 #include "GraylogInterface.hpp"
 #include "LogTestServer.hpp"
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
+using namespace boost::property_tree;
+
+MATCHER(IsJSON, "") {
+    std::stringstream ss;
+    ss << arg;
+    ptree pt;
+    try {
+        read_json(ss, pt);
+    } catch (std::exception const& e) {
+        return false;
+    }
+    return true;
+}
+
+class GraylogInterfaceStandIn : public GraylogInterface {
+public:
+    GraylogInterfaceStandIn(std::string host, int port, int queueLength) : GraylogInterface(host, port, queueLength) {
+    };
+    MOCK_METHOD1(SendMessage, void(std::string msg));
+};
 
 class GraylogConnectionStandIn : public GraylogConnection {
 public:
     GraylogConnectionStandIn(std::string host, int port, int queueLength = 100) : GraylogConnection(host, port, queueLength) {};
     ~GraylogConnectionStandIn() {};
-    using GraylogConnection::logMessages;
     using GraylogConnection::EndThread;
 };
 
@@ -71,7 +95,7 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
     ASSERT_EQ(int(errc_t::success), logServer->GetLastSocketError());
 }
 
-TEST_F(GraylogConnectionCom, DISABLED_CloseConnectionTest) {
+TEST_F(GraylogConnectionCom, CloseConnectionTest) {
     {
         GraylogConnectionStandIn con("localhost", testPort);
         std::this_thread::sleep_for(sleepTime);
@@ -88,11 +112,115 @@ TEST_F(GraylogConnectionCom, MessageTransmissionTest) {
     {
         std::string testString("This is a test string!");
         GraylogConnectionStandIn con("localhost", testPort);
-        con.logMessages.push(testString);
+        con.SendMessage(testString);
         std::this_thread::sleep_for(sleepTime);
         ASSERT_EQ(int(errc_t::success),logServer->GetLastSocketError());
         ASSERT_EQ(testString, logServer->GetLatestMessage());
         ASSERT_EQ(testString.size() + 1, logServer->GetReceivedBytes());
         ASSERT_EQ(1, logServer->GetNrOfConnections());
     }
+}
+
+TEST_F(GraylogConnectionCom, MultipleMessagesTest) {
+    std::vector<std::string> lines = {"This is a test.", "!\"#€%&/()=?*^_-.,:;", "Another line bites the dust."};
+    {
+        GraylogConnectionStandIn con("localhost", testPort);
+        std::this_thread::sleep_for(sleepTime);
+        int totalBytes = 0;
+        std::for_each(lines.begin(), lines.end(), [&](std::string ln) {totalBytes += (ln.size() + 1); con.SendMessage(ln);});
+        std::this_thread::sleep_for(sleepTime);
+        ASSERT_EQ(int(errc_t::success),logServer->GetLastSocketError());
+        ASSERT_EQ(lines[lines.size() - 1], logServer->GetLatestMessage());
+        ASSERT_EQ(totalBytes, logServer->GetReceivedBytes());
+        ASSERT_EQ(1, logServer->GetNrOfConnections());
+    }
+}
+
+LogMessage GetPopulatedLogMsg() {
+    LogMessage retMsg;
+    retMsg.host = "Some host";
+    retMsg.message = "This is some multi line\n error message with \"quotes\".";
+    retMsg.processId = 667;
+    retMsg.processName = "some_process_name";
+    retMsg.severity = Severity::Alert;
+    retMsg.threadId = "0xff0011aacc";
+    retMsg.timestamp = std::chrono::system_clock::now();
+    return retMsg;
+}
+
+TEST(GraylogInterfaceCom, AddMessageTest) {
+    GraylogInterfaceStandIn con("localhost", testPort, 100);
+    EXPECT_CALL(con, SendMessage(::testing::_)).Times(::testing::Exactly(1));
+    LogMessage msg = GetPopulatedLogMsg();
+    con.AddMessage(msg);
+}
+
+TEST(GraylogInterfaceCom, MessageJSONTest) {
+    LogMessage msg = GetPopulatedLogMsg();
+    GraylogInterfaceStandIn con("localhost", testPort, 100);
+    EXPECT_CALL(con, SendMessage(IsJSON())).Times(::testing::Exactly(1));
+    con.AddMessage(msg);
+}
+
+void TestJsonString(std::string jsonMsg) {
+    std::stringstream ss;
+    ss << jsonMsg;
+    ptree pt;
+    EXPECT_NO_THROW(read_json(ss, pt));
+    LogMessage compLog = GetPopulatedLogMsg();
+    std::string tempStr;
+    double tempDouble;
+    int tempInt;
+    EXPECT_NO_THROW(tempStr = pt.get<std::string>("short_message"));
+    EXPECT_EQ(tempStr, compLog.message);
+    EXPECT_NO_THROW(tempDouble = pt.get<double>("timestamp"));
+    EXPECT_NEAR(tempDouble, double(std::chrono::system_clock::to_time_t(compLog.timestamp)), 0.01);
+    EXPECT_NO_THROW(tempStr = pt.get<std::string>("host"));
+    EXPECT_EQ(tempStr, compLog.host);
+    EXPECT_NO_THROW(tempInt = pt.get<int>("_process_id"));
+    EXPECT_EQ(tempInt, compLog.processId);
+    EXPECT_NO_THROW(tempStr = pt.get<std::string>("_process"));
+    EXPECT_EQ(tempStr, compLog.processName);
+    EXPECT_NO_THROW(tempInt = pt.get<int>("level"));
+    EXPECT_EQ(tempInt, int(compLog.severity));
+    EXPECT_NO_THROW(tempStr = pt.get<std::string>("_thread_id"));
+    EXPECT_EQ(tempStr, compLog.threadId);
+}
+
+//MATCHER_P(MatchJSON, testAgainst, "") {
+//    
+//    try {
+//        read_json(ss, pt);
+//    } catch (std::exception const& e) {
+//        return false;
+//    }
+//    try {
+//        std::string msg = pt.get<std::string>("short_message");
+//        if (msg != testAgainst.message) {
+//            return false;
+//        }
+//        std::string host = pt.get<std::string>("host");
+//        if (host != testAgainst.host) {
+//            return false;
+//        }
+//        std::string processName = pt.get<std::string>("processName");
+//        if (processName != testAgainst.processName) {
+//            return false;
+//        }
+//        double epochTime = pt.get<double>("timestamp");
+//        double diffTime = epochTime - double(std::chrono::system_clock::to_time_t(testAgainst.timestamp));
+//        if (diffTime > 0.1 or diffTime < -0.1) {
+//            return false;
+//        }
+//    } catch (std::exception const& e) {
+//        return false;
+//    }
+//    return true;
+//}
+
+TEST(GraylogInterfaceCom, MessageJSONContentTest) {
+    LogMessage msg = GetPopulatedLogMsg();
+    GraylogInterfaceStandIn con("localhost", testPort, 100);
+    EXPECT_CALL(con, SendMessage(::testing::_)).WillOnce(testing::Invoke(&TestJsonString));
+    con.AddMessage(msg);
 }

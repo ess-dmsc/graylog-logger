@@ -13,7 +13,7 @@
 class BaseLogHandlerStandIn : public BaseLogHandler {
 public:
     BaseLogHandlerStandIn() : BaseLogHandler() {};
-    void AddMessage(LogMessage &msg) {
+    virtual void AddMessage(LogMessage &msg) {
         cMsg = msg;
     };
     LogMessage cMsg;

@@ -13,6 +13,7 @@ LogTestServer::LogTestServer(short port) : service(), acceptor(service, ip::tcp:
     connections = 0;
     receivedBytes = 0;
     WaitForNewConnection();
+    acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
     asioThread = std::thread(&LogTestServer::ThreadFunction, this);
 }
 
