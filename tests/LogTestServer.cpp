@@ -8,7 +8,7 @@
 
 #include "LogTestServer.hpp"
 
-LogTestServer::LogTestServer(short port) : service(), acceptor(service, ip::tcp::endpoint(ip::tcp::v6(), port)){
+LogTestServer::LogTestServer(short port) : service(), acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), port)){
     socketError = errc_t::success;
     connections = 0;
     receivedBytes = 0;

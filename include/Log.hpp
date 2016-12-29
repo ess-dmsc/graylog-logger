@@ -8,9 +8,13 @@
 
 #pragma once
 
+#include <vector>
 #include "LogUtil.hpp"
 
-void InitLoggingSystem();
-void Log(Severity sev, std::string message);
-void AddLogHandler(BaseLogHandler *handler);
-void RemoveAllHandlers();
+namespace Log {
+    void Msg(const Severity sev, const std::string message);
+    void SetMinimumSeverity(const Severity sev);
+    void AddLogHandler(const LogHandler_P handler);
+    void RemoveAllHandlers();
+    std::vector<LogHandler_P> GetHandlers();
+}

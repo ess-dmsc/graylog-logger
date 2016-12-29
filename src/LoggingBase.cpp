@@ -6,10 +6,18 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
+
 #include "LoggingBase.hpp"
+#include <unistd.h>
+#include <sys/types.h>
+#include <algorithm>
+#include <thread>
+#include <sstream>
+#include <chrono>
 
 LoggingBase::LoggingBase() {
     std::lock_guard<std::mutex> guard(vectorMutex);
+    minSeverity = Severity::Warning;
     const int stringBufferSize = 100;
     char stringBuffer[stringBufferSize];
     int res;
@@ -26,6 +34,9 @@ LoggingBase::~LoggingBase() {
 }
 
 void LoggingBase::Log(Severity sev, std::string message) {
+    if (int(sev) > int(minSeverity)) {
+        return;
+    }
     LogMessage cMsg(baseMsg);
     cMsg.timestamp = std::chrono::system_clock::now();
     cMsg.message = message;
@@ -37,7 +48,7 @@ void LoggingBase::Log(Severity sev, std::string message) {
     std::for_each(handlers.begin(), handlers.end(), [&](LogHandler_P ptr){ptr.get()->AddMessage(cMsg);});
 }
 
-void LoggingBase::AddLogHandler(LogHandler_P handler) {
+void LoggingBase::AddLogHandler(const LogHandler_P handler) {
     std::lock_guard<std::mutex> guard(vectorMutex);
     handlers.push_back(handler);
 }
@@ -50,4 +61,9 @@ void LoggingBase::RemoveAllHandlers() {
 std::vector<LogHandler_P> LoggingBase::GetHandlers() {
     std::lock_guard<std::mutex> guard(vectorMutex);
     return handlers;
+}
+
+void LoggingBase::SetMinSeverity(Severity sev) {
+    std::lock_guard<std::mutex> guard(vectorMutex);
+    minSeverity = sev;
 }

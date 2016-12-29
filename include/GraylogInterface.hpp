@@ -32,6 +32,7 @@ public:
     GraylogConnection(std::string host, int port, int queueLength = 100);
     virtual ~GraylogConnection();
     virtual void SendMessage(std::string msg);
+    virtual bool MessagesQueued();
 protected:
     const time_t retryDelay = 10.0;
     time_t endWait;
@@ -80,6 +81,7 @@ public:
     GraylogInterface(std::string host, int port, int queueLength = 100);
     virtual ~GraylogInterface();
     virtual void AddMessage(LogMessage &msg);
+    using GraylogConnection::MessagesQueued;
 protected:
     std::string LogMsgToJSON(LogMessage &msg);
 };

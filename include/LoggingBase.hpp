@@ -9,26 +9,21 @@
 #pragma once
 
 #include <string>
-#include "ConcurrentQueue.hpp"
-#include <chrono>
 #include <vector>
-#include <unistd.h>
-#include <sys/types.h>
-#include <algorithm>
-#include <thread>
-#include <sstream>
 #include <mutex>
 #include "LogUtil.hpp"
 
 class LoggingBase {
 public:
     LoggingBase();
-    ~LoggingBase();
-    void Log(Severity sev, std::string message);
-    void AddLogHandler(LogHandler_P handler);
-    void RemoveAllHandlers();
-    std::vector<LogHandler_P> GetHandlers();
+    virtual ~LoggingBase();
+    virtual void Log(Severity sev, std::string message);
+    virtual void AddLogHandler(const LogHandler_P handler);
+    virtual void RemoveAllHandlers();
+    virtual void SetMinSeverity(Severity sev);
+    virtual std::vector<LogHandler_P> GetHandlers();
 protected:
+    Severity minSeverity;
     std::mutex vectorMutex;
     std::vector<LogHandler_P> handlers;
     LogMessage baseMsg;

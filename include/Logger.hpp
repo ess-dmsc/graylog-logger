@@ -9,15 +9,18 @@
 #pragma once
 
 #include "LoggingBase.hpp"
-#include <string>
 
 class Logger : private LoggingBase {
 public:
-    static void Init(std::string fileName);
-    static void Close();
-    static Logger* Inst();
-    
+    static Logger& Inst();
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+    virtual void AddLogHandler(const LogHandler_P handler);
+    using LoggingBase::Log;
+    using LoggingBase::RemoveAllHandlers;
+    using LoggingBase::GetHandlers;
+    using LoggingBase::SetMinSeverity;
 private:
-    void Closer();
-    static Logger *lgr;
+    Logger();
+    ~Logger();
 };

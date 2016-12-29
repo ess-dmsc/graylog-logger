@@ -25,7 +25,7 @@ FileInterface::~FileInterface() {
 }
 
 void FileInterface::ThreadFunction() {
-    std::ofstream outStream(fileName);
+    std::ofstream outStream(fileName, std::ios_base::app);
     LogMessage tmpMsg;
     while (true) {
         msgQueue.wait_and_pop(tmpMsg);

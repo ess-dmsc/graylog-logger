@@ -7,29 +7,46 @@
 //
 
 #include "Logger.hpp"
+#include "ConsoleInterface.hpp"
 #include "FileInterface.hpp"
+#include "GraylogInterface.hpp"
 
-Logger *Logger::lgr = nullptr;
 
-Logger* Logger::Inst() {
-    if (nullptr == lgr) {
-        Logger::Init("messages.log");
-    }
-    return lgr;
+Logger& Logger::Inst() {
+    static Logger inst;
+    return inst;
 }
 
-void Logger::Close() {
-    if (nullptr == lgr) {
-        lgr->Closer();
-    }
+Logger::Logger() : LoggingBase() {
+    LogHandler_P ptr1(new ConsoleInterface());
+    AddLogHandler(ptr1);
+    
+    std::string fileName = "messages.log";
+    LogHandler_P ptr2(new FileInterface(fileName));
+    AddLogHandler(ptr2);
+    
+    LogHandler_P ptr3(new GraylogInterface("localhost", 12201));
+    AddLogHandler(ptr3);
 }
 
-void Logger::Closer() {
-    delete this;
+Logger::~Logger() {
+    
 }
 
-void Logger::Init(std::string fileName) {
-    if (fileName.size() > 0) {
-        
+void Logger::AddLogHandler(const LogHandler_P handler) {
+    std::lock_guard<std::mutex> guard(vectorMutex);
+    bool replaced = false;
+    if (dynamic_cast<ConsoleInterface*>(handler.get()) != nullptr) {
+        std::for_each(handlers.begin(), handlers.end(), [&](LogHandler_P ptr) {
+            if (dynamic_cast<ConsoleInterface*>(ptr.get()) != nullptr) {
+                ptr = handler;
+                replaced = true;
+            }
+        });
+        if (not replaced) {
+            handlers.push_back(handler);
+        }
+    } else {
+        handlers.push_back(handler);
     }
 }

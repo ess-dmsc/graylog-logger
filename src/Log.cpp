@@ -7,4 +7,27 @@
 //
 
 #include "Log.hpp"
+#include "Logger.hpp"
+
+namespace Log {
+    void Msg(const Severity sev, const std::string message) {
+        Logger::Inst().Log(sev, message);
+    }
+    
+    void SetMinimumSeverity(const Severity sev) {
+        Logger::Inst().SetMinSeverity(sev);
+    }
+    
+    void AddLogHandler(const LogHandler_P handler) {
+        Logger::Inst().AddLogHandler(handler);
+    }
+    
+    void RemoveAllHandlers() {
+        Logger::Inst().RemoveAllHandlers();
+    }
+    
+    std::vector<LogHandler_P> GetHandlers() {
+        return Logger::Inst().GetHandlers();
+    }
+}
 

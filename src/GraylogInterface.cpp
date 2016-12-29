@@ -55,7 +55,8 @@ void GraylogConnection::EndThread() {
 
 void GraylogConnection::MakeConnectionHints() {
     bzero((void*)&hints, sizeof(hints));
-    hints.ai_family = AF_UNSPEC; //Accept both IPv4 and IPv6
+    //hints.ai_family = AF_UNSPEC; //Accept both IPv4 and IPv6
+    hints.ai_family = AF_INET; //Accept only IPv4
     hints.ai_socktype = SOCK_STREAM; //Use TCP
 }
 
@@ -329,4 +330,8 @@ void GraylogConnection::ThreadFunction() {
                 break;
         }
     }
+}
+
+bool GraylogConnection::MessagesQueued() {
+    return logMessages.size() > 0;
 }
