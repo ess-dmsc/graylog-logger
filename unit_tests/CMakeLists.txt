@@ -18,12 +18,12 @@ include_directories(${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIRS} "../include")
 file(GLOB UnitTest_SRC "*.cpp")
 file(GLOB Graylog_SRC "../src/*.cpp")
 
-add_executable(LogTests ${UnitTest_SRC} ${Graylog_SRC})
+add_executable(unit_tests ${UnitTest_SRC} ${Graylog_SRC})
 
 # set(needed_features cxx_strong_enums cxx_constexpr)
 # target_compile_features(LogTests PRIVATE ${needed_features})
 
-target_link_libraries(LogTests ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES})
-target_link_libraries(LogTests ${Boost_LIBRARIES})
+target_link_libraries(unit_tests ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES})
+target_link_libraries(unit_tests ${Boost_LIBRARIES})
 
-add_test(TestAll LogTests)
+add_test(TestAll unit_tests)
