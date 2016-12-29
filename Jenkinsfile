@@ -8,7 +8,7 @@ node {
     }
     
     stage("Test") {
-        sh "./tests/LogTests --gtest_output=xml:LogTests.xml"
-        junit "tests/*Tests.xml"
+        sh "./unit_tests/LogTests --gtest_output=xml:LogTests.xml"
+        junit "unit_tests/*Tests.xml"
     }
 }
