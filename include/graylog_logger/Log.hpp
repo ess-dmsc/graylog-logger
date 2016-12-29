@@ -9,7 +9,7 @@
 #pragma once
 
 #include <vector>
-#include "LogUtil.hpp"
+#include "graylog_logger/LogUtil.hpp"
 
 namespace Log {
     void Msg(const Severity sev, const std::string message);

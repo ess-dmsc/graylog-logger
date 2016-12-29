@@ -10,9 +10,8 @@
 
 #include <string>
 #include <thread>
-#include <fstream>
-#include "ConcurrentQueue.hpp"
-#include "LogUtil.hpp"
+#include "graylog_logger/ConcurrentQueue.hpp"
+#include "graylog_logger/LogUtil.hpp"
 
 class FileInterface : public BaseLogHandler {
 public:

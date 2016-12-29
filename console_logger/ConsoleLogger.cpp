@@ -10,10 +10,10 @@
 #include <iostream>
 #include <string>
 #include <getopt.h>
-#include "Log.hpp"
-#include "GraylogInterface.hpp"
-#include "FileInterface.hpp"
-#include "ConsoleInterface.hpp"
+#include <graylog_logger/Log.hpp>
+#include <graylog_logger/GraylogInterface.hpp>
+#include <graylog_logger/FileInterface.hpp>
+#include <graylog_logger/ConsoleInterface.hpp>
 
 void PrintAlternatives();
 

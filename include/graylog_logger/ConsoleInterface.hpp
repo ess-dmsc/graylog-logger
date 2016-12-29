@@ -8,10 +8,9 @@
 
 #pragma once
 
-#include <iostream>
 #include <thread>
-#include "ConcurrentQueue.hpp"
-#include "LogUtil.hpp"
+#include "graylog_logger/ConcurrentQueue.hpp"
+#include "graylog_logger/LogUtil.hpp"
 
 class ConsoleInterface : public BaseLogHandler {
 public:

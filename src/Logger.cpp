@@ -6,10 +6,10 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-#include "Logger.hpp"
-#include "ConsoleInterface.hpp"
-#include "FileInterface.hpp"
-#include "GraylogInterface.hpp"
+#include "graylog_logger/Logger.hpp"
+#include "graylog_logger/ConsoleInterface.hpp"
+#include "graylog_logger/FileInterface.hpp"
+#include "graylog_logger/GraylogInterface.hpp"
 
 
 Logger& Logger::Inst() {

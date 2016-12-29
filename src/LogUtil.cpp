@@ -6,7 +6,11 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-#include "LogUtil.hpp"
+#include <map>
+#include <memory>
+#include <ctime>
+#include <iomanip>
+#include "graylog_logger/LogUtil.hpp"
 
 BaseLogHandler::BaseLogHandler() : msgParser(nullptr) {
 }

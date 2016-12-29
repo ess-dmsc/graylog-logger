@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "LoggingBase.hpp"
+#include "graylog_logger/LoggingBase.hpp"
 
 class Logger : private LoggingBase {
 public:

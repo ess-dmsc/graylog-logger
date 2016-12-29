@@ -10,7 +10,7 @@
 #include <gmock/gmock.h>
 #include <thread>
 #include <sstream>
-#include "GraylogInterface.hpp"
+#include "graylog_logger/GraylogInterface.hpp"
 #include "LogTestServer.hpp"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>

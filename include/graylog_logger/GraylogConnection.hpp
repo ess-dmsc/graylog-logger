@@ -1,31 +1,18 @@
 //
-//  KafkaInterface.hpp
+//  GraylogConnection.hpp
 //  dm-graylog-logger
 //
-//  Created by Jonas Nilsson on 2016-12-15.
+//  Created by Jonas Nilsson on 2016-12-29.
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
 #pragma once
 
-#include <vector>
-#include <utility>
 #include <string>
 #include <thread>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/poll.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <ctime>
-#include <chrono>
-#include <unistd.h>
-#include <fcntl.h>
-#include <assert.h>
 #include <atomic>
-#include <iostream>
-#include "ConcurrentQueue.hpp"
-#include "LogUtil.hpp"
+#include <netdb.h>
+#include "graylog_logger/ConcurrentQueue.hpp"
 
 class GraylogConnection {
 public:
@@ -74,14 +61,4 @@ protected:
 #endif
 private:
     ConcurrentQueue<std::string> logMessages;
-};
-
-class GraylogInterface : public BaseLogHandler, private GraylogConnection {
-public:
-    GraylogInterface(std::string host, int port, int queueLength = 100);
-    virtual ~GraylogInterface();
-    virtual void AddMessage(LogMessage &msg);
-    using GraylogConnection::MessagesQueued;
-protected:
-    std::string LogMsgToJSON(LogMessage &msg);
 };

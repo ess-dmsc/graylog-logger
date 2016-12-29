@@ -6,8 +6,8 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-#include "Log.hpp"
-#include "Logger.hpp"
+#include "graylog_logger/Log.hpp"
+#include "graylog_logger/Logger.hpp"
 
 namespace Log {
     void Msg(const Severity sev, const std::string message) {

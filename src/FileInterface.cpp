@@ -6,7 +6,8 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-#include "FileInterface.hpp"
+#include <fstream>
+#include "graylog_logger/FileInterface.hpp"
 
 FileInterface::FileInterface(std::string fileName) : BaseLogHandler(), fileName(fileName), fileThread(&FileInterface::ThreadFunction, this) {
     

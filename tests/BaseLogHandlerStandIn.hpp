@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "LogUtil.hpp"
+#include "graylog_logger/LogUtil.hpp"
 
 class BaseLogHandlerStandIn : public BaseLogHandler {
 public:

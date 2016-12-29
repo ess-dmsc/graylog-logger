@@ -7,7 +7,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "ConsoleInterface.hpp"
+#include "graylog_logger/ConsoleInterface.hpp"
 
 const std::string consoleTestString("Some test string");
 

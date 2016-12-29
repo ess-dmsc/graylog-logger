@@ -7,7 +7,7 @@
 //
 
 
-#include "LoggingBase.hpp"
+#include "graylog_logger/LoggingBase.hpp"
 #include <unistd.h>
 #include <sys/types.h>
 #include <algorithm>

@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
-#include "LogUtil.hpp"
+#include "graylog_logger/LogUtil.hpp"
 
 class LoggingBase {
 public:

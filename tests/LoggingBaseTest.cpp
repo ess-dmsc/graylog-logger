@@ -11,10 +11,11 @@
 #include <boost/thread.hpp>
 #include <boost/lexical_cast.hpp>
 #include <gtest/gtest.h>
+#include <thread>
 #include <chrono>
 #include "BaseLogHandlerStandIn.hpp"
-#include "LoggingBase.hpp"
-#include "LogUtil.hpp"
+#include "graylog_logger/LoggingBase.hpp"
+#include "graylog_logger/LogUtil.hpp"
 
 TEST(LoggingBase, InitTest) {
     LoggingBase log;
@@ -41,6 +42,7 @@ TEST(LoggingBase, ClearHandlersTest) {
 
 TEST(LoggingBase, LogSeveritiesTest) {
     LoggingBase log;
+    log.SetMinSeverity(Severity::Debug);
     auto standIn = std::make_shared<BaseLogHandlerStandIn>();
     log.AddLogHandler(standIn);
     std::vector<Severity> testSeverities = {Severity::Alert, Severity::Critical, Severity::Debug, Severity::Emergency, Severity::Error, Severity::Informational, Severity::Notice, Severity::Warning};

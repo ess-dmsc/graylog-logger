@@ -9,12 +9,7 @@
 #pragma once
 
 #include <string>
-#include <map>
-#include <memory>
 #include <chrono>
-#include <ctime>
-#include <iomanip>
-//#include <sstream>
 
 typedef std::chrono::time_point<std::chrono::system_clock> system_time;
 

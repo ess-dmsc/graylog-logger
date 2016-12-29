@@ -8,7 +8,8 @@
 
 #include <gtest/gtest.h>
 #include <boost/filesystem.hpp>
-#include "FileInterface.hpp"
+#include <fstream>
+#include "graylog_logger/FileInterface.hpp"
 
 const std::string usedFileName("testFileName.log");
 
