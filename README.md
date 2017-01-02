@@ -50,9 +50,12 @@ The basic interface to the library is very simple and it should be possible to g
 The code is currently not documented. Examples illustrating how the library can be used can be found on the ESS wiki.
 
 ## To do
+The items in the following list is in no particular order. Suggestions and/or patches are welcome.
+
 * Document the code
 * Add more advanced logging features
 * Clean up the graylog code
 * Fix IPv4/IPv6 support
 * Add UDP support
+* Determine process name
 * ...
