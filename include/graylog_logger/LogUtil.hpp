@@ -10,6 +10,7 @@
 
 #include <string>
 #include <chrono>
+#include <vector>
 
 typedef std::chrono::time_point<std::chrono::system_clock> system_time;
 
@@ -41,6 +42,7 @@ public:
     virtual void AddMessage(LogMessage &msg) = 0;
     void SetMessageStringCreatorFunction(std::string (*MsgParser)(LogMessage &msg));
 protected:
+    const std::vector<std::string> sevToStr = {"EMERGENCY", "ALERT", "CRITICAL", "ERROR", "WARNING", "Notice", "Info", "Debug"};
     std::string (*msgParser)(LogMessage &msg);
     std::string MsgStringCreator(LogMessage &msg);
 };
