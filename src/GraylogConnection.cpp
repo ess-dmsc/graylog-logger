@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <string.h>
 
 GraylogConnection::GraylogConnection(std::string host, int port, int queueLength) : closeThread(false), host(host), port(std::to_string(port)), queueLength(queueLength), socketFd(-1), conAddresses(NULL), connectionTries(0), firstMessage(true) {
     connectionThread = std::thread(&GraylogConnection::ThreadFunction, this);
