@@ -11,7 +11,7 @@ include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 
 find_package(GTest REQUIRED)
-find_package(GMock REQUIRED)
+find_package(GMock)
 
 include_directories(${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIRS} "../include")
 
