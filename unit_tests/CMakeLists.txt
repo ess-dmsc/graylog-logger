@@ -13,6 +13,15 @@ link_directories(${Boost_LIBRARY_DIRS})
 find_package(GTest REQUIRED)
 find_package(GMock)
 
+if (NOT GMOCK_FOUND)
+    MESSAGE("Failed first attempt at finding GMock, trying again.")
+    find_library(GMOCK_BOTH_LIBRARIES gmock gmock_main)
+    find_path(GMOCK_INCLUDE_DIRS gmock/gmock.h)
+    if (NOT GMOCK_BOTH_LIBRARIES OR NOT GMOCK_INCLUDE_DIRS)
+        MESSAGE(FATAL_ERROR "Second attempt at finding GMock failed, exiting.")
+    endif(NOT GMOCK_BOTH_LIBRARIES OR NOT GMOCK_INCLUDE_DIRS)
+endif(NOT GMOCK_FOUND)
+
 include_directories(${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIRS} "../include")
 
 file(GLOB UnitTest_SRC "*.cpp")
