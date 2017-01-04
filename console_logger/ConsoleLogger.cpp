@@ -127,11 +127,11 @@ int main(int argc, char **argv) {
     std::vector<LogHandler_P> allInterfaces = Log::GetHandlers();
     std::vector<LogHandler_P> graylogInt;
     
-    std::for_each(allInterfaces.begin(), allInterfaces.end(), [&](LogHandler_P ptr){
+    for(auto ptr : allInterfaces) {
         if (dynamic_cast<GraylogInterface*>(ptr.get()) != nullptr) {
             graylogInt.push_back(ptr);
         }
-    });
+    }
     if (graylogInt.size() > 0) {
         int milisSleep = 20;
         int waitLoops = int((timeout * 1000) / milisSleep + 0.5);
@@ -140,11 +140,11 @@ int main(int argc, char **argv) {
         for (int i = 0; i < waitLoops and continueLoop; i++) {
             std::this_thread::sleep_for(sleepTime);
             continueLoop = false;
-            std::for_each(graylogInt.begin(), graylogInt.end(), [&](LogHandler_P ptr){
+            for(auto ptr : graylogInt){
                 if (dynamic_cast<GraylogInterface*>(ptr.get())->MessagesQueued()) {
                     continueLoop = true;
                 }
-            });
+            }
         }
     }
     

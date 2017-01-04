@@ -10,7 +10,6 @@
 #include "graylog_logger/LoggingBase.hpp"
 #include <unistd.h>
 #include <sys/types.h>
-#include <algorithm>
 #include <thread>
 #include <sstream>
 #include <chrono>
@@ -45,7 +44,9 @@ void LoggingBase::Log(Severity sev, std::string message) {
     ss << std::this_thread::get_id();
     cMsg.threadId = ss.str();
     std::lock_guard<std::mutex> guard(vectorMutex);
-    std::for_each(handlers.begin(), handlers.end(), [&](LogHandler_P ptr){ptr.get()->AddMessage(cMsg);});
+    for(auto ptr : handlers) {
+        ptr.get()->AddMessage(cMsg);
+    }
 }
 
 void LoggingBase::AddLogHandler(const LogHandler_P handler) {

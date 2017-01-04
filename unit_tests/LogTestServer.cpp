@@ -29,7 +29,7 @@ LogTestServer::~LogTestServer() {
 }
 
 void LogTestServer::CloseFunction() {
-    std::for_each(existingSockets.begin(), existingSockets.end(), [this](sock_ptr sock){
+    for (auto sock : existingSockets){
         if (sock->is_open()) {
             try {
                 sock->shutdown(socket_base::shutdown_both);
@@ -37,7 +37,8 @@ void LogTestServer::CloseFunction() {
                 
             }
         }
-        sock->close();});
+        sock->close();
+    }
     existingSockets.clear();
 }
 

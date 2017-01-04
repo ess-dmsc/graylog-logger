@@ -127,7 +127,9 @@ TEST_F(GraylogConnectionCom, MultipleMessagesTest) {
         GraylogConnectionStandIn con("localhost", testPort);
         std::this_thread::sleep_for(sleepTime);
         int totalBytes = 0;
-        std::for_each(lines.begin(), lines.end(), [&](std::string ln) {totalBytes += (ln.size() + 1); con.SendMessage(ln);});
+        for(auto ln : lines) {
+            totalBytes += (ln.size() + 1); con.SendMessage(ln);
+        }
         std::this_thread::sleep_for(sleepTime);
         ASSERT_EQ(int(errc_t::success),logServer->GetLastSocketError());
         ASSERT_EQ(lines[lines.size() - 1], logServer->GetLatestMessage());

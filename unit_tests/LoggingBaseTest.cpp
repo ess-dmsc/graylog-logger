@@ -46,9 +46,10 @@ TEST(LoggingBase, LogSeveritiesTest) {
     auto standIn = std::make_shared<BaseLogHandlerStandIn>();
     log.AddLogHandler(standIn);
     std::vector<Severity> testSeverities = {Severity::Alert, Severity::Critical, Severity::Debug, Severity::Emergency, Severity::Error, Severity::Informational, Severity::Notice, Severity::Warning};
-    std::for_each(testSeverities.begin(), testSeverities.end(), [&](Severity sev){
+    for(auto sev : testSeverities){
         log.Log(sev, "");
-        ASSERT_EQ(standIn.get()->cMsg.severity, sev);});
+        ASSERT_EQ(standIn.get()->cMsg.severity, sev);
+    }
 }
 
 TEST(LoggingBase, LogMessageTest) {

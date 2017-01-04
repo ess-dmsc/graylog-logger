@@ -37,12 +37,12 @@ void Logger::AddLogHandler(const LogHandler_P handler) {
     std::lock_guard<std::mutex> guard(vectorMutex);
     bool replaced = false;
     if (dynamic_cast<ConsoleInterface*>(handler.get()) != nullptr) {
-        std::for_each(handlers.begin(), handlers.end(), [&](LogHandler_P ptr) {
+        for (auto ptr : handlers) {
             if (dynamic_cast<ConsoleInterface*>(ptr.get()) != nullptr) {
                 ptr = handler;
                 replaced = true;
             }
-        });
+        }
         if (not replaced) {
             handlers.push_back(handler);
         }
