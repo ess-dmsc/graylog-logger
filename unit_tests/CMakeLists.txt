@@ -10,19 +10,35 @@ find_package(Boost COMPONENTS system thread regex filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 
-find_package(GTest REQUIRED)
-find_package(GMock)
+if (CMAKE_VERSION VERSION_LESS 3.2)
+    set(UPDATE_DISCONNECTED_IF_AVAILABLE "")
+else()
+    set(UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
+endif()
 
-if (NOT GMOCK_FOUND)
-    MESSAGE("Failed first attempt at finding GMock, trying again.")
-    find_library(GMOCK_BOTH_LIBRARIES gmock gmock_main)
-    find_path(GMOCK_INCLUDE_DIRS gmock/gmock.h)
-    if (NOT GMOCK_BOTH_LIBRARIES OR NOT GMOCK_INCLUDE_DIRS)
-        MESSAGE(FATAL_ERROR "Second attempt at finding GMock failed, exiting.")
-    endif(NOT GMOCK_BOTH_LIBRARIES OR NOT GMOCK_INCLUDE_DIRS)
-endif(NOT GMOCK_FOUND)
+include(${CMAKE_MODULE_PATH}/DownloadProject.cmake)
+download_project(PROJ                googletest
+                 GIT_REPOSITORY      https://github.com/google/googletest.git
+                 GIT_TAG             master
+                 ${UPDATE_DISCONNECTED_IF_AVAILABLE}
+)
 
-include_directories(${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIRS} "../include")
+# Prevent GoogleTest from overriding our compiler/linker options
+# when building with Visual Studio
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+
+# When using CMake 2.8.11 or later, header path dependencies
+# are automatically added to the gtest and gmock targets.
+# For earlier CMake versions, we have to explicitly add the
+# required directories to the header search path ourselves.
+if (CMAKE_VERSION VERSION_LESS 2.8.11)
+    include_directories("${gtest_SOURCE_DIR}/include"
+                        "${gmock_SOURCE_DIR}/include")
+endif()
+
+include_directories("../include")
 
 file(GLOB UnitTest_SRC "*.cpp")
 file(GLOB Graylog_SRC "../src/*.cpp")
@@ -32,7 +48,7 @@ add_executable(unit_tests ${UnitTest_SRC} ${Graylog_SRC})
 # set(needed_features cxx_strong_enums cxx_constexpr)
 # target_compile_features(LogTests PRIVATE ${needed_features})
 
-target_link_libraries(unit_tests ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES})
+target_link_libraries(unit_tests gtest gmock_main)
 target_link_libraries(unit_tests ${Boost_LIBRARIES})
 
 add_test(TestAll unit_tests)
