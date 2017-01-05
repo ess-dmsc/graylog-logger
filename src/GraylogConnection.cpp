@@ -203,7 +203,7 @@ void GraylogConnection::CheckConnectionStatus() {
     pollfd ufds[1];
     ufds[0].fd = socketFd;
 #ifdef POLLRDHUP
-    ufds[0].events = POLLIN | POLLOUT | POLLRDHUP;
+    ufds[0].events = POLLIN | POLLOUT | POLLRDHUP;
 #else
     ufds[0].events = POLLIN | POLLOUT;
 #endif
