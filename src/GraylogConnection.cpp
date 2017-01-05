@@ -197,6 +197,7 @@ void GraylogConnection::CheckConnectionStatus() {
             SetState(ConStatus::CONNECT);
             shutdown(socketFd, SHUT_RDWR);
             close(socketFd);
+            return;
         }
     }
     pollfd ufds[1];
