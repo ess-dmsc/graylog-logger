@@ -171,39 +171,39 @@ void GraylogConnection::CheckConnectionStatus() {
     timeval selectTimeout;
     selectTimeout.tv_sec = 0;
     selectTimeout.tv_usec = 0;
-    fd_set exceptfds;
-    FD_ZERO(&exceptfds);
-    FD_SET(socketFd, &exceptfds);
-    fd_set readfds;
-    FD_ZERO(&readfds);
-    FD_SET(socketFd, &readfds);
-    fd_set writefds;
-    FD_ZERO(&writefds);
-    FD_SET(socketFd, &writefds);
-    int selRes = select(socketFd + 1, &readfds, NULL, &exceptfds, &selectTimeout);
-    //std::cout << "Connection check: " << selRes << std::endl;
-    if(selRes and FD_ISSET(socketFd, &exceptfds)) {
-        SetState(ConStatus::CONNECT);
-        shutdown(socketFd, SHUT_RDWR);
-        close(socketFd);
-        return;
-    }
-    char b;
-    if (FD_ISSET(socketFd, &readfds)) {
-        ssize_t peekRes = recv(socketFd, &b, 1, MSG_PEEK);
-        //std::cout << "Peek check: " << peekRes << std::endl;
-        if (-1 == peekRes) {
-            //perror("peek");
-            SetState(ConStatus::CONNECT);
-            shutdown(socketFd, SHUT_RDWR);
-            close(socketFd);
-            return;
-        }
-    }
+//    fd_set exceptfds;
+//    FD_ZERO(&exceptfds);
+//    FD_SET(socketFd, &exceptfds);
+//    fd_set readfds;
+//    FD_ZERO(&readfds);
+//    FD_SET(socketFd, &readfds);
+//    fd_set writefds;
+//    FD_ZERO(&writefds);
+//    FD_SET(socketFd, &writefds);
+//    int selRes = select(socketFd + 1, &readfds, NULL, &exceptfds, &selectTimeout);
+//    //std::cout << "Connection check: " << selRes << std::endl;
+//    if(selRes and FD_ISSET(socketFd, &exceptfds)) {
+//        SetState(ConStatus::CONNECT);
+//        shutdown(socketFd, SHUT_RDWR);
+//        close(socketFd);
+//        return;
+//    }
+//    char b;
+//    if (FD_ISSET(socketFd, &readfds)) {
+//        ssize_t peekRes = recv(socketFd, &b, 1, MSG_PEEK);
+//        //std::cout << "Peek check: " << peekRes << std::endl;
+//        if (-1 == peekRes) {
+//            //perror("peek");
+//            SetState(ConStatus::CONNECT);
+//            shutdown(socketFd, SHUT_RDWR);
+//            close(socketFd);
+//            return;
+//        }
+//    }
     pollfd ufds[1];
     ufds[0].fd = socketFd;
     ufds[0].events = POLLIN | POLLOUT;
-    int pollRes = poll(ufds, 1, 0);
+    int pollRes = poll(ufds, 1, 10);
     //std::cout << "Number of poll results: " << pollRes << std::endl;
     if (pollRes == 1) {
         //std::cout << "Poll result: " << ufds[0].revents << std::endl;
