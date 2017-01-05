@@ -18,6 +18,8 @@
 #include <fcntl.h>
 #include <assert.h>
 #include <string.h>
+#include <iostream>
+#include <vector>
 
 GraylogConnection::GraylogConnection(std::string host, int port, int queueLength) : closeThread(false), host(host), port(std::to_string(port)), queueLength(queueLength), socketFd(-1), conAddresses(NULL), connectionTries(0), firstMessage(true) {
     retConState = GraylogConnection::ConStatus::NONE;
@@ -333,6 +335,8 @@ bool GraylogConnection::MessagesQueued() {
 }
 
 void GraylogConnection::SetState(GraylogConnection::ConStatus newState) {
+    static std::vector<std::string> stateToStr = {"NONE", "ADDR_LOOKUP", "ADDR_RETRY_WAIT", "CONNECT", "CONNECT_WAIT", "CONNECT_RETRY_WAIT", "SEND_LOOP", "NEW_MESSAGE"};
+    std::cout << "Switched state to: " << stateToStr.at(int(newState)) << std::endl;
     stateMachine = newState;
     stateQueue.push(newState);
 }

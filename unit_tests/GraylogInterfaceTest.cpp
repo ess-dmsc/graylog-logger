@@ -89,12 +89,7 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
         ASSERT_EQ(1, logServer->GetNrOfConnections());
         ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
         ASSERT_EQ(logServer->GetLastSocketError(), int(errc_t::success));
-        GraylogConnection::ConStatus tempStat = con.GetConnectionStatus();
-        if (GraylogConnection::ConStatus::NEW_MESSAGE  == tempStat) {
-            SUCCEED();
-        } else {
-            FAIL() << "State was: " << int(tempStat);
-        }
+        ASSERT_EQ(GraylogConnection::ConStatus::NEW_MESSAGE, con.GetConnectionStatus());
     }
     std::this_thread::sleep_for(sleepTime);
     ASSERT_EQ(0, logServer->GetNrOfConnections());
@@ -103,26 +98,15 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
 }
 
 TEST_F(GraylogConnectionCom, CloseConnectionTest) {
-    GraylogConnection::ConStatus tempStat;
     {
         GraylogConnectionStandIn con("localhost", testPort);
         std::this_thread::sleep_for(sleepTime);
-        tempStat = con.GetConnectionStatus();
-        if (GraylogConnection::ConStatus::NEW_MESSAGE  == tempStat) {
-            SUCCEED();
-        } else {
-            FAIL() << "State was: " << int(tempStat);
-        }
+        ASSERT_EQ(GraylogConnection::ConStatus::NEW_MESSAGE, con.GetConnectionStatus());
         ASSERT_EQ(1, logServer->GetNrOfConnections());
         logServer->CloseAllConnections();
         std::this_thread::sleep_for(sleepTime);
+        ASSERT_EQ(GraylogConnection::ConStatus::NEW_MESSAGE, con.GetConnectionStatus());
         ASSERT_EQ(1, logServer->GetNrOfConnections()) << "Failed to reconnect after connection was closed remotely.";
-        tempStat = con.GetConnectionStatus();
-        if (GraylogConnection::ConStatus::NEW_MESSAGE  == tempStat) {
-            SUCCEED();
-        } else {
-            FAIL() << "State was: " << int(tempStat);
-        }
     }
     std::this_thread::sleep_for(sleepTime);
     ASSERT_EQ(0, logServer->GetNrOfConnections());
