@@ -107,14 +107,13 @@ TEST_F(GraylogConnectionCom, CloseConnectionTest) {
     {
         GraylogConnectionStandIn con("localhost", testPort);
         std::this_thread::sleep_for(sleepTime);
-        ASSERT_EQ(1, logServer->GetNrOfConnections());
         tempStat = con.GetConnectionStatus();
         if (GraylogConnection::ConStatus::NEW_MESSAGE  == tempStat) {
             SUCCEED();
         } else {
             FAIL() << "State was: " << int(tempStat);
         }
-        
+        ASSERT_EQ(1, logServer->GetNrOfConnections());
         logServer->CloseAllConnections();
         std::this_thread::sleep_for(sleepTime);
         ASSERT_EQ(1, logServer->GetNrOfConnections()) << "Failed to reconnect after connection was closed remotely.";
