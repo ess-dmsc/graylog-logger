@@ -12,6 +12,7 @@
 #include <thread>
 #include <atomic>
 #include <netdb.h>
+#include <mutex>
 #include "graylog_logger/ConcurrentQueue.hpp"
 
 class GraylogConnection {
@@ -20,11 +21,14 @@ public:
     virtual ~GraylogConnection();
     virtual void SendMessage(std::string msg);
     virtual bool MessagesQueued();
+    enum class ConStatus {NONE, ADDR_LOOKUP, ADDR_RETRY_WAIT, CONNECT, CONNECT_WAIT, CONNECT_RETRY_WAIT, SEND_LOOP, NEW_MESSAGE};
+    ConStatus GetConnectionStatus();
 protected:
+    
     const time_t retryDelay = 10.0;
     time_t endWait;
     int connectionTries;
-    enum class ConStatus {NONE, ADDR_LOOKUP, ADDR_RETRY_WAIT, CONNECT, CONNECT_WAIT, CONNECT_RETRY_WAIT, SEND_LOOP, NEW_MESSAGE};
+    
     ConStatus stateMachine;
     
     void EndThread();
@@ -37,6 +41,7 @@ protected:
     void NewMessage();
     void SendMessageLoop();
     void CheckConnectionStatus();
+    void SetState(ConStatus newState);
     
     int queueLength;
     
@@ -60,5 +65,8 @@ protected:
     const int sendOpt = 0;
 #endif
 private:
+    mutable std::mutex stateMutex;
+    ConStatus retConState;
     ConcurrentQueue<std::string> logMessages;
+    ConcurrentQueue<ConStatus> stateQueue;
 };

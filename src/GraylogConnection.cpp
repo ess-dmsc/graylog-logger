@@ -20,11 +20,24 @@
 #include <string.h>
 
 GraylogConnection::GraylogConnection(std::string host, int port, int queueLength) : closeThread(false), host(host), port(std::to_string(port)), queueLength(queueLength), socketFd(-1), conAddresses(NULL), connectionTries(0), firstMessage(true) {
+    retConState = GraylogConnection::ConStatus::NONE;
     connectionThread = std::thread(&GraylogConnection::ThreadFunction, this);
 }
 
 GraylogConnection::~GraylogConnection() {
     EndThread();
+}
+
+GraylogConnection::ConStatus GraylogConnection::GetConnectionStatus() {
+    GraylogConnection::ConStatus tempState = GraylogConnection::ConStatus::NONE;
+    while (not stateQueue.empty()) {
+        stateQueue.try_pop(tempState);
+    }
+    if (GraylogConnection::ConStatus::NONE != tempState) {
+        std::lock_guard<std::mutex> lock(stateMutex);
+        retConState = tempState;
+    }
+    return retConState;
 }
 
 void GraylogConnection::EndThread() {
@@ -49,13 +62,13 @@ void GraylogConnection::GetServerAddr() {
         conAddresses = NULL;
     }
     int res = getaddrinfo(host.c_str(), port.c_str(), &hints, &conAddresses);
-    if (-1 == res) {
+    if (-1 == res or NULL == conAddresses) {
         //std::cout << "GL: Failed to get addr.-info." << std::endl;
-        stateMachine = ConStatus::ADDR_RETRY_WAIT;
+        SetState(ConStatus::ADDR_RETRY_WAIT);
         endWait = time(NULL) + retryDelay;
     } else {
         //std::cout << "GL: Changing state to CONNECT." << std::endl;
-        stateMachine = ConStatus::CONNECT;
+        SetState(ConStatus::CONNECT);
     }
 }
 void GraylogConnection::ConnectToServer() {
@@ -81,7 +94,7 @@ void GraylogConnection::ConnectToServer() {
         response = connect(socketFd, p->ai_addr, p->ai_addrlen);
         if (-1 == response and EINPROGRESS == errno) {
             //std::cout << "GL: Now waiting for connection." << std::endl;
-            stateMachine = ConStatus::CONNECT_WAIT;
+            SetState(ConStatus::CONNECT_WAIT);
             break;
         } else {
             close(socketFd);
@@ -92,9 +105,9 @@ void GraylogConnection::ConnectToServer() {
     if (-1 == socketFd) {
         //std::cout << "GL: Failed all connections." << std::endl;
         connectionTries++;
-        stateMachine = ConStatus::CONNECT_RETRY_WAIT;
+        SetState(ConStatus::CONNECT_RETRY_WAIT);
         if (5 < connectionTries) {
-            stateMachine = ConStatus::ADDR_RETRY_WAIT;
+            SetState(ConStatus::ADDR_RETRY_WAIT);
             connectionTries = 0;
         }
     }
@@ -104,7 +117,7 @@ void GraylogConnection::ConnectToServer() {
 void GraylogConnection::ConnectWait() {
     if (endWait < time(NULL)) {
         //std::cout << "GL: Timeout on waiting for connection." << std::endl;
-        stateMachine = ConStatus::CONNECT;
+        SetState(ConStatus::CONNECT);
         close(socketFd);
         socketFd = -1;
         connectionTries++;
@@ -124,11 +137,11 @@ void GraylogConnection::ConnectWait() {
         currentMessage = "";
         firstMessage = true;
         
-        stateMachine = ConStatus::NEW_MESSAGE;
+        SetState(ConStatus::NEW_MESSAGE);
     } else if (0 == changes) {
         //timeout
     } else if (-1 == changes) {
-        stateMachine = ConStatus::CONNECT;
+        SetState(ConStatus::CONNECT);
         close(socketFd);
         socketFd = -1;
         connectionTries++;
@@ -144,7 +157,7 @@ void GraylogConnection::NewMessage() {
     if (logMessages.time_out_peek(currentMessage, 50)) {
         bytesSent = 0;
         //std::cout << "GL: Got message to send." << std::endl;
-        stateMachine = ConStatus::SEND_LOOP;
+        SetState(ConStatus::SEND_LOOP);
     }
 }
 
@@ -168,7 +181,7 @@ void GraylogConnection::CheckConnectionStatus() {
     int selRes = select(socketFd + 1, &readfds, NULL, &exceptfds, &selectTimeout);
     //std::cout << "Connection check: " << selRes << std::endl;
     if(selRes and FD_ISSET(socketFd, &exceptfds)) {
-        stateMachine = ConStatus::CONNECT;
+        SetState(ConStatus::CONNECT);
         shutdown(socketFd, SHUT_RDWR);
         close(socketFd);
         return;
@@ -179,7 +192,7 @@ void GraylogConnection::CheckConnectionStatus() {
         //std::cout << "Peek check: " << peekRes << std::endl;
         if (-1 == peekRes) {
             //perror("peek");
-            stateMachine = ConStatus::CONNECT;
+            SetState(ConStatus::CONNECT);
             shutdown(socketFd, SHUT_RDWR);
             close(socketFd);
         }
@@ -195,7 +208,7 @@ void GraylogConnection::CheckConnectionStatus() {
             //std::cout << "Got poll error." << std::endl;
         } else if (ufds[0].revents & POLLHUP) {
             //std::cout << "Got poll hup." << std::endl;
-            stateMachine = ConStatus::CONNECT;
+            SetState(ConStatus::CONNECT);
             shutdown(socketFd, SHUT_RDWR);
             close(socketFd);
         } else if (ufds[0].revents & POLLNVAL) {
@@ -220,7 +233,7 @@ void GraylogConnection::SendMessageLoop() {
     if (selRes > 0) {
         if (FD_ISSET(socketFd, &exceptfds)) { //Some error
             //std::cout << "GL: Got send msg exception." << std::endl;
-            stateMachine = ConStatus::CONNECT;
+            SetState(ConStatus::CONNECT);
             shutdown(socketFd, SHUT_RDWR);
             close(socketFd);
             return;
@@ -237,7 +250,7 @@ void GraylogConnection::SendMessageLoop() {
                     } else {
                         //std::cout << "GL: Send error with errno:" << errno << std::endl;
                         //perror("send:");
-                        stateMachine = ConStatus::CONNECT;
+                        SetState(ConStatus::CONNECT);
                         shutdown(socketFd, SHUT_RDWR);
                         close(socketFd);
                         return;
@@ -249,7 +262,7 @@ void GraylogConnection::SendMessageLoop() {
                     bytesSent += cBytes;
                     if (bytesSent == currentMessage.size() + 1) {
                         assert(logMessages.try_pop());
-                        stateMachine = ConStatus::NEW_MESSAGE;
+                        SetState(ConStatus::NEW_MESSAGE);
                     }
                 }
             }
@@ -266,7 +279,7 @@ void GraylogConnection::SendMessageLoop() {
 
 void GraylogConnection::ThreadFunction() {
     auto sleepTime = std::chrono::milliseconds(50);
-    stateMachine = ConStatus::ADDR_LOOKUP;
+    SetState(ConStatus::ADDR_LOOKUP);
     bytesSent = 0;
     MakeConnectionHints();
     while (true) {
@@ -283,7 +296,7 @@ void GraylogConnection::ThreadFunction() {
                 break;
             case ConStatus::ADDR_RETRY_WAIT:
                 if (time(NULL) > endWait) {
-                    stateMachine = ConStatus::ADDR_LOOKUP;
+                    SetState(ConStatus::ADDR_LOOKUP);
                 } else {
                     std::this_thread::sleep_for(sleepTime);
                 }
@@ -293,7 +306,7 @@ void GraylogConnection::ThreadFunction() {
                 break;
             case ConStatus::CONNECT_RETRY_WAIT:
                 if (time(NULL) > endWait) {
-                    stateMachine = ConStatus::CONNECT;
+                    SetState(ConStatus::CONNECT);
                 } else {
                     std::this_thread::sleep_for(sleepTime);
                 }
@@ -317,4 +330,9 @@ void GraylogConnection::ThreadFunction() {
 
 bool GraylogConnection::MessagesQueued() {
     return logMessages.size() > 0;
+}
+
+void GraylogConnection::SetState(GraylogConnection::ConStatus newState) {
+    stateMachine = newState;
+    stateQueue.push(newState);
 }

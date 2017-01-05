@@ -17,6 +17,8 @@ public:
     virtual ~GraylogInterface();
     virtual void AddMessage(LogMessage &msg);
     using GraylogConnection::MessagesQueued;
+    using GraylogConnection::GetConnectionStatus;
+    using GraylogConnection::ConStatus;
 protected:
     std::string LogMsgToJSON(LogMessage &msg);
 };

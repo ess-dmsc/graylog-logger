@@ -7,11 +7,11 @@
 //
 
 #include <iostream>
-#include <vector>
+#include <array>
 #include "graylog_logger/ConsoleInterface.hpp"
 
 std::string ConsoleStringCreator(LogMessage &msg) {
-    static std::vector<std::string> sevToStr = {"EMERGENCY","ALERT","CRITICAL","ERROR","WARNING","Notice","Info","Debug"};
+    static std::array<std::string, 8> sevToStr = {"EMERGENCY","ALERT","CRITICAL","ERROR","WARNING","Notice","Info","Debug"};
     return sevToStr[int(msg.severity)] + std::string(": ") + msg.message;
 }
 

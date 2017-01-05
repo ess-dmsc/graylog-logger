@@ -73,6 +73,7 @@ LogTestServer *GraylogConnectionCom::logServer = NULL;
 
 TEST_F(GraylogConnectionCom, UnknownHostTest) {
     GraylogConnectionStandIn con("no_host", testPort);
+    std::this_thread::sleep_for(sleepTime);
     ASSERT_EQ(logServer->GetNrOfConnections(), 0);
     ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
     ASSERT_EQ(logServer->GetLastSocketError(), int(errc_t::success));
@@ -88,6 +89,12 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
         ASSERT_EQ(1, logServer->GetNrOfConnections());
         ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
         ASSERT_EQ(logServer->GetLastSocketError(), int(errc_t::success));
+        GraylogConnection::ConStatus tempStat = con.GetConnectionStatus();
+        if (GraylogConnection::ConStatus::NEW_MESSAGE  == tempStat) {
+            SUCCEED();
+        } else {
+            FAIL() << "State was: " << int(tempStat);
+        }
     }
     std::this_thread::sleep_for(sleepTime);
     ASSERT_EQ(0, logServer->GetNrOfConnections());
@@ -96,13 +103,27 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
 }
 
 TEST_F(GraylogConnectionCom, CloseConnectionTest) {
+    GraylogConnection::ConStatus tempStat;
     {
         GraylogConnectionStandIn con("localhost", testPort);
         std::this_thread::sleep_for(sleepTime);
         ASSERT_EQ(1, logServer->GetNrOfConnections());
+        tempStat = con.GetConnectionStatus();
+        if (GraylogConnection::ConStatus::NEW_MESSAGE  == tempStat) {
+            SUCCEED();
+        } else {
+            FAIL() << "State was: " << int(tempStat);
+        }
+        
         logServer->CloseAllConnections();
         std::this_thread::sleep_for(sleepTime);
         ASSERT_EQ(1, logServer->GetNrOfConnections()) << "Failed to reconnect after connection was closed remotely.";
+        tempStat = con.GetConnectionStatus();
+        if (GraylogConnection::ConStatus::NEW_MESSAGE  == tempStat) {
+            SUCCEED();
+        } else {
+            FAIL() << "State was: " << int(tempStat);
+        }
     }
     std::this_thread::sleep_for(sleepTime);
     ASSERT_EQ(0, logServer->GetNrOfConnections());
