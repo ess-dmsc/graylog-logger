@@ -202,7 +202,11 @@ void GraylogConnection::CheckConnectionStatus() {
 //    }
     pollfd ufds[1];
     ufds[0].fd = socketFd;
+#ifdef POLLRDHUP
+    ufds[0].events = POLLIN | POLLOUT | POLLRDHUP;
+#else
     ufds[0].events = POLLIN | POLLOUT;
+#endif
     int pollRes = poll(ufds, 1, 10);
     //std::cout << "Number of poll results: " << pollRes << std::endl;
     if (pollRes == 1) {
@@ -212,7 +216,11 @@ void GraylogConnection::CheckConnectionStatus() {
             shutdown(socketFd, SHUT_RDWR);
             close(socketFd);
             //std::cout << "Got poll error." << std::endl;
+#ifdef POLLRDHUP
+        } else if (ufds[0].revents & POLLHUP or ufds[0].revents & POLLRDHUP) {
+#else
         } else if (ufds[0].revents & POLLHUP) {
+#endif
             //std::cout << "Got poll hup." << std::endl;
             SetState(ConStatus::CONNECT);
             shutdown(socketFd, SHUT_RDWR);
