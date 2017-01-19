@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 set(graylog-logger_VERSION_MAJOR 1)
 set(graylog-logger_VERSION_MINOR 0)
 
-add_definitions(-std=c++11)
+add_definitions(-std=c++11 -pthread)
 
 set(CMAKE_MACOSX_RPATH FALSE)
 
