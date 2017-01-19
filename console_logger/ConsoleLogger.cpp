@@ -19,7 +19,8 @@ void PrintAlternatives();
 
 int main(int argc, char **argv) {
     std::string fileName("messages.log");
-    std::string address("localhost");
+    std::string address1("localhost");
+    std::string address2("192.168.12.11");
     std::string msg;
     int sevLevel = 7;
     unsigned short port = 12201;
@@ -54,9 +55,9 @@ int main(int argc, char **argv) {
                 break;
             case 'a':
                 if (optarg) {
-                    address = std::string(optarg);
+                    address1 = std::string(optarg);
                 } else {
-                    address = "";
+                    address1 = "";
                 }
                 break;
             case 'p':
@@ -118,8 +119,13 @@ int main(int argc, char **argv) {
         Log::AddLogHandler(LogHandler_P(new FileInterface(fileName)));
     }
     
-    if (address.size() > 0) {
-        Log::AddLogHandler(LogHandler_P(new GraylogInterface(address, port)));
+    if (address1.size() > 0) {
+        if ("localhost" == address1) {
+            Log::AddLogHandler(LogHandler_P(new GraylogInterface(address1, port)));
+            Log::AddLogHandler(LogHandler_P(new GraylogInterface(address2, port)));
+        } else {
+            Log::AddLogHandler(LogHandler_P(new GraylogInterface(address1, port)));
+        }
     }
     
     Log::Msg(Severity(sevLevel), msg);
