@@ -9,16 +9,22 @@
 #include <fstream>
 #include "graylog_logger/FileInterface.hpp"
 
-FileInterface::FileInterface(std::string fileName) : BaseLogHandler(), fileName(fileName), fileThread(&FileInterface::ThreadFunction, this) {
+FileInterface::FileInterface(std::string fileName, int maxQueueLength) : BaseLogHandler(maxQueueLength), fileName(fileName), fileThread(&FileInterface::ThreadFunction, this) {
     
 }
 
 FileInterface::~FileInterface() {
+    ExitThread();
+}
+
+void FileInterface::ExitThread() {
     LogMessage exitMsg;
     exitMsg.message = "exit";
     exitMsg.processId = -1;
     AddMessage(exitMsg);
-    fileThread.join();
+    if (fileThread.joinable()) {
+        fileThread.join();
+    }
 }
 
 void FileInterface::ThreadFunction() {

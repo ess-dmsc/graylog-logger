@@ -15,16 +15,22 @@ std::string ConsoleStringCreator(LogMessage &msg) {
     return sevToStr[int(msg.severity)] + std::string(": ") + msg.message;
 }
 
-ConsoleInterface::ConsoleInterface() : BaseLogHandler(), consoleThread(&ConsoleInterface::ThreadFunction, this) {
+ConsoleInterface::ConsoleInterface(int maxQueueLength) : BaseLogHandler(maxQueueLength), consoleThread(&ConsoleInterface::ThreadFunction, this) {
     BaseLogHandler::SetMessageStringCreatorFunction(ConsoleStringCreator);
 }
 
 ConsoleInterface::~ConsoleInterface() {
+    ExitThread();
+}
+
+void ConsoleInterface::ExitThread() {
     LogMessage exitMsg;
     exitMsg.message = "exit";
     exitMsg.processId = -1;
     AddMessage(exitMsg);
-    consoleThread.join();
+    if (consoleThread.joinable()){
+        consoleThread.join();
+    }
 }
 
 void ConsoleInterface::ThreadFunction() {

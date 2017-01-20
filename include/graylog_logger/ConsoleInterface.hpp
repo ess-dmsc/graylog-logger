@@ -13,9 +13,10 @@
 
 class ConsoleInterface : public BaseLogHandler {
 public:
-    ConsoleInterface();
+    ConsoleInterface(int maxQueueLength = 100);
     ~ConsoleInterface();
 protected:
+    void ExitThread();
     void ThreadFunction();
     std::thread consoleThread;
 };

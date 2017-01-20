@@ -11,7 +11,7 @@
 #include "graylog_logger/GraylogInterface.hpp"
 
 
-GraylogInterface::GraylogInterface(std::string host, int port, int queueLength) : GraylogConnection(host, port, queueLength) {
+GraylogInterface::GraylogInterface(std::string host, int port, int maxQueueLength) : GraylogConnection(host, port), BaseLogHandler(maxQueueLength) {
 }
 
 GraylogInterface::~GraylogInterface() {
@@ -26,13 +26,13 @@ size_t GraylogInterface::QueueSize() {
     return GraylogConnection::logMessages.size();
 }
 
-void GraylogInterface::AddMessage(LogMessage &msg) {
-    if (GraylogConnection::logMessages.size() > BaseLogHandler::queueLength) {
+void GraylogInterface::AddMessage(const LogMessage &msg) {
+    if (GraylogConnection::logMessages.size() < BaseLogHandler::queueLength) {
         SendMessage(LogMsgToJSON(msg));
     }
 }
 
-std::string GraylogInterface::LogMsgToJSON(LogMessage &msg) {
+std::string GraylogInterface::LogMsgToJSON(const LogMessage &msg) {
     Json::Value root;
     root["short_message"] = msg.message;
     root["version"] = "1.1";

@@ -15,7 +15,7 @@ public:
     static Logger& Inst();
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
-    virtual void AddLogHandler(const LogHandler_P handler);
+    virtual void AddLogHandler(const LogHandler_P handler) override;
     using LoggingBase::Log;
     using LoggingBase::RemoveAllHandlers;
     using LoggingBase::GetHandlers;

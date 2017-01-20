@@ -13,13 +13,13 @@
 
 class GraylogInterface : public BaseLogHandler, private GraylogConnection {
 public:
-    GraylogInterface(std::string host, int port, int queueLength = 100);
+    GraylogInterface(std::string host, int port, int maxQueueLength = 100);
     virtual ~GraylogInterface();
-    virtual void AddMessage(LogMessage &msg);
-    virtual bool MessagesQueued();
-    virtual size_t QueueSize();
+    virtual void AddMessage(const LogMessage &msg) override;
+    virtual bool MessagesQueued() override;
+    virtual size_t QueueSize() override;
     using GraylogConnection::GetConnectionStatus;
     using GraylogConnection::ConStatus;
 protected:
-    std::string LogMsgToJSON(LogMessage &msg);
+    std::string LogMsgToJSON(const LogMessage &msg);
 };

@@ -17,7 +17,7 @@
 
 class GraylogConnection {
 public:
-    GraylogConnection(std::string host, int port, int queueLength = 100);
+    GraylogConnection(std::string host, int port);
     virtual ~GraylogConnection();
     virtual void SendMessage(std::string msg);
     enum class ConStatus {NONE, ADDR_LOOKUP, ADDR_RETRY_WAIT, CONNECT, CONNECT_WAIT, CONNECT_RETRY_WAIT, SEND_LOOP, NEW_MESSAGE};
