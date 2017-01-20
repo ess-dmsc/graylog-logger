@@ -20,7 +20,7 @@
 #include <string.h>
 #include <iostream>
 
-GraylogConnection::GraylogConnection(std::string host, int port, int queueLength) : closeThread(false), host(host), port(std::to_string(port)), queueLength(queueLength), socketFd(-1), conAddresses(NULL), connectionTries(0), firstMessage(true) {
+GraylogConnection::GraylogConnection(std::string host, int port, int queueLength) : closeThread(false), host(host), port(std::to_string(port)), socketFd(-1), conAddresses(NULL), connectionTries(0), firstMessage(true) {
     retConState = GraylogConnection::ConStatus::NONE;
     connectionThread = std::thread(&GraylogConnection::ThreadFunction, this);
 }
@@ -339,10 +339,6 @@ void GraylogConnection::ThreadFunction() {
                 break;
         }
     }
-}
-
-bool GraylogConnection::MessagesQueued() {
-    return logMessages.size() > 0;
 }
 
 void GraylogConnection::SetState(GraylogConnection::ConStatus newState) {

@@ -11,7 +11,7 @@
 #include <array>
 #include "graylog_logger/LogUtil.hpp"
 
-BaseLogHandler::BaseLogHandler() : msgParser(nullptr) {
+BaseLogHandler::BaseLogHandler(int maxQueueLength) : msgParser(nullptr), queueLength(maxQueueLength) {
 }
 
 void BaseLogHandler::SetMessageStringCreatorFunction(std::string (*MsgParser)(LogMessage &msg)) {
@@ -20,6 +20,20 @@ void BaseLogHandler::SetMessageStringCreatorFunction(std::string (*MsgParser)(Lo
 
 BaseLogHandler::~BaseLogHandler() {
     
+}
+
+void BaseLogHandler::AddMessage(const LogMessage &msg) {
+    if (logMessages.size() < queueLength) {
+        logMessages.push(msg);
+    }
+}
+
+bool BaseLogHandler::MessagesQueued() {
+    return logMessages.size() > 0;
+}
+
+size_t BaseLogHandler::QueueSize() {
+    return logMessages.size();
 }
 
 std::string BaseLogHandler::MsgStringCreator(LogMessage &msg) {

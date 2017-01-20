@@ -11,6 +11,7 @@
 #include <string>
 #include <chrono>
 #include <memory>
+#include "graylog_logger/ConcurrentQueue.hpp"
 
 typedef std::chrono::time_point<std::chrono::system_clock> system_time;
 
@@ -37,11 +38,15 @@ struct LogMessage {
 
 class BaseLogHandler {
 public:
-    BaseLogHandler();
+    BaseLogHandler(int maxQueueLength = 100);
     virtual ~BaseLogHandler();
-    virtual void AddMessage(LogMessage &msg) = 0;
+    virtual void AddMessage(const LogMessage &msg);
+    virtual bool MessagesQueued();
+    virtual size_t QueueSize();
     void SetMessageStringCreatorFunction(std::string (*MsgParser)(LogMessage &msg));
 protected:
+    int queueLength;
+    ConcurrentQueue<LogMessage> logMessages;
     std::string (*msgParser)(LogMessage &msg);
     std::string MsgStringCreator(LogMessage &msg);
 };

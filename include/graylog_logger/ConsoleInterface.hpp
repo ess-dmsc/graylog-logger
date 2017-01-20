@@ -9,16 +9,13 @@
 #pragma once
 
 #include <thread>
-#include "graylog_logger/ConcurrentQueue.hpp"
 #include "graylog_logger/LogUtil.hpp"
 
 class ConsoleInterface : public BaseLogHandler {
 public:
     ConsoleInterface();
     ~ConsoleInterface();
-    void AddMessage(LogMessage &msg);
 protected:
     void ThreadFunction();
-    ConcurrentQueue<LogMessage> msgQueue;
     std::thread consoleThread;
 };

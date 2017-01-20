@@ -16,7 +16,8 @@ public:
     GraylogInterface(std::string host, int port, int queueLength = 100);
     virtual ~GraylogInterface();
     virtual void AddMessage(LogMessage &msg);
-    using GraylogConnection::MessagesQueued;
+    virtual bool MessagesQueued();
+    virtual size_t QueueSize();
     using GraylogConnection::GetConnectionStatus;
     using GraylogConnection::ConStatus;
 protected:

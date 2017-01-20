@@ -20,7 +20,6 @@ public:
     GraylogConnection(std::string host, int port, int queueLength = 100);
     virtual ~GraylogConnection();
     virtual void SendMessage(std::string msg);
-    virtual bool MessagesQueued();
     enum class ConStatus {NONE, ADDR_LOOKUP, ADDR_RETRY_WAIT, CONNECT, CONNECT_WAIT, CONNECT_RETRY_WAIT, SEND_LOOP, NEW_MESSAGE};
     ConStatus GetConnectionStatus();
 protected:
@@ -59,6 +58,7 @@ protected:
     addrinfo hints;     //Connection hints
     addrinfo *conAddresses;
     struct sockaddr_in serverConInfo;//
+    ConcurrentQueue<std::string> logMessages;
 #ifdef MSG_NOSIGNAL
     const int sendOpt = MSG_NOSIGNAL;
 #else
@@ -67,6 +67,5 @@ protected:
 private:
     mutable std::mutex stateMutex;
     ConStatus retConState;
-    ConcurrentQueue<std::string> logMessages;
     ConcurrentQueue<ConStatus> stateQueue;
 };

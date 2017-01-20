@@ -27,14 +27,10 @@ ConsoleInterface::~ConsoleInterface() {
     consoleThread.join();
 }
 
-void ConsoleInterface::AddMessage(LogMessage &msg) {
-    msgQueue.push(msg);
-}
-
 void ConsoleInterface::ThreadFunction() {
     LogMessage tmpMsg;
     while (true) {
-        msgQueue.wait_and_pop(tmpMsg);
+        logMessages.wait_and_pop(tmpMsg);
         if (std::string("exit") == tmpMsg.message and -1 ==  tmpMsg.processId) {
             break;
         }

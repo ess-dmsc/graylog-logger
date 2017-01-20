@@ -21,10 +21,6 @@ Logger::Logger() : LoggingBase() {
     LogHandler_P ptr1(new ConsoleInterface());
     AddLogHandler(ptr1);
     
-    std::string fileName = "messages.log";
-    LogHandler_P ptr2(new FileInterface(fileName));
-    AddLogHandler(ptr2);
-    
     LogHandler_P ptr3(new GraylogInterface("localhost", 12201));
     AddLogHandler(ptr3);
     

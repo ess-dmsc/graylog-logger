@@ -24,7 +24,7 @@ public:
     FileInterfaceStandIn(std::string fileName) : FileInterface(fileName){};
     ~FileInterfaceStandIn() {};
     using FileInterface::fileName;
-    using FileInterface::msgQueue;
+    using FileInterface::logMessages;
     using FileInterface::fileThread;
 };
 

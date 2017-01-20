@@ -10,17 +10,14 @@
 
 #include <string>
 #include <thread>
-#include "graylog_logger/ConcurrentQueue.hpp"
 #include "graylog_logger/LogUtil.hpp"
 
 class FileInterface : public BaseLogHandler {
 public:
     FileInterface(std::string fileName);
     ~FileInterface();
-    void AddMessage(LogMessage &msg);
 protected:
     std::string fileName;
     void ThreadFunction();
-    ConcurrentQueue<LogMessage> msgQueue;
     std::thread fileThread;
 };

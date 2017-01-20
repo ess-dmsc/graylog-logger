@@ -11,15 +11,25 @@
 #include "graylog_logger/GraylogInterface.hpp"
 
 
-GraylogInterface::GraylogInterface(std::string host, int port, int queueLength) : GraylogConnection(host, port, queueLength){
+GraylogInterface::GraylogInterface(std::string host, int port, int queueLength) : GraylogConnection(host, port, queueLength) {
 }
 
 GraylogInterface::~GraylogInterface() {
     
 }
 
+bool GraylogInterface::MessagesQueued() {
+    return GraylogConnection::logMessages.size() > 0;
+}
+
+size_t GraylogInterface::QueueSize() {
+    return GraylogConnection::logMessages.size();
+}
+
 void GraylogInterface::AddMessage(LogMessage &msg) {
-    SendMessage(LogMsgToJSON(msg));
+    if (GraylogConnection::logMessages.size() > BaseLogHandler::queueLength) {
+        SendMessage(LogMsgToJSON(msg));
+    }
 }
 
 std::string GraylogInterface::LogMsgToJSON(LogMessage &msg) {

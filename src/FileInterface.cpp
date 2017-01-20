@@ -13,10 +13,6 @@ FileInterface::FileInterface(std::string fileName) : BaseLogHandler(), fileName(
     
 }
 
-void FileInterface::AddMessage(LogMessage &msg) {
-    msgQueue.push(msg);
-}
-
 FileInterface::~FileInterface() {
     LogMessage exitMsg;
     exitMsg.message = "exit";
@@ -29,7 +25,7 @@ void FileInterface::ThreadFunction() {
     std::ofstream outStream(fileName, std::ios_base::app);
     LogMessage tmpMsg;
     while (true) {
-        msgQueue.wait_and_pop(tmpMsg);
+        logMessages.wait_and_pop(tmpMsg);
         if (std::string("exit") == tmpMsg.message and -1 ==  tmpMsg.processId) {
             break;
         }
