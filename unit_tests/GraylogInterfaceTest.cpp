@@ -33,12 +33,12 @@ class GraylogInterfaceStandIn : public GraylogInterface {
 public:
     GraylogInterfaceStandIn(std::string host, int port, int queueLength) : GraylogInterface(host, port, queueLength) {
     };
-    MOCK_METHOD1(SendMessage, void(std::string msg));
+    MOCK_METHOD1(SendMessage, void(std::string));
 };
 
 class GraylogConnectionStandIn : public GraylogConnection {
 public:
-    GraylogConnectionStandIn(std::string host, int port, int queueLength = 100) : GraylogConnection(host, port, queueLength) {};
+    GraylogConnectionStandIn(std::string host, int port, int queueLength = 100) : GraylogConnection(host, port) {};
     ~GraylogConnectionStandIn() {};
     using GraylogConnection::EndThread;
 };
