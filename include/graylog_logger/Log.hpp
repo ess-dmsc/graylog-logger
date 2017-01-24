@@ -13,6 +13,7 @@
 
 namespace Log {
     void Msg(const Severity sev, const std::string message);
+    void Msg(const int sev, const std::string message);
     void SetMinimumSeverity(const Severity sev);
     void AddLogHandler(const LogHandler_P handler);
     template <typename T>

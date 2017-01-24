@@ -14,6 +14,10 @@ namespace Log {
         Logger::Inst().Log(sev, message);
     }
     
+    void Msg(const int sev, const std::string message) {
+        Logger::Inst().Log(Severity(sev), message);
+    }
+    
     void SetMinimumSeverity(const Severity sev) {
         Logger::Inst().SetMinSeverity(sev);
     }
