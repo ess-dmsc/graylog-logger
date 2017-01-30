@@ -16,7 +16,7 @@
 
 LoggingBase::LoggingBase() {
     std::lock_guard<std::mutex> guard(vectorMutex);
-    minSeverity = Severity::Warning;
+    minSeverity = Severity::Notice;
     const int stringBufferSize = 100;
     char stringBuffer[stringBufferSize];
     int res;
