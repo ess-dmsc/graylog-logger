@@ -6,7 +6,7 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-
+#include <ciso646>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 #include <boost/lexical_cast.hpp>

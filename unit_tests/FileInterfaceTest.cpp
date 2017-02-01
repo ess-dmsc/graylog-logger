@@ -6,6 +6,7 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
+#include <ciso646>
 #include <gtest/gtest.h>
 #include <boost/filesystem.hpp>
 #include <fstream>

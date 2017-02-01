@@ -6,6 +6,7 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
+#include <ciso646>
 #include "graylog_logger/Log.hpp"
 #include "graylog_logger/Logger.hpp"
 

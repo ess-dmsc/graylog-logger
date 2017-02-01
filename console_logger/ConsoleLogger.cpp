@@ -6,6 +6,7 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
+#include <ciso646>
 #include <chrono>
 #include <iostream>
 #include <string>

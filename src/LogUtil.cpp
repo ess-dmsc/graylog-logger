@@ -9,6 +9,7 @@
 #include <ctime>
 #include <iomanip>
 #include <array>
+#include <ciso646>
 #include "graylog_logger/LogUtil.hpp"
 
 BaseLogHandler::BaseLogHandler(int maxQueueLength) : msgParser(nullptr), queueLength(maxQueueLength) {

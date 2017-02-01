@@ -6,6 +6,7 @@
 //  Copyright © 2017 European Spallation Source. All rights reserved.
 //
 
+#include <ciso646>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "graylog_logger/GraylogInterface.hpp"
@@ -20,7 +21,7 @@ public:
 
 class FileInterfaceStandIn : public FileInterface {
 public:
-    FileInterfaceStandIn(int queueSize) : FileInterface("some_name.txt", queueSize) {};
+    FileInterfaceStandIn(int queueSize) : FileInterface("messages.log", queueSize) {};
     using FileInterface::ExitThread;
 };
 

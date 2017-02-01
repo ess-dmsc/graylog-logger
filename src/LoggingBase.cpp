@@ -13,6 +13,7 @@
 #include <thread>
 #include <sstream>
 #include <chrono>
+#include <ciso646>
 
 LoggingBase::LoggingBase() {
     std::lock_guard<std::mutex> guard(vectorMutex);

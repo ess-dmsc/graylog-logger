@@ -17,8 +17,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <assert.h>
-#include <string.h>
+#include <cstring>
 #include <iostream>
+#include <ciso646>
 
 GraylogConnection::GraylogConnection(std::string host, int port) : closeThread(false), host(host), port(std::to_string(port)), socketFd(-1), conAddresses(NULL), connectionTries(0), firstMessage(true) {
     retConState = GraylogConnection::ConStatus::NONE;

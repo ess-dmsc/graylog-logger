@@ -6,6 +6,7 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
+#include <ciso646>
 #include "LogTestServer.hpp"
 
 LogTestServer::LogTestServer(short port) : service(), acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), port)){

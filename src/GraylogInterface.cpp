@@ -6,7 +6,8 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-#include <strings.h>
+#include <cstring>
+#include <ciso646>
 #include "graylog_logger/json.h"
 #include "graylog_logger/GraylogInterface.hpp"
 
