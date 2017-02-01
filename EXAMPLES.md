@@ -6,6 +6,7 @@ By default, the library will log messages to console, file and Graylog server on
 
 ```c++
 #include <thread>
+#include <chrono>
 #include <graylog_logger/Log.hpp>
 
 int main() {
@@ -33,6 +34,7 @@ In order to set-up the library to only print to console, all other interfaces ha
 
 ```c++
 #include <thread>
+#include <chrono>
 #include <graylog_logger/Log.hpp>
 #include <graylog_logger/ConsoleInterface.hpp>
 
@@ -56,6 +58,7 @@ As the code is currently set-up to immediatly create a file logging interface on
 
 ```c++
 #include <thread>
+#include <chrono>
 #include <graylog_logger/Log.hpp>
 #include <graylog_logger/FileInterface.hpp>
 
@@ -92,6 +95,7 @@ This library currently uses a single severity limit. The following code snippet 
 
 ```c++
 #include <thread>
+#include <chrono>
 #include <graylog_logger/Log.hpp>
 
 int main() {
@@ -114,6 +118,7 @@ It is possible to supply your own string formating function as shown below.
 
 ```c++
 #include <thread>
+#include <chrono>
 #include <graylog_logger/Log.hpp>
 #include <graylog_logger/ConsoleInterface.hpp>
 
