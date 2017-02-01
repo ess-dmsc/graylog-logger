@@ -159,13 +159,13 @@ int main(int argc, char **argv) {
 
 
 void PrintAlternatives() {
-    std::cout << "\nusage: logMsg [-h] [-f<file_name>] [-a<address>] [-p<port>]\n";
-    std::cout << "              [-t<timeout in s>] [-l <level>] [-m<message>]\n\n";
+    std::cout << "\nusage: console_logger [-h] [-f<file_name>] [-a<address>] [-p<port>]\n";
+    std::cout << "                        [-t<timeout in s>] [-l <level>] [-m<message>]\n\n";
     std::cout << "This application will write the log message to file and socket by default.\n";
     std::cout << "To prevent the application from doing this, use the -f and -a flags but do not\n";
     std::cout << "provide a file name or address. The level paramater is a value between 0  and 7\n";
     std::cout << "with 0 being \"Emergency\" and 7 indicating a debug message. The default level";
     std::cout << "is 7 (debug). The default file name is \"messages.log\". The default address\n";
     std::cout << "is \"localhost\" and the default port is 12201.\n\n";
-    std::cout << "Example: ./logMsg -t2.0 -m\"This is a log message.\"" << std::endl;
+    std::cout << "Example: ./console_logger -t2.0 -m\"This is a log message.\"" << std::endl;
 }

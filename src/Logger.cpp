@@ -25,7 +25,7 @@ Logger::Logger() : LoggingBase() {
     AddLogHandler(ptr3);
     
     LogHandler_P ptr4(new GraylogInterface("192.168.12.11", 12201));
-    AddLogHandler(ptr3);
+    AddLogHandler(ptr4);
 }
 
 Logger::~Logger() {
