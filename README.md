@@ -1,4 +1,4 @@
-# dm-graylog-logger
+# graylog-logger
 This C++ message logging library has been developed for use at the ESS. By default, the library will write log messages to console and to TCP port 12201 on ``localhost`` in [GELF](http://docs.graylog.org/en/2.1/pages/gelf.html) format. This port will accept log messages from the library if the [dm-graylog-machine](https://bitbucket.org/europeanspallationsource/dm-graylog-machine) [Vagrant](https://www.vagrantup.com/) machine is up and running.
 
 The repository is split into three parts:
