@@ -17,7 +17,7 @@
 #ifdef _WIN32
 #include <Winsock2.h>
 #include <process.h>
-#define _getpid getpid
+#define getpid _getpid
 #else
 #include <unistd.h>
 #endif

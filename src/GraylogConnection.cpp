@@ -8,7 +8,6 @@
 
 #include "graylog_logger/GraylogConnection.hpp"
 #include <utility>
-#include <sys/socket.h>
 #include <sys/poll.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
@@ -23,7 +22,9 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <winsock2.h>
+#include <Ws2def.h>
 #else
+#include <sys/socket.h>
 #include <unistd.h>
 #endif
 
