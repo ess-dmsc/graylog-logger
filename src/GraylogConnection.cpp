@@ -14,12 +14,18 @@
 #include <arpa/inet.h>
 #include <ctime>
 #include <chrono>
-#include <unistd.h>
 #include <fcntl.h>
 #include <assert.h>
 #include <cstring>
 #include <iostream>
 #include <ciso646>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <winsock2.h>
+#else
+#include <unistd.h>
+#endif
 
 GraylogConnection::GraylogConnection(std::string host, int port) : closeThread(false), host(host), port(std::to_string(port)), socketFd(-1), conAddresses(NULL), connectionTries(0), firstMessage(true) {
     retConState = GraylogConnection::ConStatus::NONE;

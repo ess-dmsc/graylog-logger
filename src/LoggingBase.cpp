@@ -8,12 +8,19 @@
 
 
 #include "graylog_logger/LoggingBase.hpp"
-#include <unistd.h>
 #include <sys/types.h>
 #include <thread>
 #include <sstream>
 #include <chrono>
 #include <ciso646>
+
+#ifdef _WIN32
+#include <Winsock2.h>
+#include <process.h>
+#define _getpid getpid
+#else
+#include <unistd.h>
+#endif
 
 LoggingBase::LoggingBase() {
     std::lock_guard<std::mutex> guard(vectorMutex);

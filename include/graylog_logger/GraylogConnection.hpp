@@ -11,9 +11,14 @@
 #include <string>
 #include <thread>
 #include <atomic>
-#include <netdb.h>
 #include <mutex>
 #include "graylog_logger/ConcurrentQueue.hpp"
+
+#ifdef _WIN32
+
+#else
+#include <netdb.h>
+#endif
 
 class GraylogConnection {
 public:
