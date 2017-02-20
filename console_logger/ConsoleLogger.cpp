@@ -15,7 +15,7 @@
 #include <graylog_logger/FileInterface.hpp>
 #include <graylog_logger/ConsoleInterface.hpp>
 
-#ifdef (MSVC)
+#ifdef _WIN32
 #include "getopt.h"
 #else
 #include <getopt.h>
