@@ -90,7 +90,7 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
         ASSERT_EQ(1, logServer->GetNrOfConnections());
         ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
         ASSERT_EQ(logServer->GetLastSocketError(), int(errc_t::success));
-        ASSERT_EQ(GraylogConnection::ConStatus::NEW_MESSAGE, con.GetConnectionStatus());
+        ASSERT_EQ(GraylogConnection::ConStatus::NEW_MESSAGE, con.GetConnectionStatus()) << "Connection status returned " << int(con.GetConnectionStatus());
     }
     std::this_thread::sleep_for(sleepTime);
     ASSERT_EQ(0, logServer->GetNrOfConnections());
