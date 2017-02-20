@@ -16,10 +16,13 @@ include_directories("../include")
 
 file(GLOB Graylog_SRC "../src/*.cpp")
 
-add_library(graylog_logger STATIC SHARED ${Graylog_SRC})
+add_library(graylog_logger SHARED ${Graylog_SRC})
+add_library(graylog_logger_static STATIC ${Graylog_SRC})
 target_link_libraries(graylog_logger ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(graylog_logger_static ${CMAKE_THREAD_LIBS_INIT})
 
 file(GLOB HeaderInstall "../include/graylog_logger/*.hpp")
 
 install(TARGETS graylog_logger DESTINATION lib)
+install(TARGETS graylog_logger_static DESTINATION lib)
 install(FILES ${HeaderInstall} DESTINATION include/graylog_logger)
