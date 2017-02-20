@@ -14,7 +14,7 @@
 
 class FileInterface : public BaseLogHandler {
 public:
-    FileInterface(std::string fileName, int maxQueueLength = 100);
+    FileInterface(std::string fileName, size_t maxQueueLength = 100);
     ~FileInterface();
 protected:
     void ExitThread();

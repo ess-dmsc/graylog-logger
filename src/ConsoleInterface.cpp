@@ -16,7 +16,7 @@ std::string ConsoleStringCreator(LogMessage &msg) {
     return sevToStr[int(msg.severity)] + std::string(": ") + msg.message;
 }
 
-ConsoleInterface::ConsoleInterface(int maxQueueLength) : BaseLogHandler(maxQueueLength), consoleThread(&ConsoleInterface::ThreadFunction, this) {
+ConsoleInterface::ConsoleInterface(size_t maxQueueLength) : BaseLogHandler(maxQueueLength), consoleThread(&ConsoleInterface::ThreadFunction, this) {
     BaseLogHandler::SetMessageStringCreatorFunction(ConsoleStringCreator);
 }
 

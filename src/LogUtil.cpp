@@ -12,7 +12,7 @@
 #include <ciso646>
 #include "graylog_logger/LogUtil.hpp"
 
-BaseLogHandler::BaseLogHandler(int maxQueueLength) : msgParser(nullptr), queueLength(maxQueueLength) {
+BaseLogHandler::BaseLogHandler(size_t maxQueueLength) : msgParser(nullptr), queueLength(maxQueueLength) {
 }
 
 void BaseLogHandler::SetMessageStringCreatorFunction(std::string (*MsgParser)(LogMessage &msg)) {

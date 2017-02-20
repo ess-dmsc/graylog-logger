@@ -38,14 +38,14 @@ struct LogMessage {
 
 class BaseLogHandler {
 public:
-    BaseLogHandler(int maxQueueLength = 100);
+    BaseLogHandler(size_t maxQueueLength = 100);
     virtual ~BaseLogHandler();
     virtual void AddMessage(const LogMessage &msg);
     virtual bool MessagesQueued();
     virtual size_t QueueSize();
     void SetMessageStringCreatorFunction(std::string (*MsgParser)(LogMessage &msg));
 protected:
-    int queueLength;
+    size_t queueLength;
     ConcurrentQueue<LogMessage> logMessages;
     std::string (*msgParser)(LogMessage &msg);
     std::string MsgStringCreator(LogMessage &msg);

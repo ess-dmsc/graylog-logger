@@ -12,7 +12,7 @@
 #include "graylog_logger/GraylogInterface.hpp"
 
 
-GraylogInterface::GraylogInterface(std::string host, int port, int maxQueueLength) : GraylogConnection(host, port), BaseLogHandler(maxQueueLength) {
+GraylogInterface::GraylogInterface(std::string host, int port, size_t maxQueueLength) : GraylogConnection(host, port), BaseLogHandler(maxQueueLength) {
 }
 
 GraylogInterface::~GraylogInterface() {

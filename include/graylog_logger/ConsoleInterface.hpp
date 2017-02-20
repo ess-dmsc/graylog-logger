@@ -13,7 +13,7 @@
 
 class ConsoleInterface : public BaseLogHandler {
 public:
-    ConsoleInterface(int maxQueueLength = 100);
+    ConsoleInterface(size_t maxQueueLength = 100);
     ~ConsoleInterface();
 protected:
     void ExitThread();
