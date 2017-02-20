@@ -8,7 +8,6 @@
 
 #include "graylog_logger/GraylogConnection.hpp"
 #include <utility>
-#include <sys/poll.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <ctime>
@@ -23,8 +22,10 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <Ws2def.h>
+#define poll WSAPoll
 #else
 #include <sys/socket.h>
+#include <sys/poll.h>
 #include <unistd.h>
 #endif
 
