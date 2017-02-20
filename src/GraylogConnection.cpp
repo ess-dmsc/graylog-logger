@@ -22,6 +22,7 @@
 #include <winsock2.h>
 #include <Ws2def.h>
 #define poll WSAPoll
+#define close closesocket
 #else
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -60,7 +61,7 @@ void GraylogConnection::EndThread() {
 }
 
 void GraylogConnection::MakeConnectionHints() {
-    bzero((void*)&hints, sizeof(hints));
+    std::memset((void*)&hints, 0, sizeof(hints));
     //hints.ai_family = AF_UNSPEC; //Accept both IPv4 and IPv6
     hints.ai_family = AF_INET; //Accept only IPv4
     hints.ai_socktype = SOCK_STREAM; //Use TCP
