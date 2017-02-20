@@ -264,7 +264,7 @@ void GraylogConnection::SendMessageLoop() {
         if (FD_ISSET(socketFd, &writefds)) {
             //std::cout << "GL: Ready to write." << std::endl;
             {
-                ssize_t cBytes = send(socketFd, currentMessage.substr(bytesSent, currentMessage.size() - bytesSent).c_str(), currentMessage.size() - bytesSent + 1, sendOpt);
+                size_t cBytes = send(socketFd, currentMessage.substr(bytesSent, currentMessage.size() - bytesSent).c_str(), currentMessage.size() - bytesSent + 1, sendOpt);
                 //std::cout << "GL: Sent bytes: " << cBytes << std::endl;
                 if (-1 == cBytes) {
                     if (EAGAIN == errno or EWOULDBLOCK == errno) {
