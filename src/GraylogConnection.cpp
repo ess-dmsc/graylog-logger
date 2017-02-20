@@ -111,7 +111,11 @@ void GraylogConnection::ConnectToServer() {
             continue;
         }
         response = connect(socketFd, p->ai_addr, p->ai_addrlen);
+#ifdef _WIN32
+        if (-1 == response and WSAGetLastError() == WSAEWOULDBLOCK) {
+#else
         if (-1 == response and EINPROGRESS == errno) {
+#endif
             //std::cout << "GL: Now waiting for connection." << std::endl;
             SetState(ConStatus::CONNECT_WAIT);
             break;
@@ -275,7 +279,11 @@ void GraylogConnection::SendMessageLoop() {
                 size_t cBytes = send(socketFd, currentMessage.substr(bytesSent, currentMessage.size() - bytesSent).c_str(), currentMessage.size() - bytesSent + 1, sendOpt);
                 //std::cout << "GL: Sent bytes: " << cBytes << std::endl;
                 if (-1 == cBytes) {
+#ifdef _WIN32
+                    if (WSAGetLastError() == WSAEWOULDBLOCK) {
+#else
                     if (EAGAIN == errno or EWOULDBLOCK == errno) {
+#endif
                         //std::cout << "GL: Non blocking, got errno:" << errno << std::endl;
                         //Should probably handle this
                     } else {
