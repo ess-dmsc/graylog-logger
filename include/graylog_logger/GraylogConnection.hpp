@@ -30,7 +30,7 @@ public:
     ConStatus GetConnectionStatus();
 protected:
     
-    const time_t retryDelay = 10.0;
+    const time_t retryDelay = 10; //In seconds
     time_t endWait;
     int connectionTries;
     
