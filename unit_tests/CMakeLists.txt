@@ -10,6 +10,8 @@ include_directories("../src" "../tests")
 
 enable_testing()
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake_modules)
+
 find_package(Boost COMPONENTS system thread regex filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
@@ -20,7 +22,7 @@ else()
     set(UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
 endif()
 
-include(${CMAKE_MODULE_PATH}/DownloadProject.cmake)
+include(DownloadProject)
 download_project(PROJ                googletest
                  GIT_REPOSITORY      https://github.com/google/googletest.git
                  GIT_TAG             master
