@@ -24,6 +24,7 @@
 #define poll WSAPoll
 #define close closesocket
 #define SHUT_RDWR SD_BOTH
+#pragma comment(lib, "Ws2_32.lib")
 #else
 #include <arpa/inet.h>
 #include <sys/socket.h>
