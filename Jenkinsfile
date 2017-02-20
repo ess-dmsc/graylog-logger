@@ -41,7 +41,7 @@ node('boost') {
         }
     }
     if (null != currentBuild.previousBuild) {
-        if (currentBuild.result == SUCCESS && currentBuild.previousBuild.result == FAILURE) {
+        if (currentBuild.result == "SUCCESS" && currentBuild.previousBuild.result == "FAILURE") {
             slackSend color: 'good', message: 'graylog-logger: Back in the green!'
         }
     }
