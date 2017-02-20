@@ -10,11 +10,16 @@
 #include <chrono>
 #include <iostream>
 #include <string>
-#include <getopt.h>
 #include <graylog_logger/Log.hpp>
 #include <graylog_logger/GraylogInterface.hpp>
 #include <graylog_logger/FileInterface.hpp>
 #include <graylog_logger/ConsoleInterface.hpp>
+
+#ifdef (MSVC)
+#include "getopt.h"
+#else
+#include <getopt.h>
+#endif
 
 void PrintAlternatives();
 
