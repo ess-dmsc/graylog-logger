@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 set(graylog-logger_VERSION_MAJOR 1)
 set(graylog-logger_VERSION_MINOR 0)
 
-add_definitions(-std=c++11 -pthread)
+if(MSVC)
+    add_definitions(-std=c++11)
+else()
+    add_definitions(-std=c++11 -pthread)
+endif()
 
 find_package(Threads)
 

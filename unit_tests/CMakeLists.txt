@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 
-add_definitions(-std=c++11 -pthread)
+if(MSVC)
+    add_definitions(-std=c++11)
+else()
+    add_definitions(-std=c++11 -pthread)
+endif()
 
 include_directories("../src" "../tests")
 
