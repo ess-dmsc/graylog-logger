@@ -32,7 +32,7 @@ void ConsoleInterface::ExitThread() {
     if (consoleThread.joinable()){
         consoleThread.join();
     }
-}
+
 
 void ConsoleInterface::ThreadFunction() {
     LogMessage tmpMsg;
