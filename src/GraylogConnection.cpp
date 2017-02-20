@@ -23,6 +23,7 @@
 #include <Ws2def.h>
 #define poll WSAPoll
 #define close closesocket
+#define SHUT_RDWR SD_BOTH
 #else
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -96,7 +97,13 @@ void GraylogConnection::ConnectToServer() {
         setsockopt(socketFd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
 #endif
         //setsockopt(socketFd, SOL_SOCKET, SO_SNDTIMEO, const void *, socklen_t);
+
+#ifdef _WIN32
+        u_long iMode = 1;
+        response = ioctlsocket(socketFd, FIONBIO, &iMode);
+#else
         response = fcntl(socketFd, F_SETFL, O_NONBLOCK);
+#endif
         if (-1 == response) {
             close(socketFd);
             socketFd = -1;
