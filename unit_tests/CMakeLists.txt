@@ -15,6 +15,10 @@ if (NOT CMAKE_MODULE_PATH)
     set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake_modules)
 endif()
 
+if(MSVC)
+    set(Boost_USE_STATIC_LIBS ON)
+endif()
+
 find_package(Boost COMPONENTS system thread regex filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})

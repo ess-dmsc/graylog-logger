@@ -18,6 +18,6 @@ if(NOT TARGET graylog_logger)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../graylog_logger ${CMAKE_CURRENT_BINARY_DIR}/graylog_logger)
 endif()
 
-add_dependencies(console_logger graylog_logger)
+add_dependencies(console_logger graylog_logger_static)
 
-target_link_libraries(console_logger graylog_logger)
+target_link_libraries(console_logger graylog_logger_static)
