@@ -2,7 +2,7 @@
 Instructions on how to install the C++ library dm-graylog-logger can be found on the [repository page](https://bitbucket.org/europeanspallationsource/dm-graylog-logger). The intent of this page is to give you examples on how the library can be used and extended. Other than the examples shown here, the code should be used as a reference.
 
 ## Basic example
-By default, the library will log messages to console, file and Graylog server on localhost port 12201.
+By default, the library will log messages to console and Graylog server on localhost port 12201 (if available).
 
 ```c++
 #include <thread>
