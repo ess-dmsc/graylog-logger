@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 
 if(MSVC)
     add_definitions(-std=c++11)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 else()
     add_definitions(-std=c++11 -pthread)
 endif()
