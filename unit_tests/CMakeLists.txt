@@ -10,7 +10,9 @@ include_directories("../src" "../tests")
 
 enable_testing()
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake_modules)
+if (NOT CMAKE_MODULE_PATH)
+    set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake_modules)
+endif()
 
 find_package(Boost COMPONENTS system thread regex filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
