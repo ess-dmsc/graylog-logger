@@ -5,7 +5,6 @@ set(SRC ConsoleLogger.cpp)
 if(MSVC)
     add_definitions(-std=c++11)
     include_directories(".") #For getopt.h
-    set(SRC ${SRC} getopt.c) #For getopt.c
 else()
     add_definitions(-std=c++11 -pthread)
 endif()
