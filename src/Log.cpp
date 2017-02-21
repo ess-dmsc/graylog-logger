@@ -11,11 +11,11 @@
 #include "graylog_logger/Logger.hpp"
 
 namespace Log {
-    void Msg(const Severity sev, const std::string message) {
+    void Msg(const Severity sev, const std::string &message) {
         Logger::Inst().Log(sev, message);
     }
     
-    void Msg(const int sev, const std::string message) {
+    void Msg(const int sev, const std::string &message) {
         Logger::Inst().Log(Severity(sev), message);
     }
     
