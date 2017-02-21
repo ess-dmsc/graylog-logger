@@ -1,17 +1,14 @@
 cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 
-set(SRC ConsoleLogger.cpp)
+add_definitions(-std=c++11)
 
 if(MSVC)
-    add_definitions(-std=c++11)
     include_directories(".") #For getopt.h
-else()
-    add_definitions(-std=c++11 -pthread)
 endif()
 
 include_directories("../include")
 
-add_executable(console_logger ${SRC})
+add_executable(console_logger ConsoleLogger.cpp)
 
 if(NOT TARGET graylog_logger)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../graylog_logger ${CMAKE_CURRENT_BINARY_DIR}/graylog_logger)
