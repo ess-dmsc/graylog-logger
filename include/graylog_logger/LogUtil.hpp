@@ -26,6 +26,29 @@ enum class Severity : int {
     Debug = 7,
 };
     
+struct AdditionalField {
+    AdditionalField(double val) {
+        FieldType = Type::typeDbl;
+        dblVal = val;
+    };
+    AdditionalField(std::string val) {
+        FieldType = Type::typeStr;
+        strVal = val;
+    };
+    AdditionalField(std::int64_t val) {
+        FieldType = Type::typeInt;
+        intVal = val;
+    };
+    enum class Type : char {
+        typeStr = 0,
+        typeDbl = 1,
+        typeInt = 2,
+    } FieldType;
+    std::string strVal;
+    std::int64_t intVal;
+    double dblVal;
+};
+    
 struct LogMessage {
     std::string message;
     system_time timestamp;
@@ -34,6 +57,22 @@ struct LogMessage {
     std::string host;
     Severity severity;
     std::string threadId;
+    std::vector<std::pair<std::string, AdditionalField>> additionalFields;
+    template <typename valueType>
+    void AddField(std::string key, const valueType &val) {
+        int fieldLoc = -1;
+        for (int i = 0; i < additionalFields.size(); i++) {
+            if (additionalFields[i].first == key) {
+                fieldLoc = i;
+                break;
+            }
+        }
+        if (-1 == fieldLoc) {
+            additionalFields.push_back({key, val});
+        } else {
+            additionalFields[fieldLoc] = {key, val};
+        }
+    };
 };
 
 class BaseLogHandler {
