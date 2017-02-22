@@ -17,6 +17,11 @@
 #include "graylog_logger/LoggingBase.hpp"
 #include "graylog_logger/LogUtil.hpp"
 
+class LoggingBaseStandIn : public LoggingBase {
+public:
+    using LoggingBase::baseMsg;
+};
+
 TEST(LoggingBase, InitTest) {
     LoggingBase log;
     ASSERT_EQ(log.GetHandlers().size(), 0);
@@ -79,6 +84,17 @@ TEST(LoggingBase, LogMessageTest) {
         log.Log(Severity::Critical, tmpStr);
         ASSERT_EQ(tmpStr, standIn.get()->cMsg.message);
     }
+}
+
+TEST(LoggingBase, SetExtraField) {
+    LoggingBaseStandIn log;
+    std::string someKey = "yet_another_key";
+    double someValue = -13.543462;
+    log.AddField(someKey, someValue);
+    ASSERT_EQ(log.baseMsg.additionalFields.size(), 1);
+    ASSERT_EQ(log.baseMsg.additionalFields[0].first, someKey);
+    ASSERT_EQ(log.baseMsg.additionalFields[0].second.FieldType, AdditionalField::Type::typeDbl);
+    ASSERT_EQ(log.baseMsg.additionalFields[0].second.dblVal, someValue);
 }
 
 TEST(LoggingBase, MachineInfoTest) {
