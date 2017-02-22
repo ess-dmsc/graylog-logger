@@ -1,5 +1,5 @@
 # graylog-logger
-This C++ message logging library has been developed for use at the ESS. By default, the library will write log messages to console and to TCP port 12201 on ``localhost`` in [GELF](http://docs.graylog.org/en/2.1/pages/gelf.html) format. This port will accept log messages from the library if the [dm-graylog-machine](https://bitbucket.org/europeanspallationsource/dm-graylog-machine) [Vagrant](https://www.vagrantup.com/) machine is up and running.
+This C++ message logging library has been developed for use at the ESS. By default, the library will write log messages to console and to TCP port 12201 on ``localhost`` in [GELF](http://docs.graylog.org/en/2.1/pages/gelf.html) format. This port will accept log messages from the library if the [graylog-machine](https://github.com/ess-dmsc/graylog-machine) [Vagrant](https://www.vagrantup.com/) machine is up and running.
 
 The repository is split into three parts:
 
@@ -7,7 +7,7 @@ The repository is split into three parts:
 * Unit tests of the logging library which are completely self contained (i.e. does not require a Graylog server).
 * A simple console application which uses the logging library.
 
-A sister project to this library is the Python logging handler [GraylogHandler](https://bitbucket.org/europeanspallationsource/grayloghandler).
+A sister project to this library is the Python logging handler [GraylogHandler](https://github.com/ess-dmsc/graylog-handler).
 
 ## Requirements
 The logging library uses only standard libraries with one exception: [Jsoncpp](https://github.com/open-source-parsers/jsoncpp). This library is included in the project in the form of a header file and an implementation file and will thus not require any packages to be installed.
@@ -24,7 +24,7 @@ CMake will attempt to download and compile GTest/GMock and thus only boost has t
 The library uses [CMake](https://cmake.org) for building. Use the following commands to build everything and to install the library:
 
 ```
-cd dm-graylog-logger
+cd graylog-logger
 mkdir build
 cd build
 cmake ..
@@ -32,7 +32,20 @@ make
 make install
 ```
 
-In order to only build the library, change the first lin to ```cd dm-graylog-logger/graylog_logger``` and then follow the rest of the instructions. 
+In order to only build the library, change the first lin to ```cd graylog-logger/graylog_logger``` and then follow the rest of the instructions.
+
+### Building on Windows
+The library has been tested on Windows using the Microsoft Visual C++ compiler. Assuming that CMake as well as Boost are correctly installed and that the appropriate environment variables are configured, the instructions for compiling everything are as follows:
+
+```
+cd graylog-logger
+mkdir build
+cd build
+cmake ..
+cmake --build .
+```
+
+Note that the unit tests are configured to link to the static versions of the Boost libraries.
 
 ## Usage
 There are currently two alternatives for including this library in your own project.
@@ -50,7 +63,7 @@ If the command line application is compiled, instructions on how to use it are s
 If compiled, the unit tests are run by running the ```unit_tests``` application in the ```unit_tests``` directory of the ```build```directory.
 
 ### Code examples
-The basic interface to the library is very simple and it should be possible to get a understanding of it by studying the ``Log.hpp`` file. A practical example can be found in the source code for the console application, e.g. ``dm-graylog-logger/console_logger/ConsoleLogger.cpp``. More examples on usage can be found on the ESS wiki page.
+The basic interface to the library is very simple and it should be possible to get a understanding of it by studying the ``Log.hpp`` file. A practical example can be found in the source code for the console application, e.g. ``graylog-logger/console_logger/ConsoleLogger.cpp``. More examples on usage can be found on the ESS wiki page.
 
 ## Documentation
 The code is currently not documented. Examples illustrating how the library can be used can be found on the ESS wiki and in the `EXAMPLES.md` file.
