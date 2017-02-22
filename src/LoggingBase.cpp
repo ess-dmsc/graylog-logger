@@ -41,7 +41,7 @@ LoggingBase::~LoggingBase() {
     handlers.clear();
 }
 
-void LoggingBase::Log(Severity sev, std::string message) {
+void LoggingBase::Log(const Severity sev, const std::string &message) {
     if (int(sev) > int(minSeverity)) {
         return;
     }
@@ -60,7 +60,7 @@ void LoggingBase::Log(Severity sev, std::string message) {
     }
 }
 
-void LoggingBase::Log(Severity sev, std::string message, std::vector<std::pair<std::string, AdditionalField>> extraFields) {
+void LoggingBase::Log(const Severity sev, const std::string &message, const std::vector<std::pair<std::string, AdditionalField>> &extraFields) {
     if (int(sev) > int(minSeverity)) {
         return;
     }
