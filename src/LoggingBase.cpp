@@ -42,7 +42,7 @@ LoggingBase::~LoggingBase() {
 }
 
 void LoggingBase::Log(const Severity sev, const std::string &message) {
-    Log(sev, message, {});
+    Log(sev, message, std::pair<std::string,AdditionalField>());
 }
 
 void LoggingBase::Log(const Severity sev, const std::string &message, const std::pair<std::string, AdditionalField> &extraField) {

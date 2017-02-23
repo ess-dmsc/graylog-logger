@@ -27,6 +27,9 @@ enum class Severity : int {
 };
     
 struct AdditionalField {
+    AdditionalField() {
+        FieldType = Type::typeStr;
+    };
     AdditionalField(double val) {
         FieldType = Type::typeDbl;
         dblVal = val;
