@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 #include <thread>
 #include <chrono>
-#include <boost/log/attributes/current_process_name.hpp>
+//#include <boost/log/attributes/current_process_name.hpp>
 #include "BaseLogHandlerStandIn.hpp"
 #include "graylog_logger/LoggingBase.hpp"
 #include "graylog_logger/LogUtil.hpp"
