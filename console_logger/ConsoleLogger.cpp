@@ -26,12 +26,13 @@ void PrintAlternatives();
 int main(int argc, char **argv) {
     std::string fileName("messages.log");
     std::string address1("localhost");
-    std::string address2("192.168.12.11");
     std::string msg;
     int sevLevel = 7;
     unsigned short port = 12201;
     float timeout = 1.0;
     int c;
+    std::string extraKey;
+    AdditionalField extraField;
     static struct option long_options[] {
         {"help", no_argument, 0, 'h'},
         {"file", optional_argument, 0, 'f'},
@@ -40,10 +41,11 @@ int main(int argc, char **argv) {
         {"time", required_argument, 0, 't'},
         {"level", required_argument, 0, 'l'},
         {"message", required_argument, 0, 'm'},
+        {"extra", optional_argument, 0, 'e'},
     };
     int option_index = 0;
     while (true) {
-        c = getopt_long(argc, argv, "hf::p:t:l:m:a::", long_options, &option_index);
+        c = getopt_long(argc, argv, "hf::p:t:l:m:a::e:", long_options, &option_index);
         if (c == -1) {
             break;
         }
@@ -111,12 +113,33 @@ int main(int argc, char **argv) {
                         return 0;
                     }
                 }
+                break;
+            case 'e':
+                if (optarg) {
+                    std::string value(optarg);
+                    size_t splitLoc = value.find(":");
+                    if (std::string::npos == splitLoc) {
+                        break;
+                    }
+                    extraKey = value.substr(0, splitLoc);
+                    extraField = value.substr(splitLoc + 1, value.size() - 1);
+                    if (extraKey.size() == 0 or extraField.strVal.size() == 0) {
+                        extraKey = "";
+                        std::cout << "Unable to parse extra field: \"" << value << "\"" << std::endl;
+                    }
+                }
+                break;
         }
     }
     if (0 == msg.size()) {
         PrintAlternatives();
         return 0;
     }
+    std::string commandLineArguments;
+    for (int i = 1; i < argc; i++) {
+        commandLineArguments += " " + std::string(argv[i]);
+    }
+    Log::AddField("arguments", commandLineArguments);
     Log::SetMinimumSeverity(Severity::Debug);
     Log::RemoveAllHandlers();
     Log::AddLogHandler(LogHandler_P(new ConsoleInterface()));
@@ -128,13 +151,15 @@ int main(int argc, char **argv) {
     if (address1.size() > 0) {
         if ("localhost" == address1) {
             Log::AddLogHandler(LogHandler_P(new GraylogInterface(address1, port)));
-            Log::AddLogHandler(LogHandler_P(new GraylogInterface(address2, port)));
         } else {
             Log::AddLogHandler(LogHandler_P(new GraylogInterface(address1, port)));
         }
     }
-    
-    Log::Msg(Severity(sevLevel), msg);
+    if (extraKey.size() > 0) {
+        Log::Msg(Severity(sevLevel), msg, {extraKey, extraField});
+    } else {
+        Log::Msg(Severity(sevLevel), msg);
+    }
     
     std::vector<LogHandler_P> allInterfaces = Log::GetHandlers();
     std::vector<LogHandler_P> graylogInt;
@@ -158,6 +183,9 @@ int main(int argc, char **argv) {
                 }
             }
         }
+        if (continueLoop) {
+            std::cout << "Reached timeout when sending message to Graylog-server." << std::endl;
+        }
     }
     
     return 0;
@@ -166,12 +194,14 @@ int main(int argc, char **argv) {
 
 void PrintAlternatives() {
     std::cout << "\nusage: console_logger [-h] [-f<file_name>] [-a<address>] [-p<port>]\n";
-    std::cout << "                        [-t<timeout in s>] [-l <level>] [-m<message>]\n\n";
+    std::cout << "                      [-t<timeout in s>] [-l <level>] [-m<message>]\n";
+    std::cout << "                      [-e<key>:<value>]\n\n";
     std::cout << "This application will write the log message to file and socket by default.\n";
     std::cout << "To prevent the application from doing this, use the -f and -a flags but do not\n";
     std::cout << "provide a file name or address. The level paramater is a value between 0  and 7\n";
     std::cout << "with 0 being \"Emergency\" and 7 indicating a debug message. The default level\n";
     std::cout << "is 7 (debug). The default file name is \"messages.log\". The default address\n";
-    std::cout << "is \"localhost\" and the default port is 12201.\n\n";
+    std::cout << "is \"localhost\" and the default port is 12201. The extra field parameter requires\n";
+    std::cout << "that the key and value of the field is separated using the colon character.\n\n";
     std::cout << "Example: ./console_logger -t2.0 -m\"This is a log message.\"" << std::endl;
 }
