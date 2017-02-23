@@ -21,9 +21,6 @@ Logger& Logger::Inst() {
 Logger::Logger() : LoggingBase() {
     LogHandler_P ptr1(new ConsoleInterface());
     AddLogHandler(ptr1);
-    
-    LogHandler_P ptr3(new GraylogInterface("localhost", 12201));
-    AddLogHandler(ptr3);
 }
 
 Logger::~Logger() {
