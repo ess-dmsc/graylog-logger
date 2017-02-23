@@ -74,4 +74,7 @@ private:
     mutable std::mutex stateMutex;
     ConStatus retConState;
     ConcurrentQueue<ConStatus> stateQueue;
+#ifdef _WIN32
+    WSADATA wsaData;
+#endif
 };
