@@ -68,7 +68,7 @@ std::string get_process_name() {
     std::vector<std::string> filePaths = {"/proc/self/exe", "/proc/curproc/file", "/proc/curproc/exe"};
     char pathBuffer[1024];
     for (auto &path : filePaths) {
-        int nameLen = readlink(path.c_str(), pathBuffer, sizeof(buf) - 1);
+        int nameLen = readlink(path.c_str(), pathBuffer, sizeof(pathBuffer) - 1);
         if (-1 != nameLen) {
             std::string tempPath(pathBuffer);
             auto lastSlash = tempPath.rfind("/");
