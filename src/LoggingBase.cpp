@@ -19,6 +19,7 @@
 #include <Winsock2.h>
 #include <process.h>
 #include <windows.h>
+#include <locale>
 #define getpid _getpid
 #else
 #include <unistd.h>
