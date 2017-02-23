@@ -1,5 +1,5 @@
 # graylog-logger
-This C++ message logging library has been developed for use at the ESS. By default, the library will write log messages to console and to TCP port 12201 on ``localhost`` in [GELF](http://docs.graylog.org/en/2.1/pages/gelf.html) format. This port will accept log messages from the library if the [graylog-machine](https://github.com/ess-dmsc/graylog-machine) [Vagrant](https://www.vagrantup.com/) machine is up and running.
+This is a simple logging library which can be used to send log messages to a Graylog server. This is done by creating messages in the [GELF](http://docs.graylog.org/en/2.1/pages/gelf.html) format and sending them to a Graylog server via TCP. For testing purposes a [Vagrant](https://www.vagrantup.com/) machine running Graylog can be used. A simple Vagrantfile for creating this set-up can be [found here](https://github.com/ess-dmsc/graylog-machine). The argument for creating yet another logging library instead of writing a plugin/sink/handler for an already existing one is that a relatively light weight solution was desired. The library has functionality for writing log messages to console and file as well and by default the library will only write log messages to console.
 
 The repository is split into three parts:
 
@@ -11,7 +11,7 @@ A sister project to this library is the Python logging handler [GraylogHandler](
 
 ## Requirements
 The logging library uses only standard libraries with one exception: [Jsoncpp](https://github.com/open-source-parsers/jsoncpp). This library is included in the project in the form of a header file and an implementation file and will thus not require any packages to be installed.
-C++11 features are used extensively and ignoring possible bugs, thread safety is only guaranteed if the compiler used has a correct C++11 (or above) implementation. Although the library should compile on most *nix systems, small differences in how sockets are handled could introduce bugs. For the same reason, the library will not compile under windows.
+C++11 features are used extensively and ignoring possible bugs, thread safety is only guaranteed if the compiler used has a correct C++11 (or above) implementation. Although the library should compile on most *nix systems and Windows, small differences in how sockets are handled could introduce bugs.
 
 In order to build the unit tests, the following libraries are also required:
 
@@ -35,7 +35,7 @@ make install
 In order to only build the library, change the first lin to ```cd graylog-logger/graylog_logger``` and then follow the rest of the instructions.
 
 ### Building on Windows
-The library has been tested on Windows using the Microsoft Visual C++ compiler. Assuming that CMake as well as Boost are correctly installed and that the appropriate environment variables are configured, the instructions for compiling everything are as follows:
+The library has been tested on Windows 10 using the Microsoft Visual C++ compiler (version 14.0). Assuming that CMake as well as Boost are correctly installed and that the appropriate environment variables are configured, the instructions for compiling everything are as follows:
 
 ```
 cd graylog-logger
@@ -56,10 +56,10 @@ As the library only depends on standard libraries, the easiest solution is likel
 ### 2. Use the compiled library
 If the instructions under **Build and install** are followed, a compiled binary of the library and the relevant header files will be installed into some system location. Probably ```/usr/local/```. Simply link to the library in the same way as other libraries (e.g. ```-lgraylog_logger```).
 
-### Using the command line application
+### Optional: Using the command line application
 If the command line application is compiled, instructions on how to use it are shown if run without any arguments (e.g. ```./console_logger/console_logger```).
 
-### Running the unit tests
+### Optional: Running the unit tests
 If compiled, the unit tests are run by running the ```unit_tests``` application in the ```unit_tests``` directory of the ```build```directory.
 
 ### Code examples
@@ -78,3 +78,13 @@ The items in the following list is in no particular order. Suggestions and/or pa
 * Add UDP support
 * Determine process name
 * ...
+
+##Changes
+
+###Version 1.0
+
+* Added support for additional (user defined) fields.
+* The library will no longer attempt to connect to a Graylog server on localhost.
+* Using code adopted from boost, the library should now be able to determine the current process name.
+* Updated the documentation.
+* Minor bug fixes.
