@@ -42,22 +42,11 @@ LoggingBase::~LoggingBase() {
 }
 
 void LoggingBase::Log(const Severity sev, const std::string &message) {
-    if (int(sev) > int(minSeverity)) {
-        return;
-    }
-    baseMsgMutex.lock();
-    LogMessage cMsg(baseMsg);
-    baseMsgMutex.unlock();
-    cMsg.timestamp = std::chrono::system_clock::now();
-    cMsg.message = message;
-    cMsg.severity = sev;
-    std::ostringstream ss;
-    ss << std::this_thread::get_id();
-    cMsg.threadId = ss.str();
-    std::lock_guard<std::mutex> guard(vectorMutex);
-    for(auto ptr : handlers) {
-        ptr.get()->AddMessage(cMsg);
-    }
+    Log(sev, message, {});
+}
+
+void LoggingBase::Log(const Severity sev, const std::string &message, const std::pair<std::string, AdditionalField> &extraField) {
+    Log(sev, message, std::vector<std::pair<std::string, AdditionalField>>{extraField, });
 }
 
 void LoggingBase::Log(const Severity sev, const std::string &message, const std::vector<std::pair<std::string, AdditionalField>> &extraFields) {

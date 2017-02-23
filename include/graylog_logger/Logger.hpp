@@ -20,6 +20,7 @@ public:
     using LoggingBase::RemoveAllHandlers;
     using LoggingBase::GetHandlers;
     using LoggingBase::SetMinSeverity;
+    using LoggingBase::AddField;
 private:
     Logger();
     ~Logger();
