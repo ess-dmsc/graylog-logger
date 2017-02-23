@@ -13,13 +13,73 @@
 #include <sstream>
 #include <chrono>
 #include <ciso646>
+#include <fstream>
 
 #ifdef _WIN32
 #include <Winsock2.h>
 #include <process.h>
+#include <windows.h>
 #define getpid _getpid
 #else
 #include <unistd.h>
+#endif
+
+#ifdef _WIN32
+std::string get_process_name() {
+    std::wstring buf;
+    buf.resize(PATH_MAX);
+    do {
+        size_t len = GetModuleFileNameW(NULL, &buf[0], static_cast< size_t >(buf.size()));
+        if (len < buf.size()) {
+            buf.resize(len);
+            break;
+        }
+        buf.resize(buf.size() * 2);
+    } while (buf.size() < 65536);
+    
+    auto lastSlash = buf.rfind("\"");
+    if (std::string::npos == lastSlash) {
+        return buf;
+    }
+    return buf.substr(lastSlash + 1, buf.size() - 1);
+}
+#elif defined(__APPLE__) || defined(__APPLE_CC__)
+#include <mach-o/dyld.h>
+std::string get_process_name() {
+    std::string buf;
+    buf.resize(PATH_MAX);
+    while (true) {
+        uint32_t size = static_cast< uint32_t >(buf.size());
+        if (_NSGetExecutablePath(&buf[0], &size) == 0) {
+            buf.resize(std::strlen(&buf[0]));
+            break;
+        }
+        buf.resize(size);
+    }
+    auto lastSlash = buf.rfind("/");
+    if (std::string::npos == lastSlash) {
+        return buf;
+    }
+    return buf.substr(lastSlash + 1, buf.size() - 1);
+}
+#else
+#include <vector>
+std::string get_process_name() {
+    std::vector<std::string> filePaths = {"/proc/self/exe", "/proc/curproc/file", "/proc/curproc/exe"};
+    char pathBuffer[1024];
+    for (auto &path : filePaths) {
+        int nameLen = readlink(path.c_str(), pathBuffer, sizeof(buf) - 1);
+        if (-1 != nameLen) {
+            std::string tempPath(pathBuffer);
+            auto lastSlash = tempPath.rfind("/");
+            if (std::string::npos == lastSlash) {
+                return tempPath;
+            }
+            return tempPath.substr(lastSlash + 1, tempPath.size() - 1);
+        }
+    }
+    return std::to_string(getpid());
+}
 #endif
 
 LoggingBase::LoggingBase() {
@@ -34,6 +94,7 @@ LoggingBase::LoggingBase() {
         baseMsg.host = std::string(stringBuffer);
     }
     baseMsg.processId = getpid();
+    baseMsg.processName = get_process_name();
 }
 
 LoggingBase::~LoggingBase() {
@@ -42,7 +103,7 @@ LoggingBase::~LoggingBase() {
 }
 
 void LoggingBase::Log(const Severity sev, const std::string &message) {
-    Log(sev, message, std::pair<std::string,AdditionalField>());
+    Log(sev, message, std::vector<std::pair<std::string,AdditionalField>>());
 }
 
 void LoggingBase::Log(const Severity sev, const std::string &message, const std::pair<std::string, AdditionalField> &extraField) {

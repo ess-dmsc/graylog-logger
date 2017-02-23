@@ -13,6 +13,7 @@
 #include <gtest/gtest.h>
 #include <thread>
 #include <chrono>
+#include <boost/log/attributes/current_process_name.hpp>
 #include "BaseLogHandlerStandIn.hpp"
 #include "graylog_logger/LoggingBase.hpp"
 #include "graylog_logger/LogUtil.hpp"
@@ -191,6 +192,7 @@ TEST(LoggingBase, MachineInfoTest) {
     ss << std::this_thread::get_id();
     ASSERT_EQ(msg.threadId, ss.str()) << "Incorrect thread id.";
     ASSERT_EQ(msg.processId, getpid()) << "Incorrect process id.";
+    //ASSERT_EQ(msg.processName, boost::log::aux::get_process_name()) << "Incorrect process name.";
 }
 
 TEST(LoggingBase, TimestampTest) {
