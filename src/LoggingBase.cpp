@@ -46,7 +46,7 @@ std::string get_process_name() {
     using convert_typeX = std::codecvt_utf8<wchar_t>;
     std::wstring_convert<convert_typeX, wchar_t> converterX;
     
-    return converterX.to_bytes(wstr);
+    return converterX.to_bytes(buf);
 }
 #elif defined(__APPLE__) || defined(__APPLE_CC__)
 #include <mach-o/dyld.h>
