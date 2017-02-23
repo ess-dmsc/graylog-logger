@@ -27,7 +27,7 @@
 #ifdef _WIN32
 std::string get_process_name() {
     std::wstring buf;
-    buf.resize(PATH_MAX);
+    buf.resize(260);
     do {
         size_t len = GetModuleFileNameW(NULL, &buf[0], static_cast< size_t >(buf.size()));
         if (len < buf.size()) {
