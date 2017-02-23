@@ -241,7 +241,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldDouble) {
     GraylogInterfaceStandIn con("localhost", testPort, 100);
     LogMessage testMsg = GetPopulatedLogMsg();
     std::string key = "yet_another_key";
-    double value = M_PI;
+    double value = 3.1415926535897932384626433832795028841;
     testMsg.AddField(key, value);
     std::string jsonStr = con.LogMsgToJSON(testMsg);
     ptree pt = ParseJSON(jsonStr);

@@ -37,11 +37,14 @@ std::string get_process_name() {
         buf.resize(buf.size() * 2);
     } while (buf.size() < 65536);
     
-    auto lastSlash = buf.rfind("\"");
-    if (std::string::npos == lastSlash) {
-        return buf;
+    int lastSlash = buf.rfind("\"");
+    if (std::string::npos != lastSlash) {
+        buf = buf.substr(lastSlash + 1, buf.size() - 1);
     }
-    return buf.substr(lastSlash + 1, buf.size() - 1);
+    using convert_typeX = std::codecvt_utf8<wchar_t>;
+    std::wstring_convert<convert_typeX, wchar_t> converterX;
+    
+    return converterX.to_bytes(wstr);
 }
 #elif defined(__APPLE__) || defined(__APPLE_CC__)
 #include <mach-o/dyld.h>
