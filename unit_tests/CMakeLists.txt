@@ -18,7 +18,7 @@ if(MSVC)
     set(Boost_USE_STATIC_LIBS ON)
 endif()
 
-find_package(Boost COMPONENTS system thread regex filesystem REQUIRED)
+find_package(Boost COMPONENTS system thread regex filesystem REQUIRED) #log
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 

@@ -15,6 +15,7 @@
 #include "LogTestServer.hpp"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <cmath>
 
 using namespace boost::property_tree;
 
@@ -35,6 +36,7 @@ public:
     GraylogInterfaceStandIn(std::string host, int port, int queueLength) : GraylogInterface(host, port, queueLength) {
     };
     MOCK_METHOD1(SendMessage, void(std::string));
+    using GraylogInterface::LogMsgToJSON;
 };
 
 class GraylogConnectionStandIn : public GraylogConnection {
@@ -199,4 +201,51 @@ TEST(GraylogInterfaceCom, MessageJSONContentTest) {
     GraylogInterfaceStandIn con("localhost", testPort, 100);
     EXPECT_CALL(con, SendMessage(::testing::_)).WillOnce(testing::Invoke(&TestJsonString));
     con.AddMessage(msg);
+}
+
+ptree ParseJSON(std::string str) {
+    std::stringstream ss;
+    ss << str;
+    ptree pt;
+    EXPECT_NO_THROW(read_json(ss, pt));
+    return pt;
+}
+
+TEST(GraylogInterfaceCom, TestAdditionalFieldString) {
+    GraylogInterfaceStandIn con("localhost", testPort, 100);
+    LogMessage testMsg = GetPopulatedLogMsg();
+    std::string key = "yet_another_key";
+    std::string value = "yet another value";
+    testMsg.AddField(key, value);
+    std::string jsonStr = con.LogMsgToJSON(testMsg);
+    ptree pt = ParseJSON(jsonStr);
+    std::string tempStr;
+    EXPECT_NO_THROW(tempStr = pt.get<std::string>("_" + key));
+    EXPECT_EQ(tempStr, value);
+}
+
+TEST(GraylogInterfaceCom, TestAdditionalFieldInt) {
+    GraylogInterfaceStandIn con("localhost", testPort, 100);
+    LogMessage testMsg = GetPopulatedLogMsg();
+    std::string key = "yet_another_key";
+    std::int64_t value = -12431454;
+    testMsg.AddField(key, value);
+    std::string jsonStr = con.LogMsgToJSON(testMsg);
+    ptree pt = ParseJSON(jsonStr);
+    std::int64_t tempVal;
+    EXPECT_NO_THROW(tempVal = pt.get<std::int64_t>("_" + key));
+    EXPECT_EQ(tempVal, value);
+}
+
+TEST(GraylogInterfaceCom, TestAdditionalFieldDouble) {
+    GraylogInterfaceStandIn con("localhost", testPort, 100);
+    LogMessage testMsg = GetPopulatedLogMsg();
+    std::string key = "yet_another_key";
+    double value = 3.1415926535897932384626433832795028841;
+    testMsg.AddField(key, value);
+    std::string jsonStr = con.LogMsgToJSON(testMsg);
+    ptree pt = ParseJSON(jsonStr);
+    double tempVal;
+    EXPECT_NO_THROW(tempVal = pt.get<double>("_" + key));
+    EXPECT_EQ(tempVal, value);
 }

@@ -19,6 +19,27 @@ namespace Log {
         Logger::Inst().Log(Severity(sev), message);
     }
     
+    void Msg(const Severity sev, const std::string &message, std::pair<std::string, AdditionalField> extraField) {
+        Logger::Inst().Log(sev, message, extraField);
+    }
+    
+    void Msg(const int sev, const std::string &message, std::pair<std::string, AdditionalField> extraField) {
+        Logger::Inst().Log(Severity(sev), message, extraField);
+    }
+    
+    void Msg(const Severity sev, const std::string &message, std::vector<std::pair<std::string, AdditionalField>> extraFields) {
+        Logger::Inst().Log(sev, message, extraFields);
+    }
+    
+    void Msg(const int sev, const std::string &message, std::vector<std::pair<std::string, AdditionalField>> extraFields) {
+        Logger::Inst().Log(Severity(sev), message, extraFields);
+    }
+    
+    
+    void AddField(const std::string &key, const AdditionalField &value) {
+        Logger::Inst().AddField(key, value);
+    }
+    
     void SetMinimumSeverity(const Severity sev) {
         Logger::Inst().SetMinSeverity(sev);
     }

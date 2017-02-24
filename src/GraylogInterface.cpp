@@ -43,6 +43,15 @@ std::string GraylogInterface::LogMsgToJSON(const LogMessage &msg) {
     root["_process_id"] = msg.processId;
     root["_process"] = msg.processName;
     root["_thread_id"] = msg.threadId;
+    for (auto &field : msg.additionalFields) {
+        if (AdditionalField::Type::typeStr == field.second.FieldType) {
+            root["_" + field.first] = field.second.strVal;
+        } else if (AdditionalField::Type::typeDbl == field.second.FieldType) {
+            root["_" + field.first] = field.second.dblVal;
+        } else if (AdditionalField::Type::typeInt == field.second.FieldType) {
+            root["_" + field.first] = field.second.intVal;
+        }
+    }
     Json::FastWriter writer;
     return writer.write(root);
 }

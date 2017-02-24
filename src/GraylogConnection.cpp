@@ -34,10 +34,16 @@
 
 GraylogConnection::GraylogConnection(std::string host, int port) : closeThread(false), host(host), port(std::to_string(port)), socketFd(-1), conAddresses(NULL), connectionTries(0), firstMessage(true) {
     retConState = GraylogConnection::ConStatus::NONE;
+#ifdef _WIN32
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
     connectionThread = std::thread(&GraylogConnection::ThreadFunction, this);
 }
 
 GraylogConnection::~GraylogConnection() {
+#ifdef _WIN32
+    WSACleanup();
+#endif
     EndThread();
 }
 
@@ -67,6 +73,7 @@ void GraylogConnection::MakeConnectionHints() {
     //hints.ai_family = AF_UNSPEC; //Accept both IPv4 and IPv6
     hints.ai_family = AF_INET; //Accept only IPv4
     hints.ai_socktype = SOCK_STREAM; //Use TCP
+    hints.ai_protocol = IPPROTO_TCP;
 }
 
 void GraylogConnection::GetServerAddr() {
