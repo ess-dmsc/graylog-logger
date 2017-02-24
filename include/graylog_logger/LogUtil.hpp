@@ -75,7 +75,7 @@ struct LogMessage {
         } else {
             additionalFields[fieldLoc] = {key, val};
         }
-    };
+    }
 };
 
 class BaseLogHandler {
