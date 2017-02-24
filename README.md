@@ -11,7 +11,7 @@ A sister project to this library is the Python logging handler [GraylogHandler](
 
 ## Requirements
 The logging library uses only standard libraries with one exception: [Jsoncpp](https://github.com/open-source-parsers/jsoncpp). This library is included in the project in the form of a header file and an implementation file and will thus not require any packages to be installed.
-C++11 features are used extensively and ignoring possible bugs, thread safety is only guaranteed if the compiler used has a correct C++11 (or above) implementation. Although the library should compile on most *nix systems and Windows, small differences in how sockets are handled could introduce bugs.
+C++11 features are used extensively and ignoring possible bugs, thread safety is only guaranteed if the compiler used has a correct C++11 (or above) implementation. Although the library should compile on most *nix systems and, small differences in how sockets are handled could introduce bugs. The library also compiles on Windows though it can not yet transmit messages to a Graylog server on this platform.
 
 In order to build the unit tests, the following libraries are also required:
 
@@ -35,7 +35,7 @@ make install
 In order to only build the library, change the first lin to ```cd graylog-logger/graylog_logger``` and then follow the rest of the instructions.
 
 ### Building on Windows
-The library has been tested on Windows 10 using the Microsoft Visual C++ compiler (version 14.0). Assuming that CMake as well as Boost are correctly installed and that the appropriate environment variables are configured, the instructions for compiling everything are as follows:
+The compilation of the library has been tested on Windows 10 using the Microsoft Visual C++ compiler (version 14.0). Assuming that CMake as well as Boost are correctly installed and that the appropriate environment variables are configured, the instructions for compiling everything are as follows:
 
 ```
 cd graylog-logger
@@ -86,5 +86,6 @@ The items in the following list is in no particular order. Suggestions and/or pa
 * Added support for additional (user defined) fields.
 * The library will no longer attempt to connect to a Graylog server on localhost.
 * Using code adopted from boost, the library should now be able to determine the current process name.
+* The library now builds on Windows and passes all the unit tests. However, during integration testing it failed to correctly send log messages to a Graylog server on this platform. 
 * Updated the documentation.
 * Minor bug fixes.

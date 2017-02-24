@@ -117,7 +117,7 @@ std::string MyFormatter(LogMessage &msg) {
 int main() {
     Log::RemoveAllHandlers();
     auto ci = new ConsoleInterface();
-    ci->SetMessageStringCreatorFunction(MyFormater);
+    ci->SetMessageStringCreatorFunction(MyFormatter);
     Log::AddLogHandler(ci);
     Log::Msg(Severity::Warning, "A warning with a custom format.");
     return 0;
