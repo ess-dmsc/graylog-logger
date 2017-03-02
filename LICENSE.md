@@ -1,6 +1,6 @@
 BSD 2-Clause License
 
-Copyright (c) [year], [fullname]
+Copyright (c) 2017, European Spallation Source
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
