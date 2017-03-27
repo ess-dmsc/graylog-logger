@@ -32,7 +32,11 @@ make
 make install
 ```
 
-In order to only build the library, change the first lin to ```cd graylog-logger/graylog_logger``` and then follow the rest of the instructions.
+In order to only build the library, set the **BUILD_EVERYTHING** variable to **OFF**, i.e. replace `cmake ..` with:
+
+```
+cmake .. -DBUILD_EVERYTHING=OFF
+```
 
 ### Building on Windows
 The compilation of the library has been tested on Windows 10 using the Microsoft Visual C++ compiler (version 14.0). Assuming that CMake as well as Boost are correctly installed and that the appropriate environment variables are configured, the instructions for compiling everything are as follows:

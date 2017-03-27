@@ -6,5 +6,10 @@ set(dm-graylog-logger_VERSION_MINOR 0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
 add_subdirectory(graylog_logger)
-add_subdirectory(console_logger)
-add_subdirectory(unit_tests)
+
+option(BUILD_EVERYTHING "Build UnitTests & Console Logger" ON)
+
+IF(BUILD_EVERYTHING)
+	add_subdirectory(console_logger)
+	add_subdirectory(unit_tests)
+ENDIF()
