@@ -12,6 +12,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <netinet/in.h>
 #include "graylog_logger/ConcurrentQueue.hpp"
 
 #ifdef _WIN32
