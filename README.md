@@ -85,6 +85,12 @@ The items in the following list is in no particular order. Suggestions and/or pa
 
 ## Changes
 
+### Version 1.0.1
+* Fixed serious bug which would cause the graylog interface to send the same message to the server repeatedly without stopping (thanks tijme!).
+* Added license file.
+* Minor changes to cmake-files (tijme).
+* Minor other fixes.
+
 ### Version 1.0
 
 * Added support for additional (user defined) fields.
