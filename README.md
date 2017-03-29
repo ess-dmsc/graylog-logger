@@ -83,9 +83,9 @@ The items in the following list is in no particular order. Suggestions and/or pa
 * Determine process name
 * ...
 
-##Changes
+## Changes
 
-###Version 1.0
+### Version 1.0
 
 * Added support for additional (user defined) fields.
 * The library will no longer attempt to connect to a Graylog server on localhost.
