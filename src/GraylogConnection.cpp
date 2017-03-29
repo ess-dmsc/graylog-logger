@@ -307,7 +307,8 @@ void GraylogConnection::SendMessageLoop() {
                 } else {
                     bytesSent += cBytes;
                     if (bytesSent == currentMessage.size() + 1) {
-                        assert(logMessages.try_pop());
+                        bool popResult = logMessages.try_pop();
+                        assert(popResult);
                         SetState(ConStatus::NEW_MESSAGE);
                     }
                 }
