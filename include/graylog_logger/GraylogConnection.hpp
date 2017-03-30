@@ -54,7 +54,7 @@ protected:
     std::atomic_bool closeThread;
     
     std::string currentMessage;
-    int bytesSent;
+    ssize_t bytesSent;
     bool firstMessage;
     
     std::string host;

@@ -100,8 +100,8 @@ void GraylogConnection::ConnectToServer() {
         if (-1 == socketFd) {
             continue;
         }
-        int value = 1;
 #ifdef SO_NOSIGPIPE
+        int value = 1;
         setsockopt(socketFd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
 #endif
         //setsockopt(socketFd, SOL_SOCKET, SO_SNDTIMEO, const void *, socklen_t);
@@ -196,9 +196,9 @@ void GraylogConnection::SendMessage(std::string msg) {
 }
 
 void GraylogConnection::CheckConnectionStatus() {
-    timeval selectTimeout;
-    selectTimeout.tv_sec = 0;
-    selectTimeout.tv_usec = 0;
+//    timeval selectTimeout;
+//    selectTimeout.tv_sec = 0;
+//    selectTimeout.tv_usec = 0;
 //    fd_set exceptfds;
 //    FD_ZERO(&exceptfds);
 //    FD_SET(socketFd, &exceptfds);
@@ -283,7 +283,7 @@ void GraylogConnection::SendMessageLoop() {
         if (FD_ISSET(socketFd, &writefds)) {
             //std::cout << "GL: Ready to write." << std::endl;
             {
-                size_t cBytes = send(socketFd, currentMessage.substr(bytesSent, currentMessage.size() - bytesSent).c_str(), currentMessage.size() - bytesSent + 1, sendOpt);
+                ssize_t cBytes = send(socketFd, currentMessage.substr(bytesSent, currentMessage.size() - bytesSent).c_str(), currentMessage.size() - bytesSent + 1, sendOpt);
                 //std::cout << "GL: Sent bytes: " << cBytes << std::endl;
                 if (-1 == cBytes) {
 #ifdef _WIN32
