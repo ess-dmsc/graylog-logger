@@ -50,6 +50,8 @@ std::string get_process_name() {
 }
 #elif defined(__APPLE__) || defined(__APPLE_CC__)
 #include <mach-o/dyld.h>
+#include <cstring>
+#include <sys/syslimits.h>
 std::string get_process_name() {
     std::string buf;
     buf.resize(PATH_MAX);
