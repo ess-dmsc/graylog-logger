@@ -44,6 +44,6 @@ std::string BaseLogHandler::MsgStringCreator(LogMessage &msg) {
     std::time_t cTime = std::chrono::system_clock::to_time_t(msg.timestamp);
     char timeBuffer[50];
     size_t bytes = std::strftime(timeBuffer, 50, "%F %T", std::localtime(&cTime));
-    static std::array<std::string, 8> sevToStr = {{"EMERGENCY","ALERT","CRITICAL","ERROR","WARNING","Notice","Info","Debug"}};
+    std::array<std::string, 8> sevToStr = {{"EMERGENCY","ALERT","CRITICAL","ERROR","WARNING","Notice","Info","Debug"}};
     return std::string(timeBuffer, bytes) + std::string(" (") + msg.host + std::string(") ") + sevToStr[int(msg.severity)] + std::string(": ") + msg.message;
 }
