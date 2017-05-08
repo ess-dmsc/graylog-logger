@@ -85,6 +85,9 @@ The items in the following list is in no particular order. Suggestions and/or pa
 
 ## Changes
 
+### Version 1.0.2
+* Fixed bug related to the order in which static objects are deallocated on some systems. Note to self: premature optimisations are the root of all evil.
+
 ### Version 1.0.1
 * Fixed serious bug which would cause the graylog interface to send the same message to the server repeatedly without stopping (thanks tijme!).
 * Added license file.
