@@ -58,7 +58,7 @@ node('clang-format') {
 
         try {
             stage("Check formatting") {
-                sh "find . -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \
+                sh "find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
                     -exec $DM_ROOT/usr/bin/clangformatdiff.sh {} +"
             }
         } catch (e) {
