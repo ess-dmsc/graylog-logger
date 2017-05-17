@@ -47,9 +47,23 @@ node('boost && centos7') {
 
 node('clang-format') {
     dir("code") {
-        stage("Check formatting") {
-            sh "find . -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \
-                -exec ./clangformatdiff.sh {} +"
+        try {
+            stage("Checkout projects") {
+                checkout scm
+            }
+        } catch (e) {
+            slackSend color: 'danger', message: '@jonasn graylog-logger: Checkout failed'
+            throw e
+        }
+
+        try {
+            stage("Check formatting") {
+                sh "find . -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \
+                    -exec ./clangformatdiff.sh {} +"
+            }
+        } catch (e) {
+            slackSend color: 'danger', message: '@jonasn graylog-logger: Formatting check failed'
+            throw e
         }
     }
 }
