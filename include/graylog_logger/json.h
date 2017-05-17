@@ -619,7 +619,7 @@ public:
   typedef Json::ArrayIndex ArrayIndex;
 
   static const Value &null; ///< We regret this reference to a global instance;
-                            ///prefer the simpler Value().
+                            /// prefer the simpler Value().
   static const Value
       &nullRef; ///< just a kludge for binary-compatibility; same as null
   static Value const &nullSingleton(); ///< Prefer this to null or nullRef.

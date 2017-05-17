@@ -2627,9 +2627,9 @@ Value::CZString::~CZString() {
   if (cstr_ && storage_.policy_ == duplicate) {
     releaseStringValue(const_cast<char *>(cstr_),
                        storage_.length_ + 1u); //+1 for null terminating
-                                               //character for sake of
-                                               //completeness but not actually
-                                               //necessary
+                                               // character for sake of
+    // completeness but not actually
+    // necessary
   }
 }
 
