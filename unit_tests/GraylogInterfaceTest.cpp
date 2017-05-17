@@ -6,16 +6,16 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-#include "LogTestServer.hpp"
-#include "graylog_logger/GraylogInterface.hpp"
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
 #include <ciso646>
-#include <cmath>
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <sstream>
+#include <gmock/gmock.h>
 #include <thread>
+#include <sstream>
+#include "graylog_logger/GraylogInterface.hpp"
+#include "LogTestServer.hpp"
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <cmath>
 
 using namespace boost::property_tree;
 
