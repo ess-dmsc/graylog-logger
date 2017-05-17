@@ -1,4 +1,4 @@
-node('boost') {
+node('boost && centos7') {
     dir("code") {
         try {
             stage("Checkout projects") {
