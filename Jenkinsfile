@@ -59,7 +59,7 @@ node('clang-format') {
         try {
             stage("Check formatting") {
                 sh "find . -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \
-                    -exec ./clangformatdiff.sh {} +"
+                    -exec $DM_ROOT/bin/clangformatdiff.sh {} +"
             }
         } catch (e) {
             slackSend color: 'danger', message: '@jonasn graylog-logger: Formatting check failed'
