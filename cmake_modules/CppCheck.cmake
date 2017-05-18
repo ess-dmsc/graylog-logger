@@ -36,8 +36,10 @@ if(CPPCHECK)
             get_filename_component(name ${name} REALPATH)
             # Append to the list of files to exclude.
             list(APPEND excluded_files ${name})
+            # When using --relative-paths, --suppress needs a relative path.
+            file(RELATIVE_PATH rel_path ${PROJECT_SOURCE_DIR} ${name})
             # Prepare cppcheck invocation options for supression.
-            set(suppressed_files --suppress=*:${name} ${suppressed_files})
+            set(suppressed_files --suppress=*:${rel_path} ${suppressed_files})
         endforeach()
 
         # Get list of target source files.
