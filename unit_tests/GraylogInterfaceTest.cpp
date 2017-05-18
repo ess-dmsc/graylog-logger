@@ -6,6 +6,7 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
+// clang-format off
 #include <ciso646>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -16,6 +17,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <cmath>
+// clang-format on
 
 using namespace boost::property_tree;
 
