@@ -30,7 +30,7 @@ node('boost && centos7') {
 
         try {
             stage("Run cppcheck") {
-                sh "make cppcheck"
+                sh "make VERBOSE=1 cppcheck"
             }
         } catch (e) {
             slackSend color: 'danger', message: '@jonasn graylog-logger: cppcheck failed'
