@@ -29,6 +29,15 @@ node('boost && centos7') {
         }
 
         try {
+            stage("Run cppcheck") {
+                sh "make cppcheck"
+            }
+        } catch (e) {
+            slackSend color: 'danger', message: '@jonasn graylog-logger: cppcheck failed'
+            throw e
+        }
+
+        try {
             dir("unit_tests"){
                 stage("Run unit tests") {
                     sh "./unit_tests --gtest_output=xml:AllResultsUnitTests.xml"
@@ -39,9 +48,6 @@ node('boost && centos7') {
             slackSend color: 'danger', message: '@jonasn graylog-logger: Unit tests failed'
             throw e
         }
-    }
-    if (currentBuild.previousBuild.result == "FAILURE") {
-        slackSend color: 'good', message: 'graylog-logger: Back in the green!'
     }
 }
 
@@ -65,5 +71,9 @@ node('clang-format') {
             slackSend color: 'danger', message: '@jonasn graylog-logger: Formatting check failed'
             throw e
         }
+    }
+
+    if (currentBuild.previousBuild.result == "FAILURE") {
+        slackSend color: 'good', message: 'graylog-logger: Back in the green!'
     }
 }
