@@ -83,6 +83,7 @@ if(CPPCHECK)
                 --enable=unusedFunction
                 --enable=missingInclude
                 --suppress=missingIncludeSystem
+                --relative-paths=${PROJECT_SOURCE_DIR}
                 ${suppressed_files}
                 ${cpp_inc_list}
                 ${cpp_src_list}
