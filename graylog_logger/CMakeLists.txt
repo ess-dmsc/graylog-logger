@@ -14,7 +14,30 @@ set(CMAKE_MACOSX_RPATH FALSE)
 
 include_directories("../include")
 
-file(GLOB Graylog_SRC "../src/*.cpp")
+set(Graylog_SRC
+    ../src/ConsoleInterface.cpp
+    ../src/FileInterface.cpp
+    ../src/GraylogConnection.cpp
+    ../src/GraylogInterface.cpp
+    ../src/jsoncpp.cpp
+    ../src/Log.cpp
+    ../src/Logger.cpp
+    ../src/LoggingBase.cpp
+    ../src/LogUtil.cpp
+)
+
+set(Graylog_INC
+    ../include/graylog_logger/ConcurrentQueue.hpp
+    ../include/graylog_logger/ConsoleInterface.hpp
+    ../include/graylog_logger/FileInterface.hpp
+    ../include/graylog_logger/GraylogConnection.hpp
+    ../include/graylog_logger/GraylogInterface.hpp
+    ../include/graylog_logger/json.h
+    ../include/graylog_logger/Log.hpp
+    ../include/graylog_logger/Logger.hpp
+    ../include/graylog_logger/LoggingBase.hpp
+    ../include/graylog_logger/LogUtil.hpp
+)
 
 add_library(graylog_logger SHARED ${Graylog_SRC})
 add_library(graylog_logger_static STATIC ${Graylog_SRC})

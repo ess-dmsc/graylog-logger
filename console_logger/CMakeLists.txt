@@ -8,7 +8,7 @@ endif()
 
 include_directories("../include")
 
-add_executable(console_logger ConsoleLogger.cpp)
+add_executable(console_logger ConsoleLogger.cpp getopt.h)
 
 if(NOT TARGET graylog_logger)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../graylog_logger ${CMAKE_CURRENT_BINARY_DIR}/graylog_logger)

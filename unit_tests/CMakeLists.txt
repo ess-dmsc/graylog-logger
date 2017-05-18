@@ -56,10 +56,51 @@ if(Boost_FOUND)
 
     include_directories("../include")
 
-    file(GLOB UnitTest_SRC "*.cpp")
-    file(GLOB Graylog_SRC "../src/*.cpp")
+    set(UnitTest_SRC
+        BaseLogHandlerStandIn.hpp
+        BaseLogHandlerTest.cpp
+        ConsoleInterfaceTest.cpp
+        FileInterfaceTest.cpp
+        GraylogInterfaceTest.cpp
+        LoggingBaseTest.cpp
+        LogMessageTest.cpp
+        LogTestServer.cpp
+        LogTestServer.hpp
+        QueueLengthTest.cpp
+        RunTests.cpp
+    )
+    
+    set(UnitTest_INC
+        BaseLogHandlerStandIn.hpp
+        LogTestServer.hpp
+    )
+    
+    set(Graylog_SRC
+        ../src/ConsoleInterface.cpp
+        ../src/FileInterface.cpp
+        ../src/GraylogConnection.cpp
+        ../src/GraylogInterface.cpp
+        ../src/jsoncpp.cpp
+        ../src/Log.cpp
+        ../src/Logger.cpp
+        ../src/LoggingBase.cpp
+        ../src/LogUtil.cpp
+    )
+    
+    set(Graylog_INC
+        ../include/graylog_logger/ConcurrentQueue.hpp
+        ../include/graylog_logger/ConsoleInterface.hpp
+        ../include/graylog_logger/FileInterface.hpp
+        ../include/graylog_logger/GraylogConnection.hpp
+        ../include/graylog_logger/GraylogInterface.hpp
+        ../include/graylog_logger/json.h
+        ../include/graylog_logger/Log.hpp
+        ../include/graylog_logger/Logger.hpp
+        ../include/graylog_logger/LoggingBase.hpp
+        ../include/graylog_logger/LogUtil.hpp
+    )
 
-    add_executable(unit_tests ${UnitTest_SRC} ${Graylog_SRC})
+    add_executable(unit_tests ${UnitTest_SRC} ${UnitTest_INC} ${Graylog_SRC} ${Graylog_INC})
 
     # set(needed_features cxx_strong_enums cxx_constexpr)
     # target_compile_features(LogTests PRIVATE ${needed_features})
