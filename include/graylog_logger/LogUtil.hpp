@@ -27,10 +27,13 @@ enum class Severity : int {
 };
 
 struct AdditionalField {
-  AdditionalField() : intVal(0), dblVal(0), FieldType(Type::typeStr) {};
-  AdditionalField(double val) : intVal(0), dblVal(val), FieldType(Type::typeDbl) {};
-  AdditionalField(const std::string &val) : intVal(0), dblVal(0), strVal(val), FieldType(Type::typeStr) {};
-  AdditionalField(std::int64_t val) : intVal(val), dblVal(0), FieldType(Type::typeInt) {};
+  AdditionalField() : intVal(0), dblVal(0), FieldType(Type::typeStr){};
+  AdditionalField(double val)
+      : intVal(0), dblVal(val), FieldType(Type::typeDbl){};
+  AdditionalField(const std::string &val)
+      : intVal(0), dblVal(0), strVal(val), FieldType(Type::typeStr){};
+  AdditionalField(std::int64_t val)
+      : intVal(val), dblVal(0), FieldType(Type::typeInt){};
   enum class Type : char {
     typeStr = 0,
     typeDbl = 1,
@@ -42,7 +45,7 @@ struct AdditionalField {
 };
 
 struct LogMessage {
-  LogMessage() : severity(Severity::Debug) {};
+  LogMessage() : severity(Severity::Debug){};
   std::string message;
   system_time timestamp;
   int processId;

@@ -34,7 +34,8 @@
 
 GraylogConnection::GraylogConnection(const std::string &host, int port)
     : closeThread(false), host(host), port(std::to_string(port)), socketFd(-1),
-      conAddresses(NULL), connectionTries(0), firstMessage(true), retConState(GraylogConnection::ConStatus::NONE) {
+      conAddresses(NULL), connectionTries(0), firstMessage(true),
+      retConState(GraylogConnection::ConStatus::NONE) {
 #ifdef _WIN32
   WSAStartup(MAKEWORD(2, 2), &wsaData);
 #endif

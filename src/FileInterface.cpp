@@ -10,7 +10,8 @@
 #include <ciso646>
 #include <fstream>
 
-FileInterface::FileInterface(const std::string &fileName, const size_t maxQueueLength)
+FileInterface::FileInterface(const std::string &fileName,
+                             const size_t maxQueueLength)
     : BaseLogHandler(maxQueueLength), fName(fileName),
       fileThread(&FileInterface::ThreadFunction, this) {}
 
