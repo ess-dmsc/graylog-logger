@@ -20,9 +20,9 @@ std::string FileTestStringCreator(LogMessage &msg) { return fileTestString; }
 
 class FileInterfaceStandIn : public FileInterface {
 public:
-  FileInterfaceStandIn(std::string fileName) : FileInterface(fileName){};
+  FileInterfaceStandIn(const std::string &fileName) : FileInterface(fileName){};
   ~FileInterfaceStandIn(){};
-  using FileInterface::fileName;
+  using FileInterface::fName;
   using FileInterface::logMessages;
   using FileInterface::fileThread;
 };
@@ -57,7 +57,7 @@ TEST_F(FileInterfaceTest, LogFileCreationTest) {
 
 TEST_F(FileInterfaceTest, FileNameSetVarTest) {
   FileInterfaceStandIn flInt(usedFileName);
-  ASSERT_EQ(flInt.fileName, usedFileName);
+  ASSERT_EQ(flInt.fName, usedFileName);
 }
 
 TEST_F(FileInterfaceTest, FileWriteMsgTest) {

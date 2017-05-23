@@ -23,7 +23,7 @@ public:
       const std::vector<std::pair<std::string, AdditionalField>> &extraFields);
   virtual void Log(const Severity sev, const std::string &message,
                    const std::pair<std::string, AdditionalField> &extraField);
-  virtual void AddLogHandler(const LogHandler_P handler);
+  virtual void AddLogHandler(const LogHandler_P &handler);
   template <typename valueType>
   void AddField(std::string key, const valueType &value) {
     std::lock_guard<std::mutex> guard(baseMsgMutex);

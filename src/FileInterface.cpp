@@ -10,8 +10,8 @@
 #include <ciso646>
 #include <fstream>
 
-FileInterface::FileInterface(std::string fileName, size_t maxQueueLength)
-    : BaseLogHandler(maxQueueLength), fileName(fileName),
+FileInterface::FileInterface(const std::string &fileName, const size_t maxQueueLength)
+    : BaseLogHandler(maxQueueLength), fName(fileName),
       fileThread(&FileInterface::ThreadFunction, this) {}
 
 FileInterface::~FileInterface() { ExitThread(); }
@@ -27,7 +27,7 @@ void FileInterface::ExitThread() {
 }
 
 void FileInterface::ThreadFunction() {
-  std::ofstream outStream(fileName, std::ios_base::app);
+  std::ofstream outStream(fName, std::ios_base::app);
   LogMessage tmpMsg;
   while (true) {
     logMessages.wait_and_pop(tmpMsg);

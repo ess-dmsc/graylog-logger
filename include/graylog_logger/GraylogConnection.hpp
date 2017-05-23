@@ -24,7 +24,7 @@
 
 class GraylogConnection {
 public:
-  GraylogConnection(std::string host, int port);
+  GraylogConnection(const std::string &host, int port);
   virtual ~GraylogConnection();
   virtual void SendMessage(std::string msg);
   enum class ConStatus {

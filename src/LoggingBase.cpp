@@ -146,7 +146,7 @@ void LoggingBase::Log(
   }
 }
 
-void LoggingBase::AddLogHandler(const LogHandler_P handler) {
+void LoggingBase::AddLogHandler(const LogHandler_P &handler) {
   std::lock_guard<std::mutex> guard(vectorMutex);
   handlers.push_back(handler);
 }

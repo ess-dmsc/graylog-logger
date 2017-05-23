@@ -24,7 +24,7 @@ void Msg(const int sev, const std::string &message,
          std::vector<std::pair<std::string, AdditionalField>> extraFields);
 void AddField(const std::string &key, const AdditionalField &value);
 void SetMinimumSeverity(const Severity sev);
-void AddLogHandler(const LogHandler_P handler);
+void AddLogHandler(const LogHandler_P &handler);
 template <typename T>
 typename std::enable_if<
     std::is_base_of<BaseLogHandler, T>::value /*, some_type*/>::type

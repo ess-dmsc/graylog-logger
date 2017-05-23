@@ -39,10 +39,16 @@ set(Graylog_INC
     ../include/graylog_logger/LogUtil.hpp
 )
 
-add_library(graylog_logger SHARED ${Graylog_SRC})
-add_library(graylog_logger_static STATIC ${Graylog_SRC})
+add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
+add_library(graylog_logger_static STATIC ${Graylog_SRC} ${Graylog_INC})
 target_link_libraries(graylog_logger ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(graylog_logger_static ${CMAKE_THREAD_LIBS_INIT})
+
+add_cppcheck_target(
+    graylog_logger
+    "../src/jsoncpp.cpp"
+    "../include/graylog_logger/json.h"
+)
 
 file(GLOB HeaderInstall "../include/graylog_logger/*.hpp")
 

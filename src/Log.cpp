@@ -47,7 +47,7 @@ void SetMinimumSeverity(const Severity sev) {
   Logger::Inst().SetMinSeverity(sev);
 }
 
-void AddLogHandler(const LogHandler_P handler) {
+void AddLogHandler(const LogHandler_P &handler) {
   Logger::Inst().AddLogHandler(handler);
 }
 

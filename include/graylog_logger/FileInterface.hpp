@@ -14,12 +14,12 @@
 
 class FileInterface : public BaseLogHandler {
 public:
-  FileInterface(std::string fileName, size_t maxQueueLength = 100);
+  FileInterface(const std::string &fileName, const size_t maxQueueLength = 100);
   ~FileInterface();
 
 protected:
   void ExitThread();
-  std::string fileName;
+  std::string fName;
   void ThreadFunction();
   std::thread fileThread;
 };

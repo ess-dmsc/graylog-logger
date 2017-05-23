@@ -24,7 +24,7 @@ Logger::Logger() : LoggingBase() {
 
 Logger::~Logger() {}
 
-void Logger::AddLogHandler(const LogHandler_P handler) {
+void Logger::AddLogHandler(const LogHandler_P &handler) {
   std::lock_guard<std::mutex> guard(vectorMutex);
   if (dynamic_cast<ConsoleInterface *>(handler.get()) != nullptr) {
     bool replaced = false;

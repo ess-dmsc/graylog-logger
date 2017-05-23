@@ -30,7 +30,6 @@ int main(int argc, char **argv) {
   int sevLevel = 7;
   unsigned short port = 12201;
   float timeout = 1.0;
-  int c;
   std::string extraKey;
   AdditionalField extraField;
   static struct option long_options[]{
@@ -45,7 +44,7 @@ int main(int argc, char **argv) {
   };
   int option_index = 0;
   while (true) {
-    c = getopt_long(argc, argv, "hf::p:t:l:m:a::e:", long_options,
+    int c = getopt_long(argc, argv, "hf::p:t:l:m:a::e:", long_options,
                     &option_index);
     if (c == -1) {
       break;

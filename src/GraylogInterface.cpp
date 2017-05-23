@@ -11,8 +11,8 @@
 #include <ciso646>
 #include <cstring>
 
-GraylogInterface::GraylogInterface(std::string host, int port,
-                                   size_t maxQueueLength)
+GraylogInterface::GraylogInterface(const std::string &host, const int port,
+                                   const size_t maxQueueLength)
     : GraylogConnection(host, port), BaseLogHandler(maxQueueLength) {}
 
 GraylogInterface::~GraylogInterface() {}
