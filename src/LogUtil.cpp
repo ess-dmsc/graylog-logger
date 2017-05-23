@@ -12,7 +12,7 @@
 #include <ctime>
 #include <iomanip>
 
-BaseLogHandler::BaseLogHandler(size_t maxQueueLength)
+BaseLogHandler::BaseLogHandler(const size_t maxQueueLength)
     : queueLength(maxQueueLength), msgParser(nullptr) {}
 
 void BaseLogHandler::SetMessageStringCreatorFunction(

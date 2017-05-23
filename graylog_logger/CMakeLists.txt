@@ -48,6 +48,7 @@ add_cppcheck_target(
     graylog_logger
     "../src/jsoncpp.cpp"
     "../include/graylog_logger/json.h"
+    "../include/graylog_logger/ConcurrentQueue.hpp"
 )
 
 file(GLOB HeaderInstall "../include/graylog_logger/*.hpp")

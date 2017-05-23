@@ -29,7 +29,7 @@ enum class Severity : int {
 struct AdditionalField {
   AdditionalField() : intVal(0), dblVal(0), FieldType(Type::typeStr) {};
   AdditionalField(double val) : intVal(0), dblVal(val), FieldType(Type::typeDbl) {};
-  AdditionalField(std::string val) : intVal(0), dblVal(0), strVal(val), FieldType(Type::typeStr) {};
+  AdditionalField(const std::string &val) : intVal(0), dblVal(0), strVal(val), FieldType(Type::typeStr) {};
   AdditionalField(std::int64_t val) : intVal(val), dblVal(0), FieldType(Type::typeInt) {};
   enum class Type : char {
     typeStr = 0,
@@ -70,7 +70,7 @@ struct LogMessage {
 
 class BaseLogHandler {
 public:
-  BaseLogHandler(size_t maxQueueLength = 100);
+  BaseLogHandler(const size_t maxQueueLength = 100);
   virtual ~BaseLogHandler();
   virtual void AddMessage(const LogMessage &msg);
   virtual bool MessagesQueued();

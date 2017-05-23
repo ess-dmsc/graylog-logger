@@ -81,8 +81,6 @@ if(CPPCHECK)
                 --force
                 --quiet
                 --inline-suppr
-                --enable=style
-                --enable=unusedFunction
                 --enable=missingInclude
                 --suppress=missingIncludeSystem
                 --relative-paths=${PROJECT_SOURCE_DIR}
