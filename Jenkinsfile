@@ -1,3 +1,10 @@
+def failure_function(exception_obj, failureMessage) {
+    def toEmails = [[$class: 'DevelopersRecipientProvider']]
+    emailext body: '${DEFAULT_CONTENT}\n\"' + failureMessage + '\"\n\nCheck console output at $BUILD_URL to view the results.', recipientProviders: toEmails, subject: '${DEFAULT_SUBJECT}'
+    slackSend color: 'danger', message: "@jonasn graylog-logger: " + failureMessage
+    throw exception_obj
+}
+
 node('boost && centos7') {
     dir("code") {
         try {
@@ -5,8 +12,7 @@ node('boost && centos7') {
                 checkout scm
             }
         } catch (e) {
-            slackSend color: 'danger', message: '@jonasn graylog-logger: Checkout failed'
-            throw e
+            failure_function(e, 'Checkout failed')
         }
     }
     dir("build") {
@@ -15,8 +21,7 @@ node('boost && centos7') {
                 sh "cmake ../code"
             }
         } catch (e) {
-            slackSend color: 'danger', message: '@jonasn graylog-logger: CMake failed'
-            throw e
+            failure_function(e, 'CMake failed')
         }
 
         try {
@@ -24,8 +29,7 @@ node('boost && centos7') {
                 sh "make"
             }
         } catch (e) {
-            slackSend color: 'danger', message: '@jonasn graylog-logger: Failed to compile'
-            throw e
+            failure_function(e, 'Failed to compile')
         }
 
         try {
@@ -33,8 +37,7 @@ node('boost && centos7') {
                 sh "make cppcheck"
             }
         } catch (e) {
-            slackSend color: 'danger', message: '@jonasn graylog-logger: cppcheck failed'
-            throw e
+            failure_function(e, 'Cppcheck failed')
         }
 
         try {
@@ -45,8 +48,7 @@ node('boost && centos7') {
                 }
             }
         } catch (e) {
-            slackSend color: 'danger', message: '@jonasn graylog-logger: Unit tests failed'
-            throw e
+            failure_function(e, 'Unit tests failed')
         }
     }
 }
@@ -58,8 +60,7 @@ node('clang-format') {
                 checkout scm
             }
         } catch (e) {
-            slackSend color: 'danger', message: '@jonasn graylog-logger: Checkout failed'
-            throw e
+            failure_function(e, 'Checkout failed')
         }
 
         try {
@@ -68,12 +69,11 @@ node('clang-format') {
                     -exec $DM_ROOT/usr/bin/clangformatdiff.sh {} +"
             }
         } catch (e) {
-            slackSend color: 'danger', message: '@jonasn graylog-logger: Formatting check failed'
-            throw e
+            failure_function(e, 'Formatting check failed')
         }
     }
 
-    if (currentBuild.previousBuild.result == "FAILURE") {
+    if (currentBuild.previousBuild.result != "FAILURE") {
         slackSend color: 'good', message: 'graylog-logger: Back in the green!'
     }
 }
