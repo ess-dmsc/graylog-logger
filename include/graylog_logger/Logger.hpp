@@ -12,16 +12,17 @@
 
 class Logger : private LoggingBase {
 public:
-    static Logger& Inst();
-    Logger(const Logger&) = delete;
-    Logger& operator=(const Logger&) = delete;
-    virtual void AddLogHandler(const LogHandler_P handler) override;
-    using LoggingBase::Log;
-    using LoggingBase::RemoveAllHandlers;
-    using LoggingBase::GetHandlers;
-    using LoggingBase::SetMinSeverity;
-    using LoggingBase::AddField;
+  static Logger &Inst();
+  Logger(const Logger &) = delete;
+  Logger &operator=(const Logger &) = delete;
+  virtual void AddLogHandler(const LogHandler_P &handler) override;
+  using LoggingBase::Log;
+  using LoggingBase::RemoveAllHandlers;
+  using LoggingBase::GetHandlers;
+  using LoggingBase::SetMinSeverity;
+  using LoggingBase::AddField;
+
 private:
-    Logger();
-    ~Logger();
+  Logger();
+  ~Logger();
 };

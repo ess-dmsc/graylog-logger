@@ -8,15 +8,16 @@
 
 #pragma once
 
-#include <thread>
 #include "graylog_logger/LogUtil.hpp"
+#include <thread>
 
 class ConsoleInterface : public BaseLogHandler {
 public:
-    ConsoleInterface(size_t maxQueueLength = 100);
-    ~ConsoleInterface();
+  ConsoleInterface(size_t maxQueueLength = 100);
+  ~ConsoleInterface();
+
 protected:
-    void ExitThread();
-    void ThreadFunction();
-    std::thread consoleThread;
+  void ExitThread();
+  void ThreadFunction();
+  std::thread consoleThread;
 };
