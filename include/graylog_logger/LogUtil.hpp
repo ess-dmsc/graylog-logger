@@ -27,13 +27,13 @@ enum class Severity : int {
 };
 
 struct AdditionalField {
-  AdditionalField() : intVal(0), dblVal(0), FieldType(Type::typeStr){};
+  AdditionalField() : FieldType(Type::typeStr), intVal(0), dblVal(0) {};
   AdditionalField(double val)
-      : intVal(0), dblVal(val), FieldType(Type::typeDbl){};
+      : FieldType(Type::typeDbl), intVal(0), dblVal(val) {};
   AdditionalField(const std::string &val)
-      : intVal(0), dblVal(0), strVal(val), FieldType(Type::typeStr){};
+      : FieldType(Type::typeStr), strVal(val), intVal(0), dblVal(0) {};
   AdditionalField(std::int64_t val)
-      : intVal(val), dblVal(0), FieldType(Type::typeInt){};
+      : FieldType(Type::typeInt), intVal(val), dblVal(0) {};
   enum class Type : char {
     typeStr = 0,
     typeDbl = 1,
