@@ -28,7 +28,11 @@ conan_basic_setup()''')
     def package(self):
         self.copy("*.h", dst="include/graylog_logger", src="graylog-logger/include/graylog_logger")
         self.copy("*.hpp", dst="include/graylog_logger", src="graylog-logger/include/graylog_logger")
-        self.copy("*.so", dst="lib", keep_path=False)
+        if self.options.shared:
+            if self.settings.os == "Macos":
+                self.copy("*.dylib", dst="lib", keep_path=False)
+            else:
+                self.copy("*.so", dst="lib", keep_path=False)
         self.copy("*.a", dst="lib", keep_path=False)
 
     def package_info(self):
