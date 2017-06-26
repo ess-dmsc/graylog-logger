@@ -1,4 +1,5 @@
 from conans import ConanFile, CMake, tools
+from conans.errors import ConanException
 import os
 
 
@@ -22,8 +23,14 @@ conan_basic_setup()''')
     def build(self):
         cmake = CMake(self)
         shared = "-DBUILD_SHARED_LIBS=ON" if self.options.shared else ""
-        self.run('cmake graylog-logger %s %s' % (cmake.command_line, shared))
-        self.run("cmake --build . %s" % cmake.build_config)
+        try:
+            self.output.info("Try to run cmake3")
+            self.run("cmake3 --version")
+            cmake_command = "cmake3"
+        except ConanException:
+            cmake_command = "cmake"
+        self.run('%s graylog-logger %s %s' % (cmake_command, cmake.command_line, shared))
+        self.run("%s --build . %s" % (cmake_command, cmake.build_config))
 
     def package(self):
         self.copy("*.h", dst="include/graylog_logger", src="graylog-logger/include/graylog_logger")
