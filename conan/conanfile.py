@@ -10,11 +10,9 @@ class GraylogloggerConan(ConanFile):
     url = "https://bintray.com/amues/graylog-logger"
     settings = "os", "compiler", "build_type", "arch"
     options = {
-        "shared": [True, False],
         "build_everything": [True, False]
     }
-    default_options = "shared=True\n" \
-                      "build_everything=True"
+    default_options = "build_everything=True"
     generators = "cmake"
 
     def source(self):
@@ -27,9 +25,7 @@ conan_basic_setup()''')
     def build(self):
         cmake = CMake(self)
 
-        shared = "-DBUILD_SHARED_LIBS=ON" if self.options.shared else ""
         build_everything = "-DBUILD_EVERYTHING=OFF" if not self.options.build_everything else ""
-        definitions = ' '.join([shared, build_everything])
 
         try:
             self.output.info("Try to run cmake3")
@@ -39,7 +35,7 @@ conan_basic_setup()''')
             self.output.info("Using cmake instead of cmake3")
             cmake_command = "cmake"
 
-        self.run('%s graylog-logger %s %s' % (cmake_command, cmake.command_line, definitions))
+        self.run('%s graylog-logger %s %s' % (cmake_command, cmake.command_line, build_everything))
         self.run("%s --build . %s" % (cmake_command, cmake.build_config))
 
         if self.options.build_everything:
