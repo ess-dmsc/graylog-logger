@@ -35,9 +35,6 @@ class GraylogloggerConan(ConanFile):
         self.run('%s graylog-logger %s %s' % (cmake_command, cmake.command_line, build_everything))
         self.run("%s --build . %s" % (cmake_command, cmake.build_config))
 
-        if self.options.build_everything:
-            self.run("./unit_tests/unit_tests")
-
     def package(self):
         self.copy("*.h", dst="include/graylog_logger", src="graylog-logger/include/graylog_logger")
         self.copy("*.hpp", dst="include/graylog_logger", src="graylog-logger/include/graylog_logger")
