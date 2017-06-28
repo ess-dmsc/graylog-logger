@@ -18,9 +18,6 @@ class GraylogloggerConan(ConanFile):
     def source(self):
         self.run("git clone https://github.com/ess-dmsc/graylog-logger.git")
         self.run("cd graylog-logger && git checkout conan")
-        tools.replace_in_file("graylog-logger/CMakeLists.txt", "PROJECT(dm-graylog-logger)", '''PROJECT(dm-graylog-logger)
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()''')
 
     def build(self):
         cmake = CMake(self)
