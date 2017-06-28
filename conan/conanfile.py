@@ -12,7 +12,7 @@ class GraylogloggerConan(ConanFile):
     options = {
         "build_everything": [True, False]
     }
-    default_options = "build_everything=True"
+    default_options = "build_everything=False"
     generators = "cmake"
 
     def source(self):
