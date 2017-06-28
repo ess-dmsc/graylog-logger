@@ -15,6 +15,10 @@ class GraylogloggerConan(ConanFile):
     default_options = "build_everything=False"
     generators = "cmake"
 
+    def build_requirements(self):
+        if self.options.build_everything:
+            self.build_requires("gtest/1.8.0@conan/stable")
+
     def source(self):
         self.run("git clone https://github.com/ess-dmsc/graylog-logger.git")
         self.run("cd graylog-logger && git checkout conan")

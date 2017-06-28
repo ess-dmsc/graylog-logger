@@ -26,30 +26,12 @@ if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIR})
     link_directories(${Boost_LIBRARY_DIRS})
 
-    if (CMAKE_VERSION VERSION_LESS 3.2)
-        set(UPDATE_DISCONNECTED_IF_AVAILABLE "")
-    else()
-        set(UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
-    endif()
-
-    # Tests end with segmentation fault when Google Test is built with
-    # BUILD_SHARED_LIBS=ON.
-    if(DEFINED CONAN_PACKAGE_NAME)
-        set(BUILD_SHARED_LIBS OFF)
-    endif()
-
-    include(DownloadProject)
-    download_project(PROJ                googletest
-                     GIT_REPOSITORY      https://github.com/google/googletest.git
-                     GIT_TAG             master
-                     ${UPDATE_DISCONNECTED_IF_AVAILABLE}
-    )
+    # find_package(GTest) does not find Google Mock, so find it manually.
+    find_library(GMOCK_MAIN_LIB gmock_main)
 
     # Prevent GoogleTest from overriding our compiler/linker options
     # when building with Visual Studio
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-    add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
 
     include_directories("../include")
 
@@ -102,7 +84,7 @@ if(Boost_FOUND)
     # set(needed_features cxx_strong_enums cxx_constexpr)
     # target_compile_features(LogTests PRIVATE ${needed_features})
 
-    target_link_libraries(unit_tests gtest gmock_main)
+    target_link_libraries(unit_tests ${GMOCK_MAIN_LIB})
     target_link_libraries(unit_tests ${Boost_LIBRARIES})
 
     add_test(TestAll unit_tests)
