@@ -20,7 +20,7 @@ node('boost && centos7') {
             stage("Run Conan") {
                 sh "rm -rf *"
                 sh 'PATH=/opt/dm_group/usr/bin:$PATH \
-                    /opt/dm_group/virtualenv/conan/bin conan install \
+                    /opt/dm_group/virtualenv/conan/bin/conan install \
                     ../code/conan \
                     -o build_everything=True \
                     --build missing'
