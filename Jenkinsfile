@@ -47,7 +47,7 @@ node('boost && centos7') {
         }
 
         try {
-            dir("bin"){
+            dir("unit_tests"){
                 stage("Run unit tests") {
                     sh "./unit_tests --gtest_output=xml:AllResultsUnitTests.xml"
                     junit '*Tests.xml'
