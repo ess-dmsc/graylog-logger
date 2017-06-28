@@ -19,11 +19,11 @@ node('boost && centos7') {
         try {
             stage("Run Conan") {
                 sh "rm -rf *"
-                sh 'PATH=/opt/dm_group/usr/bin:$PATH \
-                    /opt/dm_group/virtualenv/conan/bin/conan install \
+                sh "PATH=/opt/dm_group/usr/bin:\$PATH \
+                    $DM_ROOT/virtualenv/conan/bin/conan install \
                     ../code/conan \
                     -o build_everything=True \
-                    --build missing'
+                    --build missing"
             }
         } catch (e) {
             failure_function(e, 'Conan failed')
@@ -31,7 +31,7 @@ node('boost && centos7') {
 
         try {
             stage("Run CMake") {
-                sh 'PATH=/opt/dm_group/usr/bin:$PATH cmake ../code'
+                sh "PATH=$DM_ROOT/usr/bin:\$PATH cmake ../code"
             }
         } catch (e) {
             failure_function(e, 'CMake failed')
