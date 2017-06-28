@@ -1,9 +1,14 @@
 cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
-project("dm-graylog-logger")
-set(dm-graylog-logger_VERSION_MAJOR 1)
-set(dm-graylog-logger_VERSION_MINOR 0)
+project("graylog-logger")
 
-include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+set(graylog-logger_VERSION_MAJOR 1)
+set(graylog-logger_VERSION_MINOR 0)
+set(graylog-logger_VERSION_PATCH 2)
+
+if(EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+    include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+    conan_basic_setup()
+endif()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
