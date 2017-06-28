@@ -25,6 +25,7 @@ node('boost && centos7') {
                     -o build_everything=True \
                     --build missing"
                 sh "PATH=$DM_ROOT/usr/bin:\$PATH cmake ../code"
+            }
         } catch (e) {
             failure_function(e, 'Configure failed')
         }
