@@ -55,7 +55,7 @@ node('boost && centos7') {
             stage("Archive artifacts") {
                 sh "rm -rf ../graylog-logger"
                 sh "mkdir ../graylog-logger"
-                sh "make install DESTDIR=$(pwd)/../graylog-logger"
+                sh "make install DESTDIR=\$(pwd)/../graylog-logger"
                 sh "tar czvf ../graylog-logger.tar.gz ../graylog-logger"
                 archiveArtifacts '../graylog-logger.tar.gz'
             }
