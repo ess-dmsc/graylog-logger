@@ -60,7 +60,7 @@ node('boost && centos7') {
                 archiveArtifacts '../graylog-logger.tar.gz'
             }
         } catch (e) {
-            failure_function(e, 'Cppcheck failed')
+            failure_function(e, 'Archive artifacts failed')
         }
     }
 }
