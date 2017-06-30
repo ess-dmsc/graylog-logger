@@ -43,10 +43,11 @@ class GraylogloggerConan(ConanFile):
         self.copy("*.h", dst="include/graylog_logger", src="graylog-logger/include/graylog_logger")
         self.copy("*.hpp", dst="include/graylog_logger", src="graylog-logger/include/graylog_logger")
         if self.settings.os == "Macos":
-            self.copy("*.dylib", dst="lib", keep_path=False)
+            self.copy("*.dylib", dst="lib", src="graylog_logger", keep_path=False)
         else:
-            self.copy("*.so", dst="lib", keep_path=False)
+            self.copy("*.so", dst="lib", src="graylog_logger", keep_path=False)
         self.copy("*.a", dst="lib", keep_path=False)
+        self.copy("console_logger", dst="bin", src="console_logger", keep_path=False)
 
     def package_info(self):
         self.cpp_info.libs = ["graylog_logger"]
