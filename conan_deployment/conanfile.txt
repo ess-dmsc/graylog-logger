@@ -1,0 +1,5 @@
+[requires]
+graylog-logger/1.0.2@amues/testing
+
+[generators]
+virtualrunenv
