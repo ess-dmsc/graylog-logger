@@ -8,7 +8,7 @@ username = os.getenv("CONAN_USERNAME", "amues")
 
 class GraylogloggerTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    requires = "graylog-logger/1.0.2@%s/%s" % (username, channel)
+    requires = "graylog-logger/<version>@%s/%s" % (username, channel)
     generators = "cmake"
 
     def build(self):

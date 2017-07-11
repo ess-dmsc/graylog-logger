@@ -5,7 +5,7 @@ import os
 
 class GraylogloggerConan(ConanFile):
     name = "graylog-logger"
-    version = "1.0.2"
+    version = "<version>"
     license = "BSD 2-Clause"
     url = "https://bintray.com/amues/graylog-logger"
     settings = "os", "compiler", "build_type", "arch"
@@ -21,7 +21,7 @@ class GraylogloggerConan(ConanFile):
 
     def source(self):
         self.run("git clone https://github.com/ess-dmsc/graylog-logger.git")
-        self.run("cd graylog-logger && git checkout conan")
+        self.run("cd graylog-logger && git checkout <commit>")
 
     def build(self):
         cmake = CMake(self)
