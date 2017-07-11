@@ -57,6 +57,16 @@ node('boost && centos7') {
             failure_function(e, 'Unit tests failed')
         }
     }
+    dir("code") {
+        try {
+            stage("Package") {
+                sh "PATH=/opt/dm_group/usr/bin:$DM_ROOT/virtualenv/conan/bin:\$PATH \
+                    ./code/make_package -k ./code/conan"
+            }
+        } catch (e) {
+            failure_function(e, 'Packaging failed')
+        }
+    }
 }
 
 node('clang-format') {
