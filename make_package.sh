@@ -71,39 +71,27 @@ fi
 # Packaging
 # =========
 
+if [ -z "$CONAN_PACKAGE_COMMIT" ] ; then
+    CONAN_PACKAGE_COMMIT="$(git rev-parse HEAD)"
+    # Get first seven characters in string.
+    CONAN_PACKAGE_COMMIT_SHORT="$(echo $CONAN_PACKAGE_COMMIT | awk '{print substr($0,0,7)}')"
+fi
+
 if [ -z "$CONAN_PACKAGE_VERSION" ] ; then
     # TODO: get version at runtime.
     VERSION_STR="1.0.2-rc.1"
 
     # If this is not a release, add git information to version string.
     if [ -z "$VERSION_RELEASE" ] ; then
-        VERSION_SUFFIX="-$(git rev-parse --short HEAD)"
-
-        # Check whether there are changes in the repository.
-        if [ -n "$(git status --porcelain)" ] ; then
-            # There are changes.
-            VERSION_SUFFIX="${VERSION_SUFFIX}-dirty"
-        fi
-
-        VERSION_STR="${VERSION_STR}${VERSION_SUFFIX}"
+        VERSION_STR="${VERSION_STR}-${CONAN_PACKAGE_COMMIT_SHORT}"
     fi
 
-    export CONAN_PACKAGE_VERSION="$VERSION_STR"
+    CONAN_PACKAGE_VERSION="$VERSION_STR"
 fi
-
-echo "Package version: $CONAN_PACKAGE_VERSION"
-
-if [ -z "$CONAN_PACKAGE_COMMIT" ] ; then
-    export CONAN_PACKAGE_COMMIT="$(git rev-parse HEAD)"
-fi
-
-echo "Package commit: $CONAN_PACKAGE_COMMIT"
 
 if [ -z "$CONAN_CHANNEL" ] ; then
     export CONAN_CHANNEL="testing"
 fi
-
-echo "Package channel: $CONAN_CHANNEL"
 
 cp -r "$conan_directory" "$destination_folder" || exit 2
 
