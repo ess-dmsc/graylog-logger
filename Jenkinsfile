@@ -59,8 +59,13 @@ node('boost && centos7') {
     }
     try {
         stage("Package") {
+            sh "yes yes | $DM_ROOT/virtualenv/conan/bin/conan remove '*'"
             sh "PATH=/opt/dm_group/usr/bin:$DM_ROOT/virtualenv/conan/bin:\$PATH \
                 ./code/make_package.sh ./code/conan"
+            sh "$DM_ROOT/virtualenv/conan/bin/conan upload \
+                --remote bintray-graylog-logger \
+                --confirm \
+                'graylog-logger/*'"
         }
     } catch (e) {
         failure_function(e, 'Packaging failed')
