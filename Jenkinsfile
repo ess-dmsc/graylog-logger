@@ -61,7 +61,7 @@ node('boost && centos7') {
         try {
             stage("Package") {
                 sh "PATH=/opt/dm_group/usr/bin:$DM_ROOT/virtualenv/conan/bin:\$PATH \
-                    ./code/make_package -k ./code/conan"
+                    ./code/make_package.sh -k ./code/conan"
             }
         } catch (e) {
             failure_function(e, 'Packaging failed')
