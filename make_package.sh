@@ -72,10 +72,14 @@ fi
 # =========
 
 if [ -z "$CONAN_PACKAGE_COMMIT" ] ; then
+    current_dir="$(pwd)"
+    cd "$conan_directory"
     CONAN_PACKAGE_COMMIT="$(git rev-parse HEAD)"
-    # Get first seven characters in string.
-    CONAN_PACKAGE_COMMIT_SHORT="$(echo $CONAN_PACKAGE_COMMIT | awk '{print substr($0,0,7)}')"
+    cd "$current_dir"
 fi
+
+# Get first seven characters in string.
+CONAN_PACKAGE_COMMIT_SHORT="$(echo $CONAN_PACKAGE_COMMIT | awk '{print substr($0,0,7)}')"
 
 if [ -z "$CONAN_PACKAGE_VERSION" ] ; then
     # TODO: get version at runtime.
