@@ -83,7 +83,7 @@ if [ -z "$CONAN_PACKAGE_VERSION" ] ; then
 
     # If this is not a release, add git information to version string.
     if [ -z "$VERSION_RELEASE" ] ; then
-        VERSION_STR="${VERSION_STR}-${CONAN_PACKAGE_COMMIT_SHORT}"
+        VERSION_STR="${VERSION_STR}+${CONAN_PACKAGE_COMMIT_SHORT}"
     fi
 
     CONAN_PACKAGE_VERSION="$VERSION_STR"
