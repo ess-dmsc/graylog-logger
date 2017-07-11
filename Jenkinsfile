@@ -62,12 +62,12 @@ node('boost && centos7') {
     try {
         stage("Package") {
             sh "yes yes | $DM_ROOT/virtualenv/conan/bin/conan remove '*'"
-            sh "http_proxy=http://192.168.1.1.8123 \
-                https_proxy=http://192.168.1.1.8123 \
+            sh "http_proxy=http://192.168.1.1:8123 \
+                https_proxy=http://192.168.1.1:8123 \
                 PATH=/opt/dm_group/usr/bin:$DM_ROOT/virtualenv/conan/bin:\$PATH \
                 ./code/make_package.sh ./code/conan"
-            sh "http_proxy=http://192.168.1.1.8123 \
-                https_proxy=http://192.168.1.1.8123 \
+            sh "http_proxy=http://192.168.1.1:8123 \
+                https_proxy=http://192.168.1.1:8123 \
                 $DM_ROOT/virtualenv/conan/bin/conan upload \
                 --remote bintray-graylog-logger \
                 --confirm \
