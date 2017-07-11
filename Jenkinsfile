@@ -19,8 +19,8 @@ node('boost && centos7') {
         try {
             stage("Configure") {
                 sh "rm -rf *"
-                sh "http_proxy=http://192.168.1.1.8123 \
-                    https_proxy=http://192.168.1.1.8123 \
+                sh "http_proxy=http://192.168.1.1:8123 \
+                    https_proxy=http://192.168.1.1:8123 \
                     PATH=/opt/dm_group/usr/bin:\$PATH \
                     $DM_ROOT/virtualenv/conan/bin/conan install \
                     ../code/conan \
