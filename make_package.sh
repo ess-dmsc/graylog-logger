@@ -2,7 +2,7 @@
 
 usage() {
     echo "USAGE: make_package.sh [OPTIONS] <dir>"
-    echo "  <dir> is a directory containing conanfile.py and test_package."
+    echo "  <dir> is a directory containing conanfile.py and test_package"
     echo ""
     echo "OPTIONS:"
     echo "  -h          Print this message and exit"
@@ -27,7 +27,7 @@ while getopts "d:kh" arg; do
             keep_folder="TRUE"
             ;;
         h)
-            echo "Substitute variables in conanfile and build package"
+            echo "$0: substitute variables in conanfile and build package"
             echo ""
             usage
             exit 0
