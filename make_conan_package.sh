@@ -9,8 +9,8 @@ description_str="\
 DESCRIPTION:
   <dir> must be a directory containing a conanfile.py and a test package. Its
   contents are copied into a destination folder that must not already exist,
-  named conan_packaging by default, and version and commit values are
-  substituted. The package is built and the destination folder is removed
+  named conan_packaging by default, and the strings '<version>' and '<commit>'
+  are substituted. The package is built and the destination folder is removed
   afterwards, unless -k is used. The destination folder name can be changed
   with -d.
 
