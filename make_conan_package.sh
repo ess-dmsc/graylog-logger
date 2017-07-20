@@ -1,5 +1,7 @@
 #!/bin/bash
 
+version_str="1.0.0"
+
 usage_str="\
 USAGE: $0 [OPTIONS] <dir>
   Substitute variables in conanfile and build Conan package
@@ -26,6 +28,7 @@ OPTIONS:
   -h         Print help and exit
   -d <dest>  Destination folder name
   -k         Keep destination package folder
+  -v         Print version and exit
 
 RETURNS:
   0  success
@@ -46,10 +49,14 @@ full_usage() {
         "$options_and_returns_str"
 }
 
+version() {
+    printf "$0 version %s\n" "$version_str"
+}
+
 # Argument and option handling
 # ============================
 
-while getopts "d:kh" arg; do
+while getopts "d:khv" arg; do
     case "${arg}" in
         d)
             dest_folder="${OPTARG}"
@@ -59,6 +66,10 @@ while getopts "d:kh" arg; do
             ;;
         h)
             full_usage
+            exit 0
+            ;;
+        v)
+            version
             exit 0
             ;;
     esac
@@ -129,6 +140,13 @@ cp -r "$conan_dir" "$dest_folder" || exit 2
 sed -i"" -e "s/<version>/$PACKAGE_VERSION/g" "$dest_folder"/conanfile.py
 sed -i"" -e "s/<version>/$PACKAGE_VERSION/g" "$dest_folder"/test_package/conanfile.py
 sed -i"" -e "s/<commit>/$PACKAGE_COMMIT/g" "$dest_folder"/conanfile.py
+
+# Print script and packaging information.
+version
+echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
+echo "PACKAGE_COMMIT=${PACKAGE_COMMIT}"
+echo "conan_dir=${conan_dir}"
+echo "dest_folder=${dest_folder}"
 
 current_dir="$(pwd)"
 cd "$dest_folder" && conan test_package
