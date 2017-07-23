@@ -84,7 +84,7 @@ if(Boost_FOUND)
     # set(needed_features cxx_strong_enums cxx_constexpr)
     # target_compile_features(LogTests PRIVATE ${needed_features})
 
-    target_link_libraries(unit_tests ${GMOCK_MAIN_LIB})
+    target_link_libraries(unit_tests ${GMOCK_MAIN_LIB} -pthread)
     target_link_libraries(unit_tests ${Boost_LIBRARIES})
 
     add_test(TestAll unit_tests)
