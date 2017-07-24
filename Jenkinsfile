@@ -21,6 +21,24 @@ node('docker') {
                 sh 'echo $http_proxy'
                 sh 'echo $https_proxy'
                 sh 'echo $no_proxy'
+                sh 'echo $env.HTTP_PROXY'
+                sh 'echo $env.HTTPS_PROXY'
+                sh 'echo $env.NO_PROXY'
+                sh 'echo $HTTP_PROXY'
+                sh 'echo $HTTPS_PROXY'
+                sh 'echo $NO_PROXY'
+                sh "echo $env.http_proxy"
+                sh "echo $env.https_proxy"
+                sh "echo $env.no_proxy"
+                sh "echo $http_proxy"
+                sh "echo $https_proxy"
+                sh "echo $no_proxy"
+                sh "echo $env.HTTP_PROXY"
+                sh "echo $env.HTTPS_PROXY"
+                sh "echo $env.NO_PROXY"
+                sh "echo $HTTP_PROXY"
+                sh "echo $HTTPS_PROXY"
+                sh "echo $NO_PROXY"
                 checkout scm
             }
         } catch (e) {
