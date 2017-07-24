@@ -9,8 +9,8 @@ node('docker') {
     docker.image('amues/centos-build-node:0.2.1').inside {
         environment {
             http_proxy = "$env.http_proxy"
-            https_proxy = '$env.https_proxy'
-            no_proxy = '$env.no_proxy'
+            https_proxy = "$env.https_proxy"
+            no_proxy = "$env.no_proxy"
         }
 
         try {
