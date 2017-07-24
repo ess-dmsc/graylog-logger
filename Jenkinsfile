@@ -73,12 +73,6 @@ node('docker') {
         //     failure_function(e, 'Packaging failed')
         // }
     }
-
-    try {
-        junit './build/unit_tests/*Tests.xml'
-    } catch (e) {
-        failure_function(e, 'Publishing unit tests failed')
-    }
 }
 
 node('clang-format') {
