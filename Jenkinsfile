@@ -20,6 +20,8 @@ node('docker') {
                 sh "rm -rf build"
                 sh "mkdir build"
                 sh "env -i \
+                    PWD=$PWD \
+                    PATH=$PATH \
                     cd build && \
                     conan install ../conan \
                     -o build_everything=True \
