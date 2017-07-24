@@ -17,6 +17,7 @@ node('docker') {
 
         try {
             stage("Configure") {
+                sh "rm -rf build"
                 sh "mkdir build"
                 sh "cd build && \
                     conan \
