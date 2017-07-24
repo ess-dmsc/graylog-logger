@@ -76,6 +76,8 @@ node('docker') {
 
     try {
         junit './build/*Tests.xml'
+    } catch (e) {
+        failure_function(e, 'Publishing unit tests failed')
     }
 }
 
