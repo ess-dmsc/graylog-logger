@@ -55,7 +55,7 @@ node('docker') {
         }
         try {
             stage("Package") {
-                sh "./make_conan_package.sh ./conan"
+                sh "HTTP_PROXY=$http_proxy HTTPS_PROXY=$https_proxy ./make_conan_package.sh ./conan"
                 // sh "$DM_ROOT/virtualenv/conan/bin/conan upload \
                 //     --remote bintray-graylog-logger \
                 //     --confirm \
