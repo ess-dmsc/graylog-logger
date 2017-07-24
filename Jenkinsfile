@@ -20,7 +20,7 @@ node('docker') {
                 sh "rm -rf build"
                 sh "mkdir build"
                 sh "cd build && \
-                    HTTP_PROXY=$http_proxy HTTPS_PROXY=$https_proxy conan install ../conan \
+                    conan install ../conan \
                     -o build_everything=True \
                     --build missing"
                 sh "cd build && cmake .."
