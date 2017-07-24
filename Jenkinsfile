@@ -7,12 +7,6 @@ def failure_function(exception_obj, failureMessage) {
 
 node('docker') {
     docker.image('amues/centos-build-node:0.2.1').inside {
-        environment {
-            HTTP_PROXY = "$env.http_proxy"
-            HTTPS_PROXY = "$env.https_proxy"
-            NO_PROXY = "$env.no_proxy"
-        }
-
         try {
             stage("Checkout projects") {
                 checkout scm
@@ -25,7 +19,9 @@ node('docker') {
             stage("Configure") {
                 sh "rm -rf build"
                 sh "mkdir build"
-                sh "cd build && \
+                sh "HTTP_PROXY=env.http_proxy \
+                    HTTPS_PROXY=env.https_proxy \
+                    cd build && \
                     conan install ../conan \
                     -o build_everything=True \
                     --build missing"
@@ -61,7 +57,9 @@ node('docker') {
         }
         try {
             stage("Package") {
-                sh "HTTP_PROXY=$http_proxy HTTPS_PROXY=$https_proxy ./make_conan_package.sh ./conan"
+                sh "HTTP_PROXY=env.http_proxy \
+                    HTTPS_PROXY=env.https_proxy \
+                    ./make_conan_package.sh ./conan"
                 // sh "$DM_ROOT/virtualenv/conan/bin/conan upload \
                 //     --remote bintray-graylog-logger \
                 //     --confirm \
