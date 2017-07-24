@@ -37,7 +37,7 @@ node('docker') {
             stage("Configure") {
                 sh "rm -rf build"
                 sh "mkdir build"
-                sh "HTTP_PROXY=$http_proxy HTTPS_PROXY=$https_proxy \
+                sh "env -i \
                     cd build && \
                     conan install ../conan \
                     -o build_everything=True \
