@@ -17,9 +17,9 @@ node('docker') {
 
         try {
             stage("Configure") {
-            sh "rm -rf build"
+                sh "rm -rf build"
                 sh "mkdir build"
-                sh "cd build && \
+                sh "cd build && pwd && ls -la && ls -la .. && \
                     conan install \
                     -o build_everything=True \
                     --build missing \
