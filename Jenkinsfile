@@ -26,9 +26,7 @@ node('docker') {
             stage("Configure") {
                 sh "rm -rf build"
                 sh "mkdir build"
-                sh "http_proxy=http://192.168.1.1:8123 \
-                    https_proxy=http://192.168.1.1:8123 \
-                    cd build && \
+                sh "cd build && \
                     conan install ../conan \
                     -o build_everything=True \
                     --build missing"
