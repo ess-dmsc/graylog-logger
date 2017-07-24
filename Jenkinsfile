@@ -7,62 +7,54 @@ def failure_function(exception_obj, failureMessage) {
 
 node('docker') {
     docker.image('amues/centos-build-node:0.2.0').inside {
-        dir("code") {
-            try {
-                stage("Checkout projects") {
-                    checkout scm
-                }
-            } catch (e) {
-                failure_function(e, 'Checkout failed')
+        try {
+            stage("Checkout projects") {
+                checkout scm
             }
+        } catch (e) {
+            failure_function(e, 'Checkout failed')
         }
-        dir("build") {
-            try {
-                stage("Configure") {
-                    sh "rm -rf *"
-                    sh "PATH=/opt/dm_group/usr/bin:\$PATH \
-                        $DM_ROOT/virtualenv/conan/bin/conan install \
-                        ../code/conan \
-                        -o build_everything=True \
-                        --build missing"
-                    sh "PATH=$DM_ROOT/usr/bin:\$PATH cmake ../code"
-                }
-            } catch (e) {
-                failure_function(e, 'Configure failed')
-            }
 
-            try {
-                stage("Build everything") {
-                    sh "make"
-                }
-            } catch (e) {
-                failure_function(e, 'Failed to compile')
+        try {
+            stage("Configure") {
+                sh "mkdir build"
+                sh "cd build && \
+                    ../conan \
+                    -o build_everything=True \
+                    --build missing"
+                sh "cd build && cmake .."
             }
+        } catch (e) {
+            failure_function(e, 'Configure failed')
+        }
 
-            try {
-                stage("Run cppcheck") {
-                    sh "make cppcheck"
-                }
-            } catch (e) {
-                failure_function(e, 'Cppcheck failed')
+        try {
+            stage("Build everything") {
+                sh "cd build && make"
             }
+        } catch (e) {
+            failure_function(e, 'Failed to compile')
+        }
 
-            try {
-                dir("unit_tests"){
-                    stage("Run unit tests") {
-                        sh "./unit_tests --gtest_output=xml:AllResultsUnitTests.xml"
-                        junit '*Tests.xml'
-                    }
-                }
-            } catch (e) {
-                failure_function(e, 'Unit tests failed')
+        try {
+            stage("Run cppcheck") {
+                sh "cd build && make cppcheck"
             }
+        } catch (e) {
+            failure_function(e, 'Cppcheck failed')
+        }
+
+        try {
+            stage("Run unit tests") {
+                sh "./build/unit_tests/unit_tests --gtest_output=xml:AllResultsUnitTests.xml"
+                junit '*Tests.xml'
+            }
+        } catch (e) {
+            failure_function(e, 'Unit tests failed')
         }
         try {
             stage("Package") {
-                sh "yes yes | $DM_ROOT/virtualenv/conan/bin/conan remove '*'"
-                sh "PATH=/opt/dm_group/usr/bin:$DM_ROOT/virtualenv/conan/bin:\$PATH \
-                    ./code/make_conan_package.sh ./code/conan"
+                sh "./make_conan_package.sh ./conan"
                 // sh "$DM_ROOT/virtualenv/conan/bin/conan upload \
                 //     --remote bintray-graylog-logger \
                 //     --confirm \
