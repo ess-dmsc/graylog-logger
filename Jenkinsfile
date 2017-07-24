@@ -21,6 +21,7 @@ node('docker') {
                 sh "mkdir build"
                 sh "HTTP_PROXY=$env.http_proxy \
                     HTTPS_PROXY=$env.https_proxy \
+                    NO_PROXY=$env.no_proxy \
                     cd build && \
                     conan install ../conan \
                     -o build_everything=True \
@@ -59,6 +60,7 @@ node('docker') {
             stage("Package") {
                 sh "HTTP_PROXY=$env.http_proxy \
                     HTTPS_PROXY=$env.https_proxy \
+                    NO_PROXY=$env.no_proxy \
                     ./make_conan_package.sh ./conan"
                 // sh "$DM_ROOT/virtualenv/conan/bin/conan upload \
                 //     --remote bintray-graylog-logger \
