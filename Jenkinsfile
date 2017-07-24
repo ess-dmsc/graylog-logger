@@ -56,21 +56,26 @@ node('docker') {
         } catch (e) {
             failure_function(e, 'Unit tests failed')
         }
-        try {
-            stage("Package") {
-                sh "rm -rf conan_packaging"
-                sh "HTTP_PROXY=$env.http_proxy \
-                    HTTPS_PROXY=$env.https_proxy \
-                    NO_PROXY=$env.no_proxy \
-                    ./make_conan_package.sh ./conan"
-                // sh "$DM_ROOT/virtualenv/conan/bin/conan upload \
-                //     --remote bintray-graylog-logger \
-                //     --confirm \
-                //     'graylog-logger/*'"
-            }
-        } catch (e) {
-            failure_function(e, 'Packaging failed')
-        }
+
+        // try {
+        //     stage("Package") {
+        //         sh "rm -rf conan_packaging"
+        //         sh "HTTP_PROXY=$env.http_proxy \
+        //             HTTPS_PROXY=$env.https_proxy \
+        //             NO_PROXY=$env.no_proxy \
+        //             ./make_conan_package.sh ./conan"
+        //         sh "$DM_ROOT/virtualenv/conan/bin/conan upload \
+        //             --remote bintray-graylog-logger \
+        //             --confirm \
+        //             'graylog-logger/*'"
+        //     }
+        // } catch (e) {
+        //     failure_function(e, 'Packaging failed')
+        // }
+    }
+
+    try {
+        junit './build/*Tests.xml'
     }
 }
 
