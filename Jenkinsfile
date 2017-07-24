@@ -58,6 +58,7 @@ node('docker') {
         }
         try {
             stage("Package") {
+                sh "rm -rf conan_packaging"
                 sh "HTTP_PROXY=$env.http_proxy \
                     HTTPS_PROXY=$env.https_proxy \
                     NO_PROXY=$env.no_proxy \
