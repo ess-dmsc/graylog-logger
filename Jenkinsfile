@@ -6,7 +6,7 @@ def failure_function(exception_obj, failureMessage) {
 }
 
 node('docker') {
-    docker.image('amues/centos-build-node:0.2.0').inside {
+    docker.image('amues/centos-build-node:0.2.1').inside {
         try {
             stage("Checkout projects") {
                 checkout scm
