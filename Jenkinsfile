@@ -15,7 +15,12 @@ node('docker') {
 
         try {
             stage("Checkout projects") {
-                sh "env"
+                sh 'echo $env.http_proxy'
+                sh 'echo $env.https_proxy'
+                sh 'echo $env.no_proxy'
+                sh 'echo $http_proxy'
+                sh 'echo $https_proxy'
+                sh 'echo $no_proxy'
                 checkout scm
             }
         } catch (e) {
