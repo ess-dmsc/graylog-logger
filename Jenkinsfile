@@ -19,7 +19,7 @@ node('docker') {
             stage("Configure") {
                 sh "mkdir build"
                 sh "cd build && \
-                    ../conan \
+                    conan \
                     -o build_everything=True \
                     --build missing"
                 sh "cd build && cmake .."
