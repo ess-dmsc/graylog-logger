@@ -51,7 +51,7 @@ node('docker') {
         try {
             stage("Run unit tests") {
                 sh "./build/unit_tests/unit_tests --gtest_output=xml:AllResultsUnitTests.xml"
-                junit '*Tests.xml'
+                // junit '*Tests.xml'
             }
         } catch (e) {
             failure_function(e, 'Unit tests failed')
