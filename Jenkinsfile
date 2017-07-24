@@ -7,26 +7,14 @@ def failure_function(exception_obj, failureMessage) {
 
 node('docker') {
     docker.image('amues/centos-build-node:0.2.1').inside {
-        environment {
-            http_proxy = "$env.http_proxy"
-            https_proxy = "$env.https_proxy"
-            no_proxy = "$env.no_proxy"
-        }
+        // environment {
+        //     http_proxy = "$env.http_proxy"
+        //     https_proxy = "$env.https_proxy"
+        //     no_proxy = "$env.no_proxy"
+        // }
 
         try {
             stage("Checkout projects") {
-                sh 'echo $env.http_proxy'
-                sh 'echo $env.https_proxy'
-                sh 'echo $env.no_proxy'
-                sh 'echo $http_proxy'
-                sh 'echo $https_proxy'
-                sh 'echo $no_proxy'
-                sh 'echo $env.HTTP_PROXY'
-                sh 'echo $env.HTTPS_PROXY'
-                sh 'echo $env.NO_PROXY'
-                sh 'echo $HTTP_PROXY'
-                sh 'echo $HTTPS_PROXY'
-                sh 'echo $NO_PROXY'
                 sh "echo $env.http_proxy"
                 sh "echo $env.https_proxy"
                 sh "echo $env.no_proxy"
