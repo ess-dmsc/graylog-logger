@@ -19,13 +19,13 @@ node('docker') {
             stage("Configure") {
                 sh "rm -rf build"
                 sh "mkdir build"
-                sh "HTTP_PROXY=$env.http_proxy \
+                sh "cd build && \
+                    HTTP_PROXY=$env.http_proxy \
                     HTTPS_PROXY=$env.https_proxy \
                     NO_PROXY=$env.no_proxy \
-                    cd build && \
                     conan install ../conan \
-                    -o build_everything=True \
-                    --build missing"
+                        -o build_everything=True \
+                        --build missing"
                 sh "cd build && cmake .."
             }
         } catch (e) {
