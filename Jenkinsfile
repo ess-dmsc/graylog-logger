@@ -7,6 +7,12 @@ def failure_function(exception_obj, failureMessage) {
 
 node('docker') {
     docker.image('amues/centos-build-node:0.2.1').inside {
+        environment {
+            HTTP_PROXY = "$env.http_proxy"
+            HTTPS_PROXY = "$env.https_proxy"
+            NO_PROXY = "$env.no_proxy"
+        }
+
         try {
             stage("Checkout projects") {
                 checkout scm
