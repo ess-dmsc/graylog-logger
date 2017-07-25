@@ -9,7 +9,7 @@ node('docker') {
     docker.image('amues/centos-build-node:0.2.2').inside('--user jenkins') {
         try {
             stage("Checkout projects") {
-                sh 'whoami'
+                sh 'git config --get remote.origin.url'
                 checkout scm
             }
         } catch (e) {
