@@ -6,9 +6,10 @@ def failure_function(exception_obj, failureMessage) {
 }
 
 node('docker') {
-    docker.image('amues/centos-build-node:0.2.1').inside {
+    docker.image('amues/centos-build-node:0.2.2').inside('--user jenkins') {
         try {
             stage("Checkout projects") {
+                sh 'whoami'
                 checkout scm
             }
         } catch (e) {
