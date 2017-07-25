@@ -6,10 +6,11 @@ def failure_function(exception_obj, failureMessage) {
 }
 
 node('docker') {
+    sh 'git config --get remote.origin.url'
+    
     docker.image('amues/centos-build-node:0.2.2').inside('--user jenkins') {
         try {
             stage("Checkout projects") {
-                sh 'git config --get remote.origin.url'
                 checkout scm
             }
         } catch (e) {
