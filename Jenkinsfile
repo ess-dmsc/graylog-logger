@@ -1,11 +1,11 @@
-project = "graylog-logger"
+def project = "graylog-logger"
 
-checkout_script = """
+def checkout_script = """
 git clone https://github.com/ess-dmsc/${project}.git \
     --branch ${env.BRANCH_NAME}
 """
 
-configure_script = """
+def configure_script = """
 mkdir build
 cd build
 conan install ../${project}/conan \
@@ -14,30 +14,30 @@ conan install ../${project}/conan \
 cmake3 ../${project} -DBUILD_EVERYTHING=ON
 """
 
-build_script = "make --directory=./build"
+def build_script = "make --directory=./build"
 
-test_output = "AllResultsUnitTests.xml"
-test_script = "./build/unit_tests/unit_tests --gtest_output=xml:${test_output}"
+def test_output = "AllResultsUnitTests.xml"
+def test_script = "./build/unit_tests/unit_tests --gtest_output=xml:${test_output}"
 
-cppcheck_script = "make --directory=./build cppcheck"
+def cppcheck_script = "make --directory=./build cppcheck"
 
-package_script = """
+def package_script = """
 cd ${project}
 ./make_conan_package.sh ./conan
 """
 
-formatting_script = """
+def formatting_script = """
 cd ${project}
 find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
     -exec clangformatdiff.sh {} +
 """
 
+def centos = docker.image('amues/centos-build-node:0.2.5')
+def fedora = docker.image('amues/fedora-build-node:0.1.2')
+
 def container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
 node('docker') {
-    def centos = docker.image('amues/centos-build-node:0.2.5')
-    def fedora = docker.image('amues/fedora-build-node:0.1.2')
-
     def run_args = "\
         --name ${container_name} \
         --tty \
@@ -83,8 +83,6 @@ node('docker') {
         container = fedora.run(run_args)
 
         sh "docker cp ./srcs ${container_name}:/home/jenkins/${project}"
-        sh "ls -la"
-        sh "ls -la *"
         sh "rm -rf srcs"
 
         stage('Formatting') {
