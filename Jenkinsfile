@@ -54,11 +54,6 @@ node('docker') {
             sh "docker exec ${name} sh -c \"${cmd}\""
         }
 
-        stage('Formatting') {
-            cmd = "make --directory=./build cppcheck"
-            sh "docker exec ${name} sh -c \"${cmd}\""
-        }
-
         stage('Package') {
             cmd = """
                 cd graylog-logger
@@ -68,7 +63,7 @@ node('docker') {
             sh "docker exec ${name} sh -c \"${cmd}\""
         }
 
-        sh "docker cp ${name}:/home/jenkins/graylog-logger ."
+        sh "docker cp ${name}:/home/jenkins/graylog-logger ./graylog-logger-srcs"
     } finally {
         container.stop()
     }
@@ -81,8 +76,8 @@ node('docker') {
             --env https_proxy=${env.https_proxy}"
         )
 
-        sh "docker cp graylog-logger ${name}:/home/jenkins"
-        sh "rm -rf graylog-logger"
+        sh "docker cp ./graylog-logger-srcs ${name}:/home/jenkins"
+        sh "rm -rf graylog-logger-srcs"
 
         stage('Formatting') {
             cmd = """
