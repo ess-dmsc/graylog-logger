@@ -68,10 +68,7 @@ node('docker') {
             sh "docker exec ${name} sh -c \"${cmd}\""
         }
 
-        // Copy and stash sources for steps in other containers.
-        sh "rm -rf graylog-logger"
         sh "docker cp ${name}:/home/jenkins/graylog-logger ."
-        stash includes: 'graylog-logger/', name: "${name}"
     } finally {
         container.stop()
     }
@@ -84,10 +81,8 @@ node('docker') {
             --env https_proxy=${env.https_proxy}"
         )
 
-        // Unstash sources and copy to container.
-        sh "rm -rf graylog-logger"
-        unstash "${name}"
         sh "docker cp graylog-logger ${name}:/home/jenkins"
+        sh "rm -rf graylog-logger"
 
         stage('Formatting') {
             cmd = """
