@@ -10,6 +10,7 @@ node('docker') {
 
     def image = docker.image('amues/centos-build-node:0.2.3')
     def name = "graylog-logger-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+    def checkout_cmd = "git clone https://github.com/ess-dmsc/graylog-logger.git --branch ${env.BRANCH_NAME}"
 
     try {
         container = image.run("\
@@ -19,10 +20,8 @@ node('docker') {
             --env https_proxy=${env.https_proxy}"
         )
 
-        sh "docker cp ./build_scripts ${name}:/home/jenkins/"
-
-        stage('Test cp') {
-            sh "docker exec ${name} env"
+        stage('Checkout') {
+            sh "docker exec ${name} sh \"${checkout_cmd}\""
             sh "docker exec ${name} ls"
         }
     } finally {
