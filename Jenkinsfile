@@ -93,7 +93,7 @@ node('docker') {
             cmd = """
                 cd graylog-logger
                 sh "find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
-                    -exec $DM_ROOT/usr/bin/clangformatdiff.sh {} +"
+                    -exec clangformatdiff.sh {} +"
             """
 
             sh "docker exec ${name} sh -c \"${cmd}\""
