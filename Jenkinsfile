@@ -21,7 +21,7 @@ node('docker') {
         )
 
         stage('Checkout') {
-            sh "docker exec ${name} sh \"${checkout_cmd}\""
+            sh "docker exec ${name} sh -c \"${checkout_cmd}\""
             sh "docker exec ${name} ls"
         }
     } finally {
