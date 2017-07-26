@@ -1,10 +1,3 @@
-// def failure_function(exception_obj, failureMessage) {
-//     def toEmails = [[$class: 'DevelopersRecipientProvider']]
-//     emailext body: '${DEFAULT_CONTENT}\n\"' + failureMessage + '\"\n\nCheck console output at $BUILD_URL to view the results.', recipientProviders: toEmails, subject: '${DEFAULT_SUBJECT}'
-//     // slackSend color: 'danger', message: "graylog-logger: " + failureMessage
-//     throw exception_obj
-// }
-
 node('docker') {
     sh "docker ps --all"
 
@@ -59,6 +52,14 @@ node('docker') {
             sh "docker exec ${name} sh -c \"${cmd}\""
             sh "docker cp ${name}:/home/jenkins/AllResultsUnitTests.xml ."
             junit "AllResultsUnitTests.xml"
+        }
+
+        stage('Cppcheck') {
+            cmd = """
+                make --directory=./build cppcheck
+            """
+
+            sh "docker exec ${name} sh -c \"${cmd}\""
         }
     } finally {
         container.stop()
