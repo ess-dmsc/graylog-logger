@@ -87,8 +87,8 @@ node('docker') {
         stage('Formatting') {
             cmd = """
                 cd graylog-logger
-                sh "find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
-                    -exec clangformatdiff.sh {} +"
+                find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
+                    -exec clangformatdiff.sh {} +
             """
 
             sh "docker exec ${name} sh -c \"${cmd}\""
