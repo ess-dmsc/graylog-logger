@@ -47,8 +47,18 @@ node('docker') {
             cmd = """
                 make --directory=./build
             """
-            
+
             sh "docker exec ${name} sh -c \"${cmd}\""
+        }
+
+        stage('Tests') {
+            cmd = """
+                ./build/unit_tests/unit_tests --gtest_output=xml:AllResultsUnitTests.xml
+            """
+
+            sh "docker exec ${name} sh -c \"${cmd}\""
+            sh "docker cp ${name}:/home/jenkins/AllResultsUnitTests.xml ."
+            junit "AllResultsUnitTests.xml"
         }
     } finally {
         container.stop()
