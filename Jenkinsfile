@@ -64,7 +64,8 @@ node('docker') {
 
         stage('Package') {
             cmd = """
-                ./graylog-logger/make_conan_package.sh
+                cd graylog-logger
+                ./make_conan_package.sh ./conan
             """
 
             sh "docker exec ${name} sh -c \"${cmd}\""
