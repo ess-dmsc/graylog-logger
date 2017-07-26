@@ -3,6 +3,7 @@ node('docker') {
 
     def centos = docker.image('amues/centos-build-node:0.2.5')
     def fedora = docker.image('amues/fedora-build-node:0.1.2')
+
     def name = "graylog-logger-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
     try {
@@ -30,26 +31,18 @@ node('docker') {
                     -o build_everything=True \
                     --build=missing
                 cmake3 ../graylog-logger -DBUILD_EVERYTHING=ON
-                pwd
-                ls
             """
 
             sh "docker exec ${name} sh -c \"${cmd}\""
         }
 
         stage('Build') {
-            cmd = """
-                make --directory=./build
-            """
-
+            cmd = "make --directory=./build"
             sh "docker exec ${name} sh -c \"${cmd}\""
         }
 
         stage('Tests') {
-            cmd = """
-                ./build/unit_tests/unit_tests --gtest_output=xml:AllResultsUnitTests.xml
-            """
-
+            cmd = "./build/unit_tests/unit_tests --gtest_output=xml:AllResultsUnitTests.xml"
             sh "docker exec ${name} sh -c \"${cmd}\""
             sh "rm -f AllResultsUnitTests.xml" // Remove file outside container.
             sh "docker cp ${name}:/home/jenkins/AllResultsUnitTests.xml ."
@@ -57,18 +50,12 @@ node('docker') {
         }
 
         stage('Cppcheck') {
-            cmd = """
-                make --directory=./build cppcheck
-            """
-
+            cmd = "make --directory=./build cppcheck"
             sh "docker exec ${name} sh -c \"${cmd}\""
         }
 
         stage('Formatting') {
-            cmd = """
-                make --directory=./build cppcheck
-            """
-
+            cmd = "make --directory=./build cppcheck"
             sh "docker exec ${name} sh -c \"${cmd}\""
         }
 
@@ -104,9 +91,6 @@ node('docker') {
 
         stage('Formatting') {
             cmd = """
-                pwd
-                ls
-                ls -la *
                 cd graylog-logger
                 sh "find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
                     -exec $DM_ROOT/usr/bin/clangformatdiff.sh {} +"
