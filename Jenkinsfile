@@ -42,6 +42,11 @@ node('docker') {
 
             sh "docker exec ${name} sh -c \"${cmd}\""
         }
+
+        stage('Build') {
+            cmd = "make -f build/Makefile"
+            sh "docker exec ${name} sh -c \"${cmd}\""
+        }
     } finally {
         container.stop()
     }
