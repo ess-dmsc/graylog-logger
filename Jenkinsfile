@@ -19,8 +19,11 @@ node('docker') {
             --env https_proxy=${env.https_proxy}"
         )
 
-        stage('Test exec') {
+        sh "docker cp ./build_scripts ${name}:/home/jenkins/"
+
+        stage('Test cp') {
             sh "docker exec ${name} env"
+            sh "docker exec ${name} ls"
         }
     } finally {
         container.stop()
