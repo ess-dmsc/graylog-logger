@@ -1,35 +1,37 @@
 def project = "graylog-logger"
 
 def checkout_script = """
-git clone https://github.com/ess-dmsc/${project}.git \
-    --branch ${env.BRANCH_NAME}
+    git clone https://github.com/ess-dmsc/${project}.git \
+        --branch ${env.BRANCH_NAME}
 """
 
 def configure_script = """
-mkdir build
-cd build
-conan install ../${project}/conan \
-    -o build_everything=True \
-    --build=missing
-cmake3 ../${project} -DBUILD_EVERYTHING=ON
+    mkdir build
+    cd build
+    conan install ../${project}/conan \
+        -o build_everything=True \
+        --build=missing
+    cmake3 ../${project} -DBUILD_EVERYTHING=ON
 """
 
 def build_script = "make --directory=./build"
 
 def test_output = "AllResultsUnitTests.xml"
-def test_script = "./build/unit_tests/unit_tests --gtest_output=xml:${test_output}"
+def test_script = """
+    ./build/unit_tests/unit_tests --gtest_output=xml:${test_output}
+"""
 
 def cppcheck_script = "make --directory=./build cppcheck"
 
 def package_script = """
-cd ${project}
-./make_conan_package.sh ./conan
+    cd ${project}
+    ./make_conan_package.sh ./conan
 """
 
 def formatting_script = """
-cd ${project}
-find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
-    -exec clangformatdiff.sh {} +
+    cd ${project}
+    find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
+        -exec clangformatdiff.sh {} +
 """
 
 def centos = docker.image('amues/centos-build-node:0.2.5')
