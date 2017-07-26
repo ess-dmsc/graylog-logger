@@ -9,7 +9,7 @@ node('docker') {
     sh "docker ps --all"
 
     def image = docker.image('amues/centos-build-node:0.2.3')
-    def name = "${env.JOB_BASE_NAME}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+    def name = "${env.JOB_NAME}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
     try {
         container = image.run("\
