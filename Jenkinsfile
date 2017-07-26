@@ -9,17 +9,18 @@ node('docker') {
     sh "docker ps --all"
 
     def image = docker.image('amues/centos-build-node:0.2.3')
+    def name = "${env.JOB_BASE_NAME}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
     try {
         container = image.run("\
-            --name ${env.JOB_BASE_NAME}-${env.BRANCH_NAME}-${env.BUILD_NUMBER} \
+            --name ${name} \
             --tty \
             --env http_proxy=${env.http_proxy} \
             --env https_proxy=${env.https_proxy}"
         )
 
         stage('Test exec') {
-            sh "docker exec env"
+            sh "docker exec ${name} env"
         }
     } finally {
         container.stop()
