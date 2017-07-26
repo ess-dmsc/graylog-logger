@@ -1,11 +1,12 @@
 node('docker') {
     sh "docker ps --all"
 
-    def image = docker.image('amues/centos-build-node:0.2.3')
+    def centos = docker.image('amues/centos-build-node:0.2.4')
+    def fedora = docker.image('amues/fedora-build-node:0.1.0')
     def name = "graylog-logger-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
     try {
-        container = image.run("\
+        container = centos.run("\
             --name ${name} \
             --tty \
             --env http_proxy=${env.http_proxy} \
@@ -50,11 +51,20 @@ node('docker') {
             """
 
             sh "docker exec ${name} sh -c \"${cmd}\""
+            sh "rm AllResultsUnitTests.xml" // Remove file outside container.
             sh "docker cp ${name}:/home/jenkins/AllResultsUnitTests.xml ."
             junit "AllResultsUnitTests.xml"
         }
 
         stage('Cppcheck') {
+            cmd = """
+                make --directory=./build cppcheck
+            """
+
+            sh "docker exec ${name} sh -c \"${cmd}\""
+        }
+
+        stage('Formatting') {
             cmd = """
                 make --directory=./build cppcheck
             """
@@ -70,27 +80,43 @@ node('docker') {
 
             sh "docker exec ${name} sh -c \"${cmd}\""
         }
+
+        // Copy and stash sources for steps in other containers.
+        sh "rm -rf graylog-logger"
+        sh "docker cp ${name}:/home/jenkins/graylog-logger ."
+        stash includes: 'graylog-logger/', name: "${name}"
+    } finally {
+        container.stop()
+    }
+
+    try {
+        container = fedora.run("\
+            --name ${name} \
+            --tty \
+            --env http_proxy=${env.http_proxy} \
+            --env https_proxy=${env.https_proxy}"
+        )
+
+        // Unstash sources and copy to container.
+        sh "rm -rf graylog-logger"
+        unstash "${name}"
+        sh "docker cp graylog-logger ${name}:/home/jenkins"
+
+        stage('Formatting') {
+            cmd = """
+                pwd
+                ls
+                ls -la *
+                cd graylog-logger
+                sh "find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
+                    -exec $DM_ROOT/usr/bin/clangformatdiff.sh {} +"
+            """
+
+            sh "docker exec ${name} sh -c \"${cmd}\""
+        }
     } finally {
         container.stop()
     }
 
     sh "docker ps --all"
 }
-
-// node('clang-format') {
-//     dir("code") {
-//         try {
-//             stage("Check formatting") {
-//                 checkout scm
-//                 sh "find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
-//                     -exec $DM_ROOT/usr/bin/clangformatdiff.sh {} +"
-//             }
-//         } catch (e) {
-//             failure_function(e, 'Formatting check failed')
-//         }
-//     }
-//
-//     if (currentBuild.previousBuild.result != "FAILURE") {
-//         slackSend color: 'good', message: 'graylog-logger: Back in the green!'
-//     }
-// }
