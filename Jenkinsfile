@@ -10,7 +10,6 @@ node('docker') {
 
     def image = docker.image('amues/centos-build-node:0.2.3')
     def name = "graylog-logger-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-    def checkout_cmd = "git clone https://github.com/ess-dmsc/graylog-logger.git --branch ${env.BRANCH_NAME}"
 
     try {
         container = image.run("\
@@ -21,8 +20,27 @@ node('docker') {
         )
 
         stage('Checkout') {
-            sh "docker exec ${name} sh -c \"${checkout_cmd}\""
-            sh "docker exec ${name} ls"
+            cmd = """
+                git clone https://github.com/ess-dmsc/graylog-logger.git \
+                    --branch ${env.BRANCH_NAME}
+            """
+
+            sh "docker exec ${name} sh -c \"${cmd}\""
+        }
+
+        stage('Configure') {
+            cmd = """
+                mkdir build
+                cd build
+                conan install ../graylog-logger/conan \
+                    -o build_everything=True \
+                    --build=missing
+                cmake3 ../graylog-logger -DBUILD_EVERYTHING=ON
+                pwd
+                ls
+            """
+
+            sh "docker exec ${name} sh -c \"${cmd}\""
         }
     } finally {
         container.stop()
