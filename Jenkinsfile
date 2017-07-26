@@ -1,8 +1,8 @@
 node('docker') {
     sh "docker ps --all"
 
-    def centos = docker.image('amues/centos-build-node:0.2.4')
-    def fedora = docker.image('amues/fedora-build-node:0.1.1')
+    def centos = docker.image('amues/centos-build-node:0.2.5')
+    def fedora = docker.image('amues/fedora-build-node:0.1.2')
     def name = "graylog-logger-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
     try {
