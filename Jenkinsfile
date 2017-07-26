@@ -51,7 +51,7 @@ node('docker') {
             """
 
             sh "docker exec ${name} sh -c \"${cmd}\""
-            sh "rm AllResultsUnitTests.xml" // Remove file outside container.
+            sh "rm -f AllResultsUnitTests.xml" // Remove file outside container.
             sh "docker cp ${name}:/home/jenkins/AllResultsUnitTests.xml ."
             junit "AllResultsUnitTests.xml"
         }
