@@ -1,96 +1,96 @@
-node('docker') {
-    sh "docker ps --all"
+project = "graylog-logger"
 
+checkout_script = """
+git clone https://github.com/ess-dmsc/${project}.git \
+    --branch ${env.BRANCH_NAME}
+"""
+
+configure_script = """
+mkdir build
+cd build
+conan install ../${project}/conan \
+    -o build_everything=True \
+    --build=missing
+cmake3 ../${project} -DBUILD_EVERYTHING=ON
+"""
+
+build_script = "make --directory=./build"
+
+test_output = "AllResultsUnitTests.xml"
+test_script = "./build/unit_tests/unit_tests --gtest_output=xml:${test_output}"
+
+cppcheck_script = "make --directory=./build cppcheck"
+
+package_script = """
+cd ${project}
+./make_conan_package.sh ./conan
+"""
+
+formatting_script = """
+cd ${project}
+find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
+    -exec clangformatdiff.sh {} +
+"""
+
+def container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+
+node('docker') {
     def centos = docker.image('amues/centos-build-node:0.2.5')
     def fedora = docker.image('amues/fedora-build-node:0.1.2')
 
-    def name = "graylog-logger-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+    def run_args = "\
+        --name ${container_name} \
+        --tty \
+        --env http_proxy=${env.http_proxy} \
+        --env https_proxy=${env.https_proxy}"
 
     try {
-        container = centos.run("\
-            --name ${name} \
-            --tty \
-            --env http_proxy=${env.http_proxy} \
-            --env https_proxy=${env.https_proxy}"
-        )
+        container = centos.run(run_args)
 
         stage('Checkout') {
-            cmd = """
-                git clone https://github.com/ess-dmsc/graylog-logger.git \
-                    --branch ${env.BRANCH_NAME}
-            """
-
-            sh "docker exec ${name} sh -c \"${cmd}\""
+            sh "docker exec ${container_name} sh -c \"${checkout_script}\""
         }
 
         stage('Configure') {
-            cmd = """
-                mkdir build
-                cd build
-                conan install ../graylog-logger/conan \
-                    -o build_everything=True \
-                    --build=missing
-                cmake3 ../graylog-logger -DBUILD_EVERYTHING=ON
-            """
-
-            sh "docker exec ${name} sh -c \"${cmd}\""
+            sh "docker exec ${container_name} sh -c \"${configure_script}\""
         }
 
         stage('Build') {
-            cmd = "make --directory=./build"
-            sh "docker exec ${name} sh -c \"${cmd}\""
+            sh "docker exec ${container_name} sh -c \"${build_script}\""
         }
 
         stage('Tests') {
-            cmd = "./build/unit_tests/unit_tests --gtest_output=xml:AllResultsUnitTests.xml"
-            sh "docker exec ${name} sh -c \"${cmd}\""
-            sh "rm -f AllResultsUnitTests.xml" // Remove file outside container.
-            sh "docker cp ${name}:/home/jenkins/AllResultsUnitTests.xml ."
-            junit "AllResultsUnitTests.xml"
+            sh "docker exec ${container_name} sh -c \"${test_script}\""
+            sh "rm -f ${test_output}" // Remove file outside container.
+            sh "docker cp ${container_name}:/home/jenkins/${test_output} ."
+            junit "${test_output}"
         }
 
         stage('Cppcheck') {
-            cmd = "make --directory=./build cppcheck"
-            sh "docker exec ${name} sh -c \"${cmd}\""
+            sh "docker exec ${container_name} sh -c \"${cppcheck_script}\""
         }
 
         stage('Package') {
-            cmd = """
-                cd graylog-logger
-                ./make_conan_package.sh ./conan
-            """
-
-            sh "docker exec ${name} sh -c \"${cmd}\""
+            sh "docker exec ${container_name} sh -c \"${package_script}\""
         }
 
-        sh "docker cp ${name}:/home/jenkins/graylog-logger ./graylog-logger-srcs"
+        sh "docker cp ${container_name}:/home/jenkins/${project} ./srcs"
     } finally {
         container.stop()
     }
 
     try {
-        container = fedora.run("\
-            --name ${name} \
-            --tty \
-            --env http_proxy=${env.http_proxy} \
-            --env https_proxy=${env.https_proxy}"
-        )
+        container = fedora.run(run_args)
 
-        sh "docker cp ./graylog-logger-srcs ${name}:/home/jenkins"
-        sh "rm -rf graylog-logger-srcs"
+        sh "docker cp ./srcs ${container_name}:/home/jenkins/${project}"
+        sh "ls -la"
+        sh "ls -la *"
+        sh "rm -rf srcs"
 
         stage('Formatting') {
-            cmd = """
-                cd graylog-logger
-                find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
-                    -exec clangformatdiff.sh {} +
-            """
-
-            sh "docker exec ${name} sh -c \"${cmd}\""
+            sh "docker exec ${container_name} sh -c \"${formatting_script}\""
         }
     } finally {
         container.stop()
     }
-
-    sh "docker ps --all"
 }
