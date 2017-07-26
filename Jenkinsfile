@@ -44,7 +44,10 @@ node('docker') {
         }
 
         stage('Build') {
-            cmd = "pwd && ls && make -f build/Makefile"
+            cmd = """
+                make --directory=./build
+            """
+            
             sh "docker exec ${name} sh -c \"${cmd}\""
         }
     } finally {
