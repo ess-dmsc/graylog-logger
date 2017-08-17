@@ -34,8 +34,8 @@ def formatting_script = """
         -exec clangformatdiff.sh {} +
 """
 
-def centos = docker.image('amues/centos-build-node:0.2.5')
-def fedora = docker.image('amues/fedora-build-node:0.1.2')
+def centos = docker.image('essdmscdm/centos-build-node:0.2.5')
+def fedora = docker.image('essdmscdm/fedora-build-node:0.1.2')
 
 def container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
