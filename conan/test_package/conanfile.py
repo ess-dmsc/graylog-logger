@@ -3,7 +3,7 @@ import os
 
 
 channel = os.getenv("CONAN_CHANNEL", "testing")
-username = os.getenv("CONAN_USERNAME", "amues")
+username = os.getenv("CONAN_USER", "ess-dmsc")
 
 
 class GraylogloggerTestConan(ConanFile):
