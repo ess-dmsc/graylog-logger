@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version_str="1.0.0"
+version_str="1.1.0"
 
 usage_str="\
 USAGE: $0 [OPTIONS] <dir>
@@ -19,7 +19,7 @@ DESCRIPTION:
   Version and commit values can be defined by setting the environment variables
   PACKAGE_VERSION and PACKAGE_COMMIT, respectively. If PACKAGE_VERSION is not
   set, 0.1.0-rc.1 is used. If IS_RELEASE is not set, a '+' character and the
-  first seven digits of the commit SHA-1 is appended to PACKAGE_VERSION. If
+  first seven characters of the commit SHA-1 is appended to PACKAGE_VERSION. If
   PACKAGE_COMMIT is not set, the current commit SHA-1 is used.
 "
 
@@ -29,6 +29,11 @@ OPTIONS:
   -d <dest>  Destination folder name
   -k         Keep destination package folder
   -v         Print version and exit
+
+ENVIRONMENT VARIABLES:
+  PACKAGE_VERSION  replaces version
+  PACKAGE_COMMIT   replaces commit
+  IS_RELEASE       set to omit commit number from version string
 
 RETURNS:
   0  success
