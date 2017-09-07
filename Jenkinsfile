@@ -3,6 +3,8 @@ def project = "graylog-logger"
 def centos = docker.image('essdmscdm/centos-build-node:0.3.0')
 def fedora = docker.image('essdmscdm/fedora-build-node:0.1.3')
 
+def base_container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+
 def run_in_container(container_name, script) {
     sh "docker exec ${container_name} sh -c \"${script}\""
 }
@@ -16,14 +18,13 @@ def failure_function(exception_obj, failureMessage) {
 
 node('docker') {
     try {
-        def container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-        def run_args = "\
+        def container_name = "${base_container_name}-centos"
+        container = centos.run("\
             --name ${container_name} \
             --tty \
             --env http_proxy=${env.http_proxy} \
-            --env https_proxy=${env.https_proxy}"
-
-        container = centos.run(run_args)
+            --env https_proxy=${env.https_proxy} \
+        ")
 
         stage('Checkout') {
             run_in_container(container_name, """
@@ -89,18 +90,23 @@ node('docker') {
     }
 
     try {
-        container = fedora.run(run_args)
+        def container_name = "${base_container_name}-fedora"
+        container = fedora.run("\
+            --name ${container_name} \
+            --tty \
+            --env http_proxy=${env.http_proxy} \
+            --env https_proxy=${env.https_proxy} \
+        ")
 
         sh "docker cp ./srcs ${container_name}:/home/jenkins/${project}"
         sh "rm -rf srcs"
 
         stage('Formatting') {
-            def formatting_script = """
+            run_in_container(container_name, """
                 cd ${project}
                 find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
                     -exec clangformatdiff.sh {} +
-            """
-            sh "docker exec ${container_name} sh -c \"${formatting_script}\""
+            """)
         }
     } catch(e) {
         failure_function(e, 'Failed')
