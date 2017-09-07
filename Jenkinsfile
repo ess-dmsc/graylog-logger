@@ -109,3 +109,7 @@ node('docker') {
         container.stop()
     }
 }
+
+if (currentBuild.previousBuild.result != "FAILURE") {
+    slackSend color: 'good', message: 'graylog-logger: Back in the green!'
+}
