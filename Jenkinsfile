@@ -1,7 +1,7 @@
 def project = "graylog-logger"
 
-def centos = docker.image('essdmscdm/centos-build-node:0.3.0')
-def fedora = docker.image('essdmscdm/fedora-build-node:0.1.3')
+def centos = docker.image('essdmscdm/centos-build-node:0.4.0')
+def fedora = docker.image('essdmscdm/fedora-build-node:0.2.0')
 
 def base_container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
@@ -25,6 +25,13 @@ node('docker') {
             --env http_proxy=${env.http_proxy} \
             --env https_proxy=${env.https_proxy} \
         ")
+
+        run_in_container(container_name, """
+            cmake3 --version
+            conan --version
+            cppcheck --version
+            git --version
+        """)
 
         stage('Checkout') {
             run_in_container(container_name, """
@@ -112,6 +119,10 @@ node('docker') {
 
         sh "docker cp ./srcs ${container_name}:/home/jenkins/${project}"
         sh "rm -rf srcs"
+
+        run_in_container(container_name, """
+            clang-format -version
+        """)
 
         stage('Check Formatting') {
             run_in_container(container_name, """
