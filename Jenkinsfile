@@ -73,7 +73,7 @@ node('docker') {
             junit "${test_output}"
         }
 
-        stage('Run Static Analysis') {
+        stage('Analyse') {
             run_in_container(container_name, """
                 make --directory=./build cppcheck
             """)
