@@ -127,6 +127,8 @@ node('docker') {
     }
 }
 
-if (currentBuild.previousBuild.result != "FAILURE") {
-    slackSend color: 'good', message: "${project}-${env.BRANCH_NAME}: Back in the green!"
-}
+try {
+    if (currentBuild.previousBuild.result == "FAILURE") {
+        slackSend color: 'good', message: "${project}-${env.BRANCH_NAME}: Back in the green!"
+    }
+} catch(e) { }
