@@ -65,8 +65,8 @@ node('docker') {
         stage('Archive') {
             def package_script = """
                 mkdir -p archive/graylog-logger
-                cd build && make install DESTDIR=\$(pwd)/../archive/graylog-logger
-                cd archive && tar czvf graylog-logger.tar.gz graylog-logger
+                make -C build install DESTDIR=\$(pwd)/../archive/graylog-logger
+                tar czvf graylog-logger.tar.gz -C archive graylog-logger
             """
             sh "docker exec ${container_name} sh -c \"${package_script}\""
             // Copy archive from container.
