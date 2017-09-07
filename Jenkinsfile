@@ -2,6 +2,13 @@ def project = "graylog-logger"
 def centos = docker.image('essdmscdm/centos-build-node:0.2.5')
 def fedora = docker.image('essdmscdm/fedora-build-node:0.1.2')
 
+def failure_function(exception_obj, failureMessage) {
+    def toEmails = [[$class: 'DevelopersRecipientProvider']]
+    emailext body: '${DEFAULT_CONTENT}\n\"' + failureMessage + '\"\n\nCheck console output at $BUILD_URL to view the results.', recipientProviders: toEmails, subject: '${DEFAULT_SUBJECT}'
+    slackSend color: 'danger', message: "@jonasn graylog-logger: " + failureMessage
+    throw exception_obj
+}
+
 node('docker') {
     def container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
     def run_args = "\
@@ -71,10 +78,13 @@ node('docker') {
             sh "docker exec ${container_name} sh -c \"${package_script}\""
             // Copy archive from container.
             sh "rm -f graylog-logger.tar.gz" // Remove file outside container.
-            sh "docker cp ${container_name}:/home/jenkins/archive/graylog-logger.tar.gz ."
+            sh "docker cp ${container_name}:/home/jenkins/graylog-logger.tar.gz ."
             archiveArtifacts 'graylog-logger.tar.gz'
         }
+
         sh "docker cp ${container_name}:/home/jenkins/${project} ./srcs"
+    } catch(e) {
+        failure_function(e, 'Failed')
     } finally {
         container.stop()
     }
@@ -93,6 +103,8 @@ node('docker') {
             """
             sh "docker exec ${container_name} sh -c \"${formatting_script}\""
         }
+    } catch(e) {
+        failure_function(e, 'Failed')
     } finally {
         container.stop()
     }
