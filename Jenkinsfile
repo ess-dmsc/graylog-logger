@@ -3,13 +3,6 @@ def project = "graylog-logger"
 def centos = docker.image('essdmscdm/centos-build-node:0.2.5')
 def fedora = docker.image('essdmscdm/fedora-build-node:0.1.2')
 
-def container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-def run_args = "\
-    --name ${container_name} \
-    --tty \
-    --env http_proxy=${env.http_proxy} \
-    --env https_proxy=${env.https_proxy}"
-
 def run_in_container(container_name, script) {
     sh "docker exec ${container_name} sh -c \"${script}\""
 }
@@ -23,6 +16,13 @@ def failure_function(exception_obj, failureMessage) {
 
 node('docker') {
     try {
+        def container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+        def run_args = "\
+            --name ${container_name} \
+            --tty \
+            --env http_proxy=${env.http_proxy} \
+            --env https_proxy=${env.https_proxy}"
+
         container = centos.run(run_args)
 
         stage('Checkout') {
