@@ -7,15 +7,7 @@ set(graylog-logger_VERSION_PATCH 2)
 
 if(EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-    conan_basic_setup()
-
-    # Unset variables that cause files to be moved in build tree.
-    unset(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-    unset(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE)
-    unset(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG)
-    unset(CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-    unset(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE)
-    unset(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG)
+    conan_basic_setup(NO_OUTPUT_DIRS)
 endif()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
