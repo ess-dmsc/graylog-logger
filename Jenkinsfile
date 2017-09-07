@@ -33,13 +33,25 @@ node('docker') {
             """)
         }
 
-        stage('Configure') {
+        stage('Get Dependencies') {
+            def conan_remote = "ess-dmsc-local"
             run_in_container(container_name, """
+                export http_proxy=''
+                export https_proxy=''
                 mkdir build
                 cd build
+                conan remote add \
+                    --insert 0 \
+                    ${conan_remote} ${local_conan_server}
                 conan install ../${project}/conan \
                     -o build_everything=True \
                     --build=missing
+            """)
+        }
+
+        stage('Configure') {
+            run_in_container(container_name, """
+                cd build
                 cmake3 ../${project} -DBUILD_EVERYTHING=ON
             """)
         }
@@ -48,7 +60,7 @@ node('docker') {
             run_in_container(container_name, "make --directory=./build")
         }
 
-        stage('Tests') {
+        stage('Test') {
             def test_output = "AllResultsUnitTests.xml"
             run_in_container(container_name, """
                 ./build/unit_tests/unit_tests --gtest_output=xml:${test_output}
@@ -61,7 +73,7 @@ node('docker') {
             junit "${test_output}"
         }
 
-        stage('Cppcheck') {
+        stage('Run Static Analysis') {
             run_in_container(container_name, """
                 make --directory=./build cppcheck
             """)
@@ -101,7 +113,7 @@ node('docker') {
         sh "docker cp ./srcs ${container_name}:/home/jenkins/${project}"
         sh "rm -rf srcs"
 
-        stage('Formatting') {
+        stage('Check Formatting') {
             run_in_container(container_name, """
                 cd ${project}
                 find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
