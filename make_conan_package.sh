@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version_str="1.1.0"
+version_str="2.0.1"
 
 usage_str="\
 USAGE: $0 [OPTIONS] <dir>
@@ -25,10 +25,12 @@ DESCRIPTION:
 
 options_and_returns_str="\
 OPTIONS:
-  -h         Print help and exit
-  -d <dest>  Destination folder name
-  -k         Keep destination package folder
-  -v         Print version and exit
+  -h           Print help and exit
+  -u <user>    Set package user name (default: ess-dmsc)
+  -c <channel> Set package channel name (default: testing)
+  -d <dest>    Destination folder name (default: conan_packaging)
+  -k           Keep destination package folder
+  -v           Print version and exit
 
 ENVIRONMENT VARIABLES:
   PACKAGE_VERSION  replaces version
@@ -61,8 +63,14 @@ version() {
 # Argument and option handling
 # ============================
 
-while getopts "d:khv" arg; do
+while getopts "d:u:c:khv" arg; do
     case "${arg}" in
+        u)
+            pkg_user="${OPTARG}"
+            ;;
+        c)
+            pkg_channel="${OPTARG}"
+            ;;
         d)
             dest_folder="${OPTARG}"
             ;;
@@ -104,6 +112,14 @@ if [ ! -d "$conan_dir" ] ; then
     >&2 echo ""
     usage
     exit 2
+fi
+
+if [ -z "$pkg_user" ] ; then
+    pkg_user="ess-dmsc"
+fi
+
+if [ -z "$pkg_channel" ] ; then
+    pkg_channel="testing"
 fi
 
 if [ -z "$dest_folder" ] ; then
@@ -154,7 +170,7 @@ echo "conan_dir=${conan_dir}"
 echo "dest_folder=${dest_folder}"
 
 current_dir="$(pwd)"
-cd "$dest_folder" && conan test_package
+cd "$dest_folder" && conan create "${pkg_user}/${pkg_channel}"
 result=$?
 if [ $result -ne 0 ] ; then
     >&2 echo "Error: packaging failed with return code $result"
