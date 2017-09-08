@@ -73,8 +73,9 @@ node('docker') {
                 ./build/unit_tests/unit_tests --gtest_output=xml:${test_output}
             """)
 
+            // Remove file outside container.
+            sh "rm -f ${test_output}"
             // Copy results from container.
-            sh "rm -f ${test_output}" // Remove file outside container.
             sh "docker cp ${container_name}:/home/jenkins/${test_output} ."
 
             junit "${test_output}"
@@ -88,16 +89,17 @@ node('docker') {
 
         stage('Archive') {
             run_in_container(container_name, """
-                mkdir -p archive/graylog-logger
-                make -C build install DESTDIR=\$(pwd)/../archive/graylog-logger
-                tar czvf graylog-logger.tar.gz -C archive graylog-logger
+                mkdir -p archive/${project}
+                make -C build install DESTDIR=\$(pwd)/../archive/${project}
+                tar czvf ${project}.tar.gz -C archive ${project}
             """)
 
+            // Remove file outside container.
+            sh "rm -f ${project}.tar.gz"
             // Copy archive from container.
-            sh "rm -f graylog-logger.tar.gz" // Remove file outside container.
-            sh "docker cp ${container_name}:/home/jenkins/graylog-logger.tar.gz ."
+            sh "docker cp ${container_name}:/home/jenkins/${project}.tar.gz ."
 
-            archiveArtifacts 'graylog-logger.tar.gz'
+            archiveArtifacts "${project}.tar.gz"
         }
 
         // Copy sources
