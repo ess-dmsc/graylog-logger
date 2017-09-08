@@ -64,7 +64,9 @@ node('docker') {
         }
 
         stage('Build') {
-            run_in_container(container_name, "make --directory=./build")
+            run_in_container(container_name, """
+                make --directory=./build VERBOSE=1
+            """)
         }
 
         stage('Test') {
