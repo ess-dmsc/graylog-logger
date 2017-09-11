@@ -13,7 +13,7 @@ class GraylogloggerConan(ConanFile):
         "build_everything": [True, False]
     }
     default_options = "build_everything=False"
-    generators = "cmake"
+    generators = "cmake", "virtualrunenv"
 
     def build_requirements(self):
         if self.options.build_everything:
