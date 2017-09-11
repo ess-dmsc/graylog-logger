@@ -1,6 +1,6 @@
 def project = "graylog-logger"
 
-def centos = docker.image('essdmscdm/centos-build-node:0.4.1')
+def centos = docker.image('essdmscdm/centos-build-node:0.5.0')
 def fedora = docker.image('essdmscdm/fedora-build-node:0.2.0')
 
 def base_container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
