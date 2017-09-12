@@ -50,9 +50,7 @@ node('docker') {
                 conan remote add \
                     --insert 0 \
                     ${conan_remote} ${local_conan_server}
-                conan install ../${project}/conan \
-                    -o build_everything=True \
-                    --build=missing
+                conan install ../${project} --build=missing
             """)
         }
 

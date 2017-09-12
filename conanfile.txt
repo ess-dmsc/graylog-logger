@@ -1,0 +1,7 @@
+[requires]
+gtest/1.8.0@conan/stable
+Boost/1.65.1@ess-dmsc/testing
+
+[generators]
+cmake
+virtualrunenv
