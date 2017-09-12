@@ -58,7 +58,7 @@ node('docker') {
             run_in_container(container_name, """
                 cd build
                 cmake3 ../${project} -DBUILD_EVERYTHING=ON
-                make --directory=./build VERBOSE=1
+                make VERBOSE=1
             """)
         }
 
