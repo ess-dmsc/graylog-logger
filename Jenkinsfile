@@ -40,7 +40,7 @@ node('docker') {
             """)
         }
 
-        stage('Get Dependencies') {
+        stage('Get Deps') {
             def conan_remote = "ess-dmsc-local"
             run_in_container(container_name, """
                 export http_proxy=''
@@ -126,7 +126,7 @@ node('docker') {
             clang-format -version
         """)
 
-        stage('Check Formatting') {
+        stage('Check Format') {
             run_in_container(container_name, """
                 cd ${project}
                 find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
