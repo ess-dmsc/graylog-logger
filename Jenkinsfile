@@ -6,7 +6,9 @@ def fedora = docker.image('essdmscdm/fedora-build-node:0.2.0')
 def base_container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
 def run_in_container(container_name, script) {
-    sh "docker exec ${container_name} sh -c \"${script}\""
+    r = sh script: "docker exec ${container_name} sh -c \"${script}\"",
+        returnStdout: true
+    return r
 }
 
 def failure_function(exception_obj, failureMessage) {
@@ -127,6 +129,21 @@ node('docker') {
                 find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
                     -exec clangformatdiff.sh {} +
             """)
+        }
+
+        stage('Trigger Packaging') {
+            pkg_commit = run_in_container(container_name, """
+                cd ${project} && git rev-parse HEAD
+            """)
+
+            build job: 'ess-dmsc/conan-graylog-logger/master',
+                parameters: [
+                    string(name: 'pkg_version', value: "master"),
+                    string(name: 'pkg_commit', value: "${pkg_commit}"),
+                    booleanParam(name: 'is_release', value: false)
+                ],
+                quietPeriod: 0,
+                wait: false
         }
     } catch(e) {
         failure_function(e, 'Failed')
