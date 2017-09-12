@@ -40,7 +40,7 @@ node('docker') {
             """)
         }
 
-        stage('Get Deps') {
+        stage('Get Dependencies') {
             def conan_remote = "ess-dmsc-local"
             run_in_container(container_name, """
                 export http_proxy=''
@@ -54,15 +54,10 @@ node('docker') {
             """)
         }
 
-        stage('Configure') {
+        stage('Build') {
             run_in_container(container_name, """
                 cd build
                 cmake3 ../${project} -DBUILD_EVERYTHING=ON
-            """)
-        }
-
-        stage('Build') {
-            run_in_container(container_name, """
                 make --directory=./build VERBOSE=1
             """)
         }
@@ -126,7 +121,7 @@ node('docker') {
             clang-format -version
         """)
 
-        stage('Check Format') {
+        stage('Check Formatting') {
             run_in_container(container_name, """
                 cd ${project}
                 find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
