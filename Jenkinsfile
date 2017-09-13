@@ -39,7 +39,7 @@ node('docker') {
 
         // Copy sources to container.
         sh "docker cp ${project} ${container_name}:/home/jenkins/${project}"
-        
+
         stage('Get Dependencies') {
             def conan_remote = "ess-dmsc-local"
             sh """docker exec ${container_name} sh -c \"
@@ -100,49 +100,46 @@ node('docker') {
 
             archiveArtifacts "${project}.tar.gz"
         }
-
-        // Copy sources
-        sh "docker cp ${container_name}:/home/jenkins/${project} ./srcs"
     } catch(e) {
         failure_function(e, 'Failed')
     } finally {
         container.stop()
     }
 
-    // try {
-    //     def container_name = "${base_container_name}-fedora"
-    //     container = fedora.run("\
-    //         --name ${container_name} \
-    //         --tty \
-    //         --env http_proxy=${env.http_proxy} \
-    //         --env https_proxy=${env.https_proxy} \
-    //     ")
-    //
-    //     sh "docker cp ./srcs ${container_name}:/home/jenkins/${project}"
-    //     sh "rm -rf srcs"
-    //
-    //     stage('Check Formatting') {
-    //         sh """docker exec ${container_name} sh -c \"
-    //             clang-format -version
-    //             cd ${project}
-    //             find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
-    //                 -exec clangformatdiff.sh {} +
-    //         \""""
-    //     }
-    //
-    //     stage('Trigger Packaging') {
-    //         def get_commit_script = """docker exec ${container_name} sh -c \"
-    //             cd ${project}
-    //             git rev-parse HEAD
-    //         \""""
-    //         pkg_commit = sh script: get_commit_script, returnStdout: true
-    //         echo pkg_commit
-    //     }
-    // } catch(e) {
-    //     failure_function(e, 'Failed')
-    // } finally {
-    //     container.stop()
-    // }
+    try {
+        def container_name = "${base_container_name}-fedora"
+        container = fedora.run("\
+            --name ${container_name} \
+            --tty \
+            --env http_proxy=${env.http_proxy} \
+            --env https_proxy=${env.https_proxy} \
+        ")
+
+        // Copy sources to container.
+        sh "docker cp ${project} ${container_name}:/home/jenkins/${project}"
+
+        stage('Check Formatting') {
+            sh """docker exec ${container_name} sh -c \"
+                clang-format -version
+                cd ${project}
+                find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
+                    -exec clangformatdiff.sh {} +
+            \""""
+        }
+
+        // stage('Trigger Packaging') {
+        //     def get_commit_script = """docker exec ${container_name} sh -c \"
+        //         cd ${project}
+        //         git rev-parse HEAD
+        //     \""""
+        //     pkg_commit = sh script: get_commit_script, returnStdout: true
+        //     echo pkg_commit
+        // }
+    } catch(e) {
+        failure_function(e, 'Failed')
+    } finally {
+        container.stop()
+    }
 }
 
 try {
