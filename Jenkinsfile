@@ -19,8 +19,13 @@ def failure_function(exception_obj, failureMessage) {
 }
 
 node('docker') {
+    // Delete workspace when build is done
+    cleanWs()
+
     dir("${project}") {
         stage('Checkout') {
+            sh 'ls -la'
+            sh 'ls -la ..'
             scm_vars = checkout scm
             echo scm_vars.GIT_COMMIT
         }
@@ -146,8 +151,6 @@ node('docker') {
     // } finally {
     //     container.stop()
     // }
-
-    cleanWs()
 }
 
 try {
