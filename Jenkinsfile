@@ -7,8 +7,12 @@ def base_container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
 def failure_function(exception_obj, failureMessage) {
     def toEmails = [[$class: 'DevelopersRecipientProvider']]
-    emailext body: '${DEFAULT_CONTENT}\n\"' + failureMessage + '\"\n\nCheck console output at $BUILD_URL to view the results.', recipientProviders: toEmails, subject: '${DEFAULT_SUBJECT}'
-    slackSend color: 'danger', message: "@afonso.mukai ${project}-${env.BRANCH_NAME}: " + failureMessage
+    emailext body: '${DEFAULT_CONTENT}\n\"' + failureMessage +'\"\n\nCheck console output at $BUILD_URL to view the results.',
+        recipientProviders: toEmails,
+        subject: '${DEFAULT_SUBJECT}'
+    slackSend color: 'danger',
+        message: "@afonso.mukai ${project}-${env.BRANCH_NAME}: " + failureMessage
+
     throw exception_obj
 }
 
@@ -137,7 +141,10 @@ node('docker') {
 }
 
 try {
-    if (currentBuild.previousBuild.result == "FAILURE") {
-        slackSend color: 'good', message: "${project}-${env.BRANCH_NAME}: Back in the green!"
+    if (currentBuild.number > 1) {
+        if (currentBuild.previousBuild.result == "FAILURE") {
+            slackSend color: 'good',
+                message: "${project}-${env.BRANCH_NAME}: Back in the green!"
+        }
     }
 } catch(e) { }
