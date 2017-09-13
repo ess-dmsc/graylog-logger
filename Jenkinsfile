@@ -47,7 +47,7 @@ node('docker') {
                     --insert 0 \
                     ${conan_remote} ${local_conan_server}
                 conan install ../${project} --build=missing
-            """)
+            """
             sh "docker exec ${container_name} sh -c \"${dependencies_script}\""
         }
 
