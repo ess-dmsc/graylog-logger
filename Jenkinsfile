@@ -22,7 +22,7 @@ node('docker') {
     dir("${project}") {
         stage('Checkout') {
             scm_vars = checkout scm
-            echo scm_vars
+            echo scm_vars.GIT_COMMIT
         }
     }
 
