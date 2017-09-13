@@ -85,7 +85,7 @@ node('docker') {
         stage('Archive') {
             def archive_script = """
                 mkdir -p archive/${project}
-                make -C build install DESTDIR=\$(pwd)/archive/${project}
+                make -C build install DESTDIR=\\\$(pwd)/archive/${project}
                 tar czvf ${project}.tar.gz -C archive ${project}
             """
             sh "docker exec ${container_name} sh -c \"${archive_script}\""
