@@ -29,17 +29,16 @@ node('docker') {
         ")
 
         stage('Checkout') {
-            def checkout_script = """
+            sh """docker exec ${container_name} sh -c \"
                 git --version
                 git clone https://github.com/ess-dmsc/${project}.git \
                     --branch ${env.BRANCH_NAME}
-            """
-            sh "docker exec ${container_name} sh -c \"${checkout_script}\""
+            \""""
         }
 
         stage('Get Dependencies') {
             def conan_remote = "ess-dmsc-local"
-            def dependencies_script = """
+            sh """docker exec ${container_name} sh -c \"
                 export http_proxy=''
                 export https_proxy=''
                 mkdir build
@@ -49,27 +48,24 @@ node('docker') {
                     --insert 0 \
                     ${conan_remote} ${local_conan_server}
                 conan install ../${project} --build=missing
-            """
-            sh "docker exec ${container_name} sh -c \"${dependencies_script}\""
+            \""""
         }
 
         stage('Build') {
-            def build_script = """
+            sh """docker exec ${container_name} sh -c \"
                 cd build
                 cmake --version
                 cmake3 ../${project} -DBUILD_EVERYTHING=ON
                 make --version
                 make VERBOSE=1
-            """
-            sh "docker exec ${container_name} sh -c \"${build_script}\""
+            \""""
         }
 
         stage('Test') {
             def test_output = "AllResultsUnitTests.xml"
-            def test_script = """
+            sh """docker exec ${container_name} sh -c \"
                 ./build/unit_tests/unit_tests --gtest_output=xml:${test_output}
-            """
-            sh "docker exec ${container_name} sh -c \"${test_script}\""
+            \""""
 
             // Remove file outside container.
             sh "rm -f ${test_output}"
@@ -80,20 +76,18 @@ node('docker') {
         }
 
         stage('Analyse') {
-            def analysis_script = """
+            sh """docker exec ${container_name} sh -c \"
                 cppcheck --version
                 make --directory=./build cppcheck
-            """
-            sh "docker exec ${container_name} sh -c \"${analysis_script}\""
+            \""""
         }
 
         stage('Archive') {
-            def archive_script = """
+            sh """docker exec ${container_name} sh -c \"
                 mkdir -p archive/${project}
                 make -C build install DESTDIR=\\\$(pwd)/archive/${project}
                 tar czvf ${project}.tar.gz -C archive ${project}
-            """
-            sh "docker exec ${container_name} sh -c \"${archive_script}\""
+            \""""
 
             // Remove file outside container.
             sh "rm -f ${project}.tar.gz"
@@ -124,29 +118,22 @@ node('docker') {
         sh "rm -rf srcs"
 
         stage('Check Formatting') {
-            def formatting_script = """
+            sh """docker exec ${container_name} sh -c \"
                 clang-format -version
                 cd ${project}
                 find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
                     -exec clangformatdiff.sh {} +
-            """
-            sh "docker exec ${container_name} sh -c \"${formatting_script}\""
+            \""""
         }
 
-        // stage('Trigger Packaging') {
-        //     pkg_commit = run_in_container(container_name, """
-        //         cd ${project} && git rev-parse HEAD
-        //     """)
-        //
-        //     build job: 'ess-dmsc/conan-graylog-logger/master',
-        //         parameters: [
-        //             string(name: 'pkg_version', value: "master"),
-        //             string(name: 'pkg_commit', value: "${pkg_commit}"),
-        //             booleanParam(name: 'is_release', value: false)
-        //         ],
-        //         quietPeriod: 0,
-        //         wait: false
-        // }
+        stage('Trigger Packaging') {
+            def get_commit_script = """docker exec ${container_name} sh -c \"
+                cd ${project}
+                git rev-parse HEAD
+            \""""
+            pkg_commit = sh script: get_commit_script, returnStdout: true
+            echo pkg_commit
+        }
     } catch(e) {
         failure_function(e, 'Failed')
     } finally {
