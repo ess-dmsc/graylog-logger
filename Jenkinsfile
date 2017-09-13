@@ -28,6 +28,8 @@ node('docker') {
             sh 'ls -la ..'
             scm_vars = checkout scm
             echo scm_vars.GIT_COMMIT
+            sh 'ls -la'
+            sh 'ls -la ..'
         }
     }
 
