@@ -30,6 +30,7 @@ node('docker') {
 
         stage('Checkout') {
             def checkout_script = """
+                git --version
                 git clone https://github.com/ess-dmsc/${project}.git \
                     --branch ${env.BRANCH_NAME}
             """
@@ -43,6 +44,7 @@ node('docker') {
                 export https_proxy=''
                 mkdir build
                 cd build
+                conan --version
                 conan remote add \
                     --insert 0 \
                     ${conan_remote} ${local_conan_server}
@@ -54,7 +56,9 @@ node('docker') {
         stage('Build') {
             def build_script = """
                 cd build
+                cmake --version
                 cmake3 ../${project} -DBUILD_EVERYTHING=ON
+                make --version
                 make VERBOSE=1
             """
             sh "docker exec ${container_name} sh -c \"${build_script}\""
@@ -77,6 +81,7 @@ node('docker') {
 
         stage('Analyse') {
             def analysis_script = """
+                cppcheck --version
                 make --directory=./build cppcheck
             """
             sh "docker exec ${container_name} sh -c \"${analysis_script}\""
@@ -106,49 +111,47 @@ node('docker') {
         container.stop()
     }
 
-    // try {
-    //     def container_name = "${base_container_name}-fedora"
-    //     container = fedora.run("\
-    //         --name ${container_name} \
-    //         --tty \
-    //         --env http_proxy=${env.http_proxy} \
-    //         --env https_proxy=${env.https_proxy} \
-    //     ")
-    //
-    //     sh "docker cp ./srcs ${container_name}:/home/jenkins/${project}"
-    //     sh "rm -rf srcs"
-    //
-    //     run_in_container(container_name, """
-    //         clang-format -version
-    //     """)
-    //
-    //     stage('Check Formatting') {
-    //         run_in_container(container_name, """
-    //             cd ${project}
-    //             find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
-    //                 -exec clangformatdiff.sh {} +
-    //         """)
-    //     }
-    //
-    //     stage('Trigger Packaging') {
-    //         pkg_commit = run_in_container(container_name, """
-    //             cd ${project} && git rev-parse HEAD
-    //         """)
-    //
-    //         build job: 'ess-dmsc/conan-graylog-logger/master',
-    //             parameters: [
-    //                 string(name: 'pkg_version', value: "master"),
-    //                 string(name: 'pkg_commit', value: "${pkg_commit}"),
-    //                 booleanParam(name: 'is_release', value: false)
-    //             ],
-    //             quietPeriod: 0,
-    //             wait: false
-    //     }
-    // } catch(e) {
-    //     failure_function(e, 'Failed')
-    // } finally {
-    //     container.stop()
-    // }
+    try {
+        def container_name = "${base_container_name}-fedora"
+        container = fedora.run("\
+            --name ${container_name} \
+            --tty \
+            --env http_proxy=${env.http_proxy} \
+            --env https_proxy=${env.https_proxy} \
+        ")
+
+        sh "docker cp ./srcs ${container_name}:/home/jenkins/${project}"
+        sh "rm -rf srcs"
+
+        stage('Check Formatting') {
+            def formatting_script = """
+                clang-format -version
+                cd ${project}
+                find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
+                    -exec clangformatdiff.sh {} +
+            """
+            sh "docker exec ${container_name} sh -c \"${formatting_script}\""
+        }
+
+        // stage('Trigger Packaging') {
+        //     pkg_commit = run_in_container(container_name, """
+        //         cd ${project} && git rev-parse HEAD
+        //     """)
+        //
+        //     build job: 'ess-dmsc/conan-graylog-logger/master',
+        //         parameters: [
+        //             string(name: 'pkg_version', value: "master"),
+        //             string(name: 'pkg_commit', value: "${pkg_commit}"),
+        //             booleanParam(name: 'is_release', value: false)
+        //         ],
+        //         quietPeriod: 0,
+        //         wait: false
+        // }
+    } catch(e) {
+        failure_function(e, 'Failed')
+    } finally {
+        container.stop()
+    }
 }
 
 try {
