@@ -19,8 +19,11 @@ def failure_function(exception_obj, failureMessage) {
 }
 
 node('docker') {
-    stage('Checkout') {
-        scm_vars = checkout scm, clearWorkspace: true
+    dir("${project}") {
+        stage('Checkout') {
+            scm_vars = checkout scm
+            echo scm_vars
+        }
     }
 
     // try {
@@ -143,6 +146,8 @@ node('docker') {
     // } finally {
     //     container.stop()
     // }
+
+    cleanWs()
 }
 
 try {
@@ -150,5 +155,3 @@ try {
         slackSend color: 'good', message: "${project}-${env.BRANCH_NAME}: Back in the green!"
     }
 } catch(e) { }
-
-cleanWs()
