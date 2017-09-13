@@ -87,7 +87,7 @@ node('docker') {
         stage('Archive') {
             run_in_container(container_name, """
                 mkdir -p archive/${project}
-                make -C build install DESTDIR=\$(pwd)/../archive/${project}
+                make -C build install DESTDIR=\$(pwd)/archive/${project}
                 tar czvf ${project}.tar.gz -C archive ${project}
             """)
 
