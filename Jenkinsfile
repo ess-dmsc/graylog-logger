@@ -28,23 +28,17 @@ node('docker') {
             --env https_proxy=${env.https_proxy} \
         ")
 
-        run_in_container(container_name, """
-            cmake3 --version
-            conan --version
-            cppcheck --version
-            git --version
-        """)
-
         stage('Checkout') {
-            run_in_container(container_name, """
+            def checkout_script = """
                 git clone https://github.com/ess-dmsc/${project}.git \
                     --branch ${env.BRANCH_NAME}
-            """)
+            """
+            sh "docker exec ${container_name} sh -c \"${checkout_script}\""
         }
 
         stage('Get Dependencies') {
             def conan_remote = "ess-dmsc-local"
-            run_in_container(container_name, """
+            def dependencies_script = """
                 export http_proxy=''
                 export https_proxy=''
                 mkdir build
@@ -54,21 +48,24 @@ node('docker') {
                     ${conan_remote} ${local_conan_server}
                 conan install ../${project} --build=missing
             """)
+            sh "docker exec ${container_name} sh -c \"${dependencies_script}\""
         }
 
         stage('Build') {
-            run_in_container(container_name, """
+            def build_script = """
                 cd build
                 cmake3 ../${project} -DBUILD_EVERYTHING=ON
                 make VERBOSE=1
-            """)
+            """
+            sh "docker exec ${container_name} sh -c \"${build_script}\""
         }
 
         stage('Test') {
             def test_output = "AllResultsUnitTests.xml"
-            run_in_container(container_name, """
+            def test_script = """
                 ./build/unit_tests/unit_tests --gtest_output=xml:${test_output}
-            """)
+            """
+            sh "docker exec ${container_name} sh -c \"${test_script}\""
 
             // Remove file outside container.
             sh "rm -f ${test_output}"
@@ -79,17 +76,19 @@ node('docker') {
         }
 
         stage('Analyse') {
-            run_in_container(container_name, """
+            def analysis_script = """
                 make --directory=./build cppcheck
-            """)
+            """
+            sh "docker exec ${container_name} sh -c \"${analysis_script}\""
         }
 
         stage('Archive') {
-            run_in_container(container_name, """
+            def archive_script = """
                 mkdir -p archive/${project}
                 make -C build install DESTDIR=\$(pwd)/archive/${project}
                 tar czvf ${project}.tar.gz -C archive ${project}
-            """)
+            """
+            sh "docker exec ${container_name} sh -c \"${archive_script}\""
 
             // Remove file outside container.
             sh "rm -f ${project}.tar.gz"
@@ -107,49 +106,49 @@ node('docker') {
         container.stop()
     }
 
-    try {
-        def container_name = "${base_container_name}-fedora"
-        container = fedora.run("\
-            --name ${container_name} \
-            --tty \
-            --env http_proxy=${env.http_proxy} \
-            --env https_proxy=${env.https_proxy} \
-        ")
-
-        sh "docker cp ./srcs ${container_name}:/home/jenkins/${project}"
-        sh "rm -rf srcs"
-
-        run_in_container(container_name, """
-            clang-format -version
-        """)
-
-        stage('Check Formatting') {
-            run_in_container(container_name, """
-                cd ${project}
-                find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
-                    -exec clangformatdiff.sh {} +
-            """)
-        }
-
-        stage('Trigger Packaging') {
-            pkg_commit = run_in_container(container_name, """
-                cd ${project} && git rev-parse HEAD
-            """)
-
-            build job: 'ess-dmsc/conan-graylog-logger/master',
-                parameters: [
-                    string(name: 'pkg_version', value: "master"),
-                    string(name: 'pkg_commit', value: "${pkg_commit}"),
-                    booleanParam(name: 'is_release', value: false)
-                ],
-                quietPeriod: 0,
-                wait: false
-        }
-    } catch(e) {
-        failure_function(e, 'Failed')
-    } finally {
-        container.stop()
-    }
+    // try {
+    //     def container_name = "${base_container_name}-fedora"
+    //     container = fedora.run("\
+    //         --name ${container_name} \
+    //         --tty \
+    //         --env http_proxy=${env.http_proxy} \
+    //         --env https_proxy=${env.https_proxy} \
+    //     ")
+    //
+    //     sh "docker cp ./srcs ${container_name}:/home/jenkins/${project}"
+    //     sh "rm -rf srcs"
+    //
+    //     run_in_container(container_name, """
+    //         clang-format -version
+    //     """)
+    //
+    //     stage('Check Formatting') {
+    //         run_in_container(container_name, """
+    //             cd ${project}
+    //             find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
+    //                 -exec clangformatdiff.sh {} +
+    //         """)
+    //     }
+    //
+    //     stage('Trigger Packaging') {
+    //         pkg_commit = run_in_container(container_name, """
+    //             cd ${project} && git rev-parse HEAD
+    //         """)
+    //
+    //         build job: 'ess-dmsc/conan-graylog-logger/master',
+    //             parameters: [
+    //                 string(name: 'pkg_version', value: "master"),
+    //                 string(name: 'pkg_commit', value: "${pkg_commit}"),
+    //                 booleanParam(name: 'is_release', value: false)
+    //             ],
+    //             quietPeriod: 0,
+    //             wait: false
+    //     }
+    // } catch(e) {
+    //     failure_function(e, 'Failed')
+    // } finally {
+    //     container.stop()
+    // }
 }
 
 try {
