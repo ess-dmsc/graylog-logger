@@ -94,7 +94,10 @@ node('docker') {
             // Copy archive from container.
             sh "docker cp ${container_name}:/home/jenkins/${env.JOB_BASE_NAME}.tar.gz ."
 
-            archiveArtifacts "${env.JOB_BASE_NAME}.tar.gz"
+            // Create file with commit information.
+            sh "cat ${scm_vars.GIT_COMMIT} > GIT_COMMIT"
+
+            archiveArtifacts "${env.JOB_BASE_NAME}.tar.gz,GIT_COMMIT"
         }
     } catch(e) {
         failure_function(e, 'Failed')
