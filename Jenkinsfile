@@ -1,7 +1,7 @@
 def centos = docker.image('essdmscdm/centos-build-node:0.7.0')
 def fedora = docker.image('essdmscdm/fedora-build-node:0.3.0')
 
-def base_container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+def base_container_name = "${env.JOB_BASE_NAME}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
 def failure_function(exception_obj, failureMessage) {
     def toEmails = [[$class: 'DevelopersRecipientProvider']]
