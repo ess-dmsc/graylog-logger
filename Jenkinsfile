@@ -1,7 +1,9 @@
+project = "graylog-logger"
+
 def centos = docker.image('essdmscdm/centos-build-node:0.7.0')
 def fedora = docker.image('essdmscdm/fedora-build-node:0.3.0')
 
-def base_container_name = "${env.JOB_BASE_NAME}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+def base_container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
 def failure_function(exception_obj, failureMessage) {
     def toEmails = [[$class: 'DevelopersRecipientProvider']]
@@ -9,7 +11,7 @@ def failure_function(exception_obj, failureMessage) {
         recipientProviders: toEmails,
         subject: '${DEFAULT_SUBJECT}'
     slackSend color: 'danger',
-        message: "@afonso.mukai ${env.JOB_BASE_NAME}-${env.BRANCH_NAME}: " + failureMessage
+        message: "@afonso.mukai ${project}-${env.BRANCH_NAME}: " + failureMessage
 
     throw exception_obj
 }
@@ -18,7 +20,7 @@ node('docker') {
     // Delete workspace when build is done
     cleanWs()
 
-    dir("${env.JOB_BASE_NAME}") {
+    dir("${project}") {
         stage('Checkout') {
             scm_vars = checkout scm
         }
@@ -34,7 +36,7 @@ node('docker') {
         ")
 
         // Copy sources to container.
-        sh "docker cp ${env.JOB_BASE_NAME} ${container_name}:/home/jenkins/${env.JOB_BASE_NAME}"
+        sh "docker cp ${project} ${container_name}:/home/jenkins/${project}"
 
         stage('Get Dependencies') {
             def conan_remote = "ess-dmsc-local"
@@ -47,7 +49,7 @@ node('docker') {
                 conan remote add \
                     --insert 0 \
                     ${conan_remote} ${local_conan_server}
-                conan install ../${env.JOB_BASE_NAME} --build=missing
+                conan install ../${project} --build=missing
             \""""
         }
 
@@ -55,7 +57,7 @@ node('docker') {
             sh """docker exec ${container_name} sh -c \"
                 cd build
                 cmake --version
-                cmake3 ../${env.JOB_BASE_NAME} -DBUILD_EVERYTHING=ON
+                cmake3 ../${project} -DBUILD_EVERYTHING=ON
                 make --version
                 make VERBOSE=1
             \""""
@@ -84,20 +86,20 @@ node('docker') {
 
         stage('Archive') {
             sh """docker exec ${container_name} sh -c \"
-                mkdir -p archive/${env.JOB_BASE_NAME}
-                make -C build install DESTDIR=\\\$(pwd)/archive/${env.JOB_BASE_NAME}
-                tar czvf ${env.JOB_BASE_NAME}.tar.gz -C archive ${env.JOB_BASE_NAME}
+                mkdir -p archive/${project}
+                make -C build install DESTDIR=\\\$(pwd)/archive/${project}
+                tar czvf ${project}.tar.gz -C archive ${project}
             \""""
 
             // Remove file outside container.
-            sh "rm -f ${env.JOB_BASE_NAME}.tar.gz"
+            sh "rm -f ${project}.tar.gz"
             // Copy archive from container.
-            sh "docker cp ${container_name}:/home/jenkins/${env.JOB_BASE_NAME}.tar.gz ."
+            sh "docker cp ${container_name}:/home/jenkins/${project}.tar.gz ."
 
             // Create file with commit information.
             sh "echo ${scm_vars.GIT_COMMIT} > GIT_COMMIT"
 
-            archiveArtifacts "${env.JOB_BASE_NAME}.tar.gz,GIT_COMMIT"
+            archiveArtifacts "${project}.tar.gz,GIT_COMMIT"
         }
     } catch(e) {
         failure_function(e, 'Failed')
@@ -115,12 +117,12 @@ node('docker') {
         ")
 
         // Copy sources to container.
-        sh "docker cp ${env.JOB_BASE_NAME} ${container_name}:/home/jenkins/${env.JOB_BASE_NAME}"
+        sh "docker cp ${project} ${container_name}:/home/jenkins/${project}"
 
         stage('Check Formatting') {
             sh """docker exec ${container_name} sh -c \"
                 clang-format -version
-                cd ${env.JOB_BASE_NAME}
+                cd ${project}
                 find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
                     -exec clangformatdiff.sh {} +
             \""""
@@ -128,7 +130,7 @@ node('docker') {
 
         // stage('Trigger Packaging') {
         //     def get_commit_script = """docker exec ${container_name} sh -c \"
-        //         cd ${env.JOB_BASE_NAME}
+        //         cd ${project}
         //         git rev-parse HEAD
         //     \""""
         //     pkg_commit = sh script: get_commit_script, returnStdout: true
@@ -145,7 +147,7 @@ try {
     if (currentBuild.number > 1) {
         if (currentBuild.previousBuild.result == "FAILURE") {
             slackSend color: 'good',
-                message: "${env.JOB_BASE_NAME}-${env.BRANCH_NAME}: Back in the green!"
+                message: "${project}-${env.BRANCH_NAME}: Back in the green!"
         }
     }
 } catch(e) { }
