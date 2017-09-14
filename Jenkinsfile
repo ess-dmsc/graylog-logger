@@ -127,19 +127,15 @@ node('docker') {
                     -exec clangformatdiff.sh {} +
             \""""
         }
-
-        // stage('Trigger Packaging') {
-        //     def get_commit_script = """docker exec ${container_name} sh -c \"
-        //         cd ${project}
-        //         git rev-parse HEAD
-        //     \""""
-        //     pkg_commit = sh script: get_commit_script, returnStdout: true
-        //     echo pkg_commit
-        // }
     } catch(e) {
         failure_function(e, 'Failed')
     } finally {
         container.stop()
+    }
+
+    stage('Trigger Packaging') {
+        build job: "ess-dmsc/conan-graylog-logger/${env.BRANCH_NAME}",
+            wait: false
     }
 }
 
