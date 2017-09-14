@@ -1,5 +1,3 @@
-def project = "graylog-logger"
-
 def centos = docker.image('essdmscdm/centos-build-node:0.7.0')
 def fedora = docker.image('essdmscdm/fedora-build-node:0.3.0')
 
@@ -11,7 +9,7 @@ def failure_function(exception_obj, failureMessage) {
         recipientProviders: toEmails,
         subject: '${DEFAULT_SUBJECT}'
     slackSend color: 'danger',
-        message: "@afonso.mukai ${project}-${env.BRANCH_NAME}: " + failureMessage
+        message: "@afonso.mukai ${env.JOB_BASE_NAME}-${env.BRANCH_NAME}: " + failureMessage
 
     throw exception_obj
 }
@@ -20,7 +18,7 @@ node('docker') {
     // Delete workspace when build is done
     cleanWs()
 
-    dir("${project}") {
+    dir("${env.JOB_BASE_NAME}") {
         stage('Checkout') {
             scm_vars = checkout scm
         }
@@ -36,7 +34,7 @@ node('docker') {
         ")
 
         // Copy sources to container.
-        sh "docker cp ${project} ${container_name}:/home/jenkins/${project}"
+        sh "docker cp ${env.JOB_BASE_NAME} ${container_name}:/home/jenkins/${env.JOB_BASE_NAME}"
 
         stage('Get Dependencies') {
             def conan_remote = "ess-dmsc-local"
@@ -49,7 +47,7 @@ node('docker') {
                 conan remote add \
                     --insert 0 \
                     ${conan_remote} ${local_conan_server}
-                conan install ../${project} --build=missing
+                conan install ../${env.JOB_BASE_NAME} --build=missing
             \""""
         }
 
@@ -57,7 +55,7 @@ node('docker') {
             sh """docker exec ${container_name} sh -c \"
                 cd build
                 cmake --version
-                cmake3 ../${project} -DBUILD_EVERYTHING=ON
+                cmake3 ../${env.JOB_BASE_NAME} -DBUILD_EVERYTHING=ON
                 make --version
                 make VERBOSE=1
             \""""
@@ -86,17 +84,17 @@ node('docker') {
 
         stage('Archive') {
             sh """docker exec ${container_name} sh -c \"
-                mkdir -p archive/${project}
-                make -C build install DESTDIR=\\\$(pwd)/archive/${project}
-                tar czvf ${project}.tar.gz -C archive ${project}
+                mkdir -p archive/${env.JOB_BASE_NAME}
+                make -C build install DESTDIR=\\\$(pwd)/archive/${env.JOB_BASE_NAME}
+                tar czvf ${env.JOB_BASE_NAME}.tar.gz -C archive ${env.JOB_BASE_NAME}
             \""""
 
             // Remove file outside container.
-            sh "rm -f ${project}.tar.gz"
+            sh "rm -f ${env.JOB_BASE_NAME}.tar.gz"
             // Copy archive from container.
-            sh "docker cp ${container_name}:/home/jenkins/${project}.tar.gz ."
+            sh "docker cp ${container_name}:/home/jenkins/${env.JOB_BASE_NAME}.tar.gz ."
 
-            archiveArtifacts "${project}.tar.gz"
+            archiveArtifacts "${env.JOB_BASE_NAME}.tar.gz"
         }
     } catch(e) {
         failure_function(e, 'Failed')
@@ -114,12 +112,12 @@ node('docker') {
         ")
 
         // Copy sources to container.
-        sh "docker cp ${project} ${container_name}:/home/jenkins/${project}"
+        sh "docker cp ${env.JOB_BASE_NAME} ${container_name}:/home/jenkins/${env.JOB_BASE_NAME}"
 
         stage('Check Formatting') {
             sh """docker exec ${container_name} sh -c \"
                 clang-format -version
-                cd ${project}
+                cd ${env.JOB_BASE_NAME}
                 find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
                     -exec clangformatdiff.sh {} +
             \""""
@@ -127,7 +125,7 @@ node('docker') {
 
         // stage('Trigger Packaging') {
         //     def get_commit_script = """docker exec ${container_name} sh -c \"
-        //         cd ${project}
+        //         cd ${env.JOB_BASE_NAME}
         //         git rev-parse HEAD
         //     \""""
         //     pkg_commit = sh script: get_commit_script, returnStdout: true
@@ -144,7 +142,7 @@ try {
     if (currentBuild.number > 1) {
         if (currentBuild.previousBuild.result == "FAILURE") {
             slackSend color: 'good',
-                message: "${project}-${env.BRANCH_NAME}: Back in the green!"
+                message: "${env.JOB_BASE_NAME}-${env.BRANCH_NAME}: Back in the green!"
         }
     }
 } catch(e) { }
