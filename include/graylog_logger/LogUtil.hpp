@@ -57,7 +57,7 @@ struct LogMessage {
   template <typename valueType>
   void AddField(std::string key, const valueType &val) {
     int fieldLoc = -1;
-    for (int i = 0; i < additionalFields.size(); i++) {
+    for (size_t i = 0; i < additionalFields.size(); i++) {
       if (additionalFields[i].first == key) {
         fieldLoc = i;
         break;
