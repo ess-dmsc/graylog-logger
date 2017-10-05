@@ -50,14 +50,6 @@ GraylogConnection::~GraylogConnection() {
 }
 
 GraylogConnection::ConStatus GraylogConnection::GetConnectionStatus() {
-  GraylogConnection::ConStatus tempState = GraylogConnection::ConStatus::NONE;
-  while (not stateQueue.empty()) {
-    stateQueue.try_pop(tempState);
-  }
-  if (GraylogConnection::ConStatus::NONE != tempState) {
-    std::lock_guard<std::mutex> lock(stateMutex);
-    retConState = tempState;
-  }
   return retConState;
 }
 
@@ -383,11 +375,5 @@ void GraylogConnection::ThreadFunction() {
 }
 
 void GraylogConnection::SetState(GraylogConnection::ConStatus newState) {
-  //    static std::vector<std::string> stateToStr = {"NONE", "ADDR_LOOKUP",
-  //    "ADDR_RETRY_WAIT", "CONNECT", "CONNECT_WAIT", "CONNECT_RETRY_WAIT",
-  //    "SEND_LOOP", "NEW_MESSAGE"};
-  //    std::cout << "Switched state to: " << stateToStr.at(int(newState)) <<
-  //    std::endl;
-  stateMachine = newState;
-  stateQueue.push(newState);
+  retConState = newState;
 }

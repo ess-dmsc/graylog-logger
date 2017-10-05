@@ -81,9 +81,7 @@ protected:
   const int sendOpt = 0;
 #endif
 private:
-  mutable std::mutex stateMutex;
-  ConStatus retConState;
-  ConcurrentQueue<ConStatus> stateQueue;
+  std::atomic<ConStatus> retConState;
 #ifdef _WIN32
   WSADATA wsaData;
 #endif
