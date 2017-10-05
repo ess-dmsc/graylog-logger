@@ -375,5 +375,6 @@ void GraylogConnection::ThreadFunction() {
 }
 
 void GraylogConnection::SetState(GraylogConnection::ConStatus newState) {
+  stateMachine = newState;
   retConState = newState;
 }
