@@ -82,6 +82,12 @@ The items in the following list is in no particular order. Suggestions and/or pa
 
 ## Changes
 
+### Version 1.0.3
+* Fixed serious excessive CPU usage bug and related memory leak in the Graylog server conenction code.
+* Added support for Conan (Afonso).
+* Re-did formating of the code (Afonso).
+* Added automatic checking of code in Jenkinsfile (Afonso).
+
 ### Version 1.0.2
 * Fixed bug related to the order in which static objects are deallocated on some systems. Note to self: premature optimisations are the root of all evil.
 
