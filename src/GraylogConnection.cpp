@@ -130,10 +130,6 @@ void GraylogConnection::ConnectToServer() {
     // std::cout << "GL: Failed all connections." << std::endl;
     connectionTries++;
     SetState(ConStatus::CONNECT_RETRY_WAIT);
-    if (5 < connectionTries) {
-      SetState(ConStatus::ADDR_RETRY_WAIT);
-      connectionTries = 0;
-    }
   }
   endWait = time(NULL) + retryDelay;
 }
@@ -345,6 +341,11 @@ void GraylogConnection::ThreadFunction() {
         close(socketFd);
       }
       break;
+    }
+    if (5 < connectionTries) {
+      SetState(ConStatus::ADDR_RETRY_WAIT);
+      connectionTries = 0;
+      endWait = time(NULL) + retryDelay;
     }
     switch (stateMachine) {
     case ConStatus::ADDR_LOOKUP:
