@@ -152,7 +152,8 @@ void GraylogConnection::ConnectWait() {
   fd_set writefds;
   FD_ZERO(&writefds);
   FD_SET(socketFd, &writefds);
-  int changes = select(socketFd + 1, NULL, &writefds, &exceptfds, &selectTimeout);
+  int changes =
+      select(socketFd + 1, NULL, &writefds, &exceptfds, &selectTimeout);
   // std::cout << "GL: select changes: " << changes << std::endl;
   if (1 == changes) {
     if (FD_ISSET(socketFd, &exceptfds)) {
