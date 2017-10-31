@@ -7,7 +7,7 @@ set(graylog-logger_VERSION_PATCH 2)
 
 if(EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-    conan_basic_setup(NO_OUTPUT_DIRS)
+    conan_basic_setup(SKIP_RPATH NO_OUTPUT_DIRS)
 endif()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)

@@ -1,6 +1,10 @@
 [requires]
-gtest/1.8.0@conan/stable
-Boost/1.65.1@ess-dmsc/testing
+gtest/3121b20@ess-dmsc/testing
+Boost/1.65.1-dm1@ess-dmsc/stable
+
+[options]
+gtest:shared=True
+Boost:shared=True
 
 [generators]
 cmake
