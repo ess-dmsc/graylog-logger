@@ -3,7 +3,7 @@ project("graylog-logger")
 
 set(graylog-logger_VERSION_MAJOR 1)
 set(graylog-logger_VERSION_MINOR 0)
-set(graylog-logger_VERSION_PATCH 2)
+set(graylog-logger_VERSION_PATCH 4)
 
 if(EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
