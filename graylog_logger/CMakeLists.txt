@@ -43,6 +43,7 @@ add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(graylog_logger_static STATIC ${Graylog_SRC} ${Graylog_INC})
 target_link_libraries(graylog_logger ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(graylog_logger_static ${CMAKE_THREAD_LIBS_INIT})
+set_property(TARGET graylog_logger_static PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 add_cppcheck_target(
     graylog_logger
