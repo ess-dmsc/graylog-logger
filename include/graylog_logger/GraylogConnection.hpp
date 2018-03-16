@@ -51,11 +51,11 @@ protected:
   void SendMessageLoop();
   void CheckConnectionStatus();
   void SetState(ConStatus newState);
-  
+
   const time_t retryDelay = 10; // In seconds
   time_t endWait;
   int connectionTries{0};
-  
+
   ConStatus stateMachine{ConStatus::ADDR_LOOKUP};
 
   std::atomic_bool closeThread{false};
@@ -68,10 +68,12 @@ protected:
   std::string port;
 
   std::thread connectionThread;
-  int socketFd{-1};   // Socket id (file descriptor)
+  int socketFd{-1};  // Socket id (file descriptor)
   addrinfo hints{0}; // Connection hints
   addrinfo *conAddresses{nullptr};
-  struct sockaddr_in serverConInfo{0}; //
+  struct sockaddr_in serverConInfo {
+    0
+  }; //
   ConcurrentQueue<std::string> logMessages;
 #ifdef MSG_NOSIGNAL
   const int sendOpt = MSG_NOSIGNAL;

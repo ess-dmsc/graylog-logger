@@ -19,8 +19,8 @@ public:
   virtual void AddMessage(const LogMessage &msg) override;
   virtual bool MessagesQueued() override;
   virtual size_t QueueSize() override;
-  using GraylogConnection::GetConnectionStatus;
   using GraylogConnection::ConStatus;
+  using GraylogConnection::GetConnectionStatus;
 
 protected:
   std::string LogMsgToJSON(const LogMessage &msg);

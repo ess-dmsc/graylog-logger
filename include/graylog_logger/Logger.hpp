@@ -16,11 +16,11 @@ public:
   Logger(const Logger &) = delete;
   Logger &operator=(const Logger &) = delete;
   virtual void AddLogHandler(const LogHandler_P &handler) override;
+  using LoggingBase::AddField;
+  using LoggingBase::GetHandlers;
   using LoggingBase::Log;
   using LoggingBase::RemoveAllHandlers;
-  using LoggingBase::GetHandlers;
   using LoggingBase::SetMinSeverity;
-  using LoggingBase::AddField;
 
 private:
   Logger();

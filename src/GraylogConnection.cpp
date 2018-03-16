@@ -33,7 +33,9 @@
 #endif
 
 GraylogConnection::GraylogConnection(const std::string &host, int port)
-    : endWait(time(nullptr) + retryDelay), host(host), port(std::to_string(port)), retConState(GraylogConnection::ConStatus::NONE) {
+    : endWait(time(nullptr) + retryDelay), host(host),
+      port(std::to_string(port)),
+      retConState(GraylogConnection::ConStatus::NONE) {
 #ifdef _WIN32
   WSAStartup(MAKEWORD(2, 2), &wsaData);
 #endif
@@ -61,7 +63,7 @@ void GraylogConnection::EndThread() {
 }
 
 void GraylogConnection::MakeConnectionHints() {
-  std::memset(reinterpret_cast<void*>(&hints), 0, sizeof(hints));
+  std::memset(reinterpret_cast<void *>(&hints), 0, sizeof(hints));
   // hints.ai_family = AF_UNSPEC; //Accept both IPv4 and IPv6
   hints.ai_family = AF_INET;       // Accept only IPv4
   hints.ai_socktype = SOCK_STREAM; // Use TCP
@@ -96,7 +98,7 @@ void GraylogConnection::ConnectToServer() {
     int value = 1;
     setsockopt(socketFd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
 #endif
-// setsockopt(socketFd, SOL_SOCKET, SO_SNDTIMEO, const void *, socklen_t);
+    // setsockopt(socketFd, SOL_SOCKET, SO_SNDTIMEO, const void *, socklen_t);
 
 #ifdef _WIN32
     u_long iMode = 1;

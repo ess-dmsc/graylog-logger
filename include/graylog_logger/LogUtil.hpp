@@ -10,9 +10,9 @@
 
 #include "graylog_logger/ConcurrentQueue.hpp"
 #include <chrono>
+#include <functional>
 #include <memory>
 #include <string>
-#include <functional>
 
 typedef std::chrono::time_point<std::chrono::system_clock> system_time;
 
@@ -79,13 +79,13 @@ public:
   virtual void AddMessage(const LogMessage &msg);
   virtual bool MessagesQueued();
   virtual size_t QueueSize();
-  void
-  SetMessageStringCreatorFunction(std::function<std::string(const LogMessage&)> ParserFunction);
+  void SetMessageStringCreatorFunction(
+      std::function<std::string(const LogMessage &)> ParserFunction);
 
 protected:
   size_t queueLength;
   ConcurrentQueue<LogMessage> logMessages;
-  std::function<std::string(const LogMessage&)> MessageParser;
+  std::function<std::string(const LogMessage &)> MessageParser;
   std::string MsgStringCreator(const LogMessage &msg);
 };
 

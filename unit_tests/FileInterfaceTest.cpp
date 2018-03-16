@@ -16,15 +16,17 @@ const std::string usedFileName("testFileName.log");
 
 const std::string fileTestString("Some test string");
 
-std::string FileTestStringCreator(const LogMessage &msg) { return fileTestString; }
+std::string FileTestStringCreator(const LogMessage &msg) {
+  return fileTestString;
+}
 
 class FileInterfaceStandIn : public FileInterface {
 public:
   FileInterfaceStandIn(const std::string &fileName) : FileInterface(fileName){};
   ~FileInterfaceStandIn(){};
   using FileInterface::fName;
-  using FileInterface::logMessages;
   using FileInterface::fileThread;
+  using FileInterface::logMessages;
 };
 
 class FileInterfaceTest : public ::testing::Test {

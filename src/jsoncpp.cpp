@@ -192,7 +192,7 @@ static inline void fixNumericLocaleInput(char *begin, char *end) {
   }
 }
 
-} // namespace Json {
+} // namespace Json
 
 #endif // LIB_JSONCPP_JSON_TOOL_H_INCLUDED
 
@@ -4157,7 +4157,7 @@ JSONCPP_STRING valueToString(double value, bool useSpecialFloats,
   fixNumericLocale(buffer, buffer + len);
   return buffer;
 }
-}
+} // namespace
 
 JSONCPP_STRING valueToString(double value) {
   return valueToString(value, false, 17);

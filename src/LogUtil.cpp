@@ -15,7 +15,8 @@
 BaseLogHandler::BaseLogHandler(const size_t maxQueueLength)
     : queueLength(maxQueueLength), MessageParser(nullptr) {}
 
-void BaseLogHandler::SetMessageStringCreatorFunction(std::function<std::string(const LogMessage&)> ParserFunction) {
+void BaseLogHandler::SetMessageStringCreatorFunction(
+    std::function<std::string(const LogMessage &)> ParserFunction) {
   BaseLogHandler::MessageParser = std::move(ParserFunction);
 }
 
@@ -40,6 +41,6 @@ std::string BaseLogHandler::MsgStringCreator(const LogMessage &msg) {
                                           "ERROR", "WARNING", "Notice", "Info",
                                           "Debug"}};
   return std::string(timeBuffer, bytes) + std::string(" (") + msg.host +
-         std::string(") ") + sevToStr.at(int(msg.severity)) + std::string(": ") +
-         msg.message;
+         std::string(") ") + sevToStr.at(int(msg.severity)) +
+         std::string(": ") + msg.message;
 }

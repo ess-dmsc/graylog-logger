@@ -15,6 +15,6 @@ public:
   BaseLogHandlerStandIn() : BaseLogHandler(){};
   virtual void AddMessage(const LogMessage &msg) { cMsg = msg; };
   LogMessage cMsg;
-  using BaseLogHandler::MsgStringCreator;
   using BaseLogHandler::MessageParser;
+  using BaseLogHandler::MsgStringCreator;
 };
