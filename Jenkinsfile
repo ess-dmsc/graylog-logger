@@ -118,12 +118,15 @@ node('docker') {
         sh "docker cp ${project} ${container_name}:/home/jenkins/${project}"
 
         stage('Check Formatting') {
-            sh """docker exec ${container_name} sh -c \"
+            formattingResult = sh script: """docker exec ${container_name} sh -c \"
                 clang-format -version
                 cd ${project}
                 find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
                     -exec clangformatdiff.sh {} +
-            \""""
+            \"""", returnStatus: true
+            if (formattingResult != 0) {
+              currentBuild.result = 'UNSTABLE'
+            }
         }
     } catch(e) {
         failure_function(e, 'Failed')
