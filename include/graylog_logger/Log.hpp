@@ -15,13 +15,13 @@ namespace Log {
 void Msg(const Severity sev, const std::string &message);
 void Msg(const int sev, const std::string &message);
 void Msg(const Severity sev, const std::string &message,
-         std::pair<std::string, AdditionalField> extraField);
+         const std::pair<std::string, AdditionalField> &extraField);
 void Msg(const int sev, const std::string &message,
-         std::pair<std::string, AdditionalField> extraField);
+         const std::pair<std::string, AdditionalField> &extraField);
 void Msg(const Severity sev, const std::string &message,
-         std::vector<std::pair<std::string, AdditionalField>> extraFields);
+         const std::vector<std::pair<std::string, AdditionalField>> &extraFields);
 void Msg(const int sev, const std::string &message,
-         std::vector<std::pair<std::string, AdditionalField>> extraFields);
+         const std::vector<std::pair<std::string, AdditionalField>> &extraFields);
 void AddField(const std::string &key, const AdditionalField &value);
 void SetMinimumSeverity(const Severity sev);
 void AddLogHandler(const LogHandler_P &handler);
@@ -34,4 +34,4 @@ AddLogHandler(T *ptr) {
 void AddLogHandler(const BaseLogHandler *handler);
 void RemoveAllHandlers();
 std::vector<LogHandler_P> GetHandlers();
-}
+} //namespace Log

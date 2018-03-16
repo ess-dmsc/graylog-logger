@@ -17,12 +17,10 @@ Logger &Logger::Inst() {
   return inst;
 }
 
-Logger::Logger() : LoggingBase() {
+Logger::Logger() {
   LogHandler_P ptr1(new ConsoleInterface());
-  AddLogHandler(ptr1);
+  Logger::AddLogHandler(ptr1);
 }
-
-Logger::~Logger() {}
 
 void Logger::AddLogHandler(const LogHandler_P &handler) {
   std::lock_guard<std::mutex> guard(vectorMutex);

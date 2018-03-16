@@ -13,9 +13,7 @@
 
 GraylogInterface::GraylogInterface(const std::string &host, const int port,
                                    const size_t maxQueueLength)
-    : GraylogConnection(host, port), BaseLogHandler(maxQueueLength) {}
-
-GraylogInterface::~GraylogInterface() {}
+    : BaseLogHandler(maxQueueLength), GraylogConnection(host, port) {}
 
 bool GraylogInterface::MessagesQueued() {
   return GraylogConnection::logMessages.size() > 0;

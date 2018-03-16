@@ -20,22 +20,22 @@ void Msg(const int sev, const std::string &message) {
 }
 
 void Msg(const Severity sev, const std::string &message,
-         std::pair<std::string, AdditionalField> extraField) {
+         const std::pair<std::string, AdditionalField> &extraField) {
   Logger::Inst().Log(sev, message, extraField);
 }
 
 void Msg(const int sev, const std::string &message,
-         std::pair<std::string, AdditionalField> extraField) {
+         const std::pair<std::string, AdditionalField> &extraField) {
   Logger::Inst().Log(Severity(sev), message, extraField);
 }
 
 void Msg(const Severity sev, const std::string &message,
-         std::vector<std::pair<std::string, AdditionalField>> extraFields) {
+         const std::vector<std::pair<std::string, AdditionalField>> &extraFields) {
   Logger::Inst().Log(sev, message, extraFields);
 }
 
 void Msg(const int sev, const std::string &message,
-         std::vector<std::pair<std::string, AdditionalField>> extraFields) {
+         const std::vector<std::pair<std::string, AdditionalField>> &extraFields) {
   Logger::Inst().Log(Severity(sev), message, extraFields);
 }
 
@@ -54,4 +54,4 @@ void AddLogHandler(const LogHandler_P &handler) {
 void RemoveAllHandlers() { Logger::Inst().RemoveAllHandlers(); }
 
 std::vector<LogHandler_P> GetHandlers() { return Logger::Inst().GetHandlers(); }
-}
+} //namespace Log

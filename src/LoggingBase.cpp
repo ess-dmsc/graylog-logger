@@ -31,7 +31,7 @@ std::string get_process_name() {
   buf.resize(260);
   do {
     size_t len =
-        GetModuleFileNameW(NULL, &buf[0], static_cast<size_t>(buf.size()));
+        GetModuleFileNameW(nullptr, &buf[0], static_cast<size_t>(buf.size()));
     if (len < buf.size()) {
       buf.resize(len);
       break;
@@ -56,14 +56,14 @@ std::string get_process_name() {
   std::string buf;
   buf.resize(PATH_MAX);
   while (true) {
-    uint32_t size = static_cast<uint32_t>(buf.size());
+    auto size = static_cast<uint32_t>(buf.size());
     if (_NSGetExecutablePath(&buf[0], &size) == 0) {
       buf.resize(std::strlen(&buf[0]));
       break;
     }
     buf.resize(size);
   }
-  auto lastSlash = buf.rfind("/");
+  auto lastSlash = buf.rfind('/');
   if (std::string::npos == lastSlash) {
     return buf;
   }
@@ -141,8 +141,8 @@ void LoggingBase::Log(
   ss << std::this_thread::get_id();
   cMsg.threadId = ss.str();
   std::lock_guard<std::mutex> guard(vectorMutex);
-  for (auto ptr : handlers) {
-    ptr.get()->AddMessage(cMsg);
+  for (auto &ptr : handlers) {
+    ptr->AddMessage(cMsg);
   }
 }
 

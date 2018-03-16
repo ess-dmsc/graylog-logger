@@ -14,7 +14,7 @@
 
 const std::string testString("Some test string");
 
-std::string MyStringCreator(LogMessage &msg) { return testString; }
+std::string MyStringCreator(const LogMessage &msg) { return testString; }
 
 TEST(BaseLogHandler, DefaultStringCreatorTest) {
   LogMessage msg;
@@ -32,9 +32,9 @@ TEST(BaseLogHandler, DefaultStringCreatorTest) {
 TEST(BaseLogHandler, SetStringCreatorTest) {
   LogMessage msg;
   BaseLogHandlerStandIn standIn;
-  ASSERT_EQ(standIn.msgParser, nullptr);
-  standIn.SetMessageStringCreatorFunction(&MyStringCreator);
-  ASSERT_EQ(standIn.msgParser, &MyStringCreator);
+  ASSERT_FALSE(standIn.MessageParser);
+  standIn.SetMessageStringCreatorFunction(MyStringCreator);
+  ASSERT_TRUE(standIn.MessageParser);
 }
 
 TEST(BaseLogHandler, NewStringCreatorTest) {

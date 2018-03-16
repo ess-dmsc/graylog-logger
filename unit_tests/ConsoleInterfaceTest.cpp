@@ -12,7 +12,7 @@
 
 const std::string consoleTestString("Some test string");
 
-std::string ConsoleTestStringCreator(LogMessage &msg) {
+std::string ConsoleTestStringCreator(const LogMessage &msg) {
   return consoleTestString;
 }
 

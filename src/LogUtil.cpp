@@ -13,14 +13,11 @@
 #include <iomanip>
 
 BaseLogHandler::BaseLogHandler(const size_t maxQueueLength)
-    : queueLength(maxQueueLength), msgParser(nullptr) {}
+    : queueLength(maxQueueLength), MessageParser(nullptr) {}
 
-void BaseLogHandler::SetMessageStringCreatorFunction(
-    std::string (*MsgParser)(LogMessage &msg)) {
-  BaseLogHandler::msgParser = MsgParser;
+void BaseLogHandler::SetMessageStringCreatorFunction(std::function<std::string(const LogMessage&)> ParserFunction) {
+  BaseLogHandler::MessageParser = std::move(ParserFunction);
 }
-
-BaseLogHandler::~BaseLogHandler() {}
 
 void BaseLogHandler::AddMessage(const LogMessage &msg) {
   if (logMessages.size() < queueLength) {
@@ -32,9 +29,9 @@ bool BaseLogHandler::MessagesQueued() { return logMessages.size() > 0; }
 
 size_t BaseLogHandler::QueueSize() { return logMessages.size(); }
 
-std::string BaseLogHandler::MsgStringCreator(LogMessage &msg) {
-  if (nullptr != msgParser) {
-    return (*msgParser)(msg);
+std::string BaseLogHandler::MsgStringCreator(const LogMessage &msg) {
+  if (nullptr != MessageParser) {
+    return MessageParser(msg);
   }
   std::time_t cTime = std::chrono::system_clock::to_time_t(msg.timestamp);
   char timeBuffer[50];
@@ -43,6 +40,6 @@ std::string BaseLogHandler::MsgStringCreator(LogMessage &msg) {
                                           "ERROR", "WARNING", "Notice", "Info",
                                           "Debug"}};
   return std::string(timeBuffer, bytes) + std::string(" (") + msg.host +
-         std::string(") ") + sevToStr[int(msg.severity)] + std::string(": ") +
+         std::string(") ") + sevToStr.at(int(msg.severity)) + std::string(": ") +
          msg.message;
 }

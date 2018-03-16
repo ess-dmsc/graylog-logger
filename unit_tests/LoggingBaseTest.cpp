@@ -57,7 +57,7 @@ TEST(LoggingBase, LogSeveritiesTest) {
       Severity::Notice,    Severity::Warning};
   for (auto sev : testSeverities) {
     log.Log(sev, "");
-    ASSERT_EQ(standIn.get()->cMsg.severity, sev);
+    ASSERT_EQ(standIn->cMsg.severity, sev);
   }
 }
 
@@ -72,12 +72,12 @@ TEST(LoggingBase, LogIntSeveritiesTest) {
       Severity::Notice,    Severity::Warning};
   for (auto sev : testSeverities) {
     log.Log(Severity(int(sev)), "");
-    ASSERT_EQ(standIn.get()->cMsg.severity, sev);
+    ASSERT_EQ(standIn->cMsg.severity, sev);
   }
   int testIntSev = -7;
   auto testSev = Severity(testIntSev);
   log.Log(testSev, "");
-  ASSERT_EQ(standIn.get()->cMsg.severity, Severity(testIntSev));
+  ASSERT_EQ(standIn->cMsg.severity, Severity(testIntSev));
 }
 
 TEST(LoggingBase, LogMessageTest) {
@@ -89,7 +89,7 @@ TEST(LoggingBase, LogMessageTest) {
   for (int i = 0; i < 100; i++) {
     tmpStr += baseStr;
     log.Log(Severity::Critical, tmpStr);
-    ASSERT_EQ(tmpStr, standIn.get()->cMsg.message);
+    ASSERT_EQ(tmpStr, standIn->cMsg.message);
   }
 }
 
@@ -202,7 +202,7 @@ TEST(LoggingBase, MachineInfoTest) {
   auto standIn = std::make_shared<BaseLogHandlerStandIn>();
   log.AddLogHandler(standIn);
   log.Log(Severity::Critical, "No message");
-  LogMessage msg = standIn.get()->cMsg;
+  LogMessage msg = standIn->cMsg;
   ASSERT_EQ(msg.host, boost::asio::ip::host_name()) << "Incorrect host name.";
   std::ostringstream ss;
   ss << std::this_thread::get_id();
@@ -217,7 +217,7 @@ TEST(LoggingBase, TimestampTest) {
   auto standIn = std::make_shared<BaseLogHandlerStandIn>();
   log.AddLogHandler(standIn);
   log.Log(Severity::Critical, "No message");
-  LogMessage msg = standIn.get()->cMsg;
+  LogMessage msg = standIn->cMsg;
   std::chrono::duration<double> time_diff =
       std::chrono::system_clock::now() - msg.timestamp;
   ASSERT_NEAR(time_diff.count(), 0.0, 0.1) << "Time stamp is incorrect.";

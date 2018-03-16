@@ -24,5 +24,5 @@ public:
 
 private:
   Logger();
-  ~Logger();
+  ~Logger() = default;
 };

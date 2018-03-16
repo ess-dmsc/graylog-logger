@@ -7,7 +7,7 @@
 //
 
 #include "graylog_logger/GraylogConnection.hpp"
-#include <assert.h>
+#include <cassert>
 #include <chrono>
 #include <ciso646>
 #include <cstring>
@@ -33,9 +33,7 @@
 #endif
 
 GraylogConnection::GraylogConnection(const std::string &host, int port)
-    : closeThread(false), host(host), port(std::to_string(port)), socketFd(-1),
-      conAddresses(NULL), connectionTries(0), firstMessage(true),
-      retConState(GraylogConnection::ConStatus::NONE) {
+    : endWait(time(nullptr) + retryDelay), host(host), port(std::to_string(port)), retConState(GraylogConnection::ConStatus::NONE) {
 #ifdef _WIN32
   WSAStartup(MAKEWORD(2, 2), &wsaData);
 #endif
@@ -56,14 +54,14 @@ GraylogConnection::ConStatus GraylogConnection::GetConnectionStatus() {
 void GraylogConnection::EndThread() {
   closeThread = true;
   connectionThread.join();
-  if (NULL != conAddresses) {
+  if (nullptr != conAddresses) {
     freeaddrinfo(conAddresses);
-    conAddresses = NULL;
+    conAddresses = nullptr;
   }
 }
 
 void GraylogConnection::MakeConnectionHints() {
-  std::memset((void *)&hints, 0, sizeof(hints));
+  std::memset(reinterpret_cast<void*>(&hints), 0, sizeof(hints));
   // hints.ai_family = AF_UNSPEC; //Accept both IPv4 and IPv6
   hints.ai_family = AF_INET;       // Accept only IPv4
   hints.ai_socktype = SOCK_STREAM; // Use TCP
@@ -71,15 +69,15 @@ void GraylogConnection::MakeConnectionHints() {
 }
 
 void GraylogConnection::GetServerAddr() {
-  if (NULL != conAddresses) {
+  if (nullptr != conAddresses) {
     freeaddrinfo(conAddresses);
-    conAddresses = NULL;
+    conAddresses = nullptr;
   }
   int res = getaddrinfo(host.c_str(), port.c_str(), &hints, &conAddresses);
-  if (-1 == res or NULL == conAddresses) {
+  if (-1 == res or nullptr == conAddresses) {
     // std::cout << "GL: Failed to get addr.-info." << std::endl;
     SetState(ConStatus::ADDR_RETRY_WAIT);
-    endWait = time(NULL) + retryDelay;
+    endWait = time(nullptr) + retryDelay;
   } else {
     // std::cout << "GL: Changing state to CONNECT." << std::endl;
     SetState(ConStatus::CONNECT);
@@ -88,7 +86,7 @@ void GraylogConnection::GetServerAddr() {
 void GraylogConnection::ConnectToServer() {
   addrinfo *p;
   int response;
-  for (p = conAddresses; p != NULL; p = p->ai_next) {
+  for (p = conAddresses; p != nullptr; p = p->ai_next) {
     // std::cout << "GL: Connect addr. iteration." << std::endl;
     socketFd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
     if (-1 == socketFd) {
@@ -120,22 +118,20 @@ void GraylogConnection::ConnectToServer() {
       // std::cout << "GL: Now waiting for connection." << std::endl;
       SetState(ConStatus::CONNECT_WAIT);
       break;
-    } else {
-      close(socketFd);
-      socketFd = -1;
-      continue;
     }
+    close(socketFd);
+    socketFd = -1;
   }
   if (-1 == socketFd) {
     // std::cout << "GL: Failed all connections." << std::endl;
     connectionTries++;
     SetState(ConStatus::CONNECT_RETRY_WAIT);
   }
-  endWait = time(NULL) + retryDelay;
+  endWait = time(nullptr) + retryDelay;
 }
 
 void GraylogConnection::ConnectWait() {
-  if (endWait < time(NULL)) {
+  if (endWait < time(nullptr)) {
     // std::cout << "GL: Timeout on waiting for connection." << std::endl;
     SetState(ConStatus::CONNECT);
     close(socketFd);
@@ -143,17 +139,17 @@ void GraylogConnection::ConnectWait() {
     connectionTries++;
     return;
   }
-  timeval selectTimeout;
+  timeval selectTimeout{0};
   selectTimeout.tv_sec = 0;
   selectTimeout.tv_usec = 50000;
-  fd_set exceptfds;
+  fd_set exceptfds{{0}};
   FD_ZERO(&exceptfds);
   FD_SET(socketFd, &exceptfds);
   fd_set writefds;
   FD_ZERO(&writefds);
   FD_SET(socketFd, &writefds);
   int changes =
-      select(socketFd + 1, NULL, &writefds, &exceptfds, &selectTimeout);
+      select(socketFd + 1, nullptr, &writefds, &exceptfds, &selectTimeout);
   // std::cout << "GL: select changes: " << changes << std::endl;
   if (1 == changes) {
     if (FD_ISSET(socketFd, &exceptfds)) {
@@ -205,7 +201,7 @@ void GraylogConnection::CheckConnectionStatus() {
   //    fd_set writefds;
   //    FD_ZERO(&writefds);
   //    FD_SET(socketFd, &writefds);
-  //    int selRes = select(socketFd + 1, &readfds, NULL, &exceptfds,
+  //    int selRes = select(socketFd + 1, &readfds, nullptr, &exceptfds,
   //    &selectTimeout);
   //    //std::cout << "Connection check: " << selRes << std::endl;
   //    if(selRes and FD_ISSET(socketFd, &exceptfds)) {
@@ -260,18 +256,18 @@ void GraylogConnection::CheckConnectionStatus() {
 }
 
 void GraylogConnection::SendMessageLoop() {
-  timeval selectTimeout;
+  timeval selectTimeout{0};
   selectTimeout.tv_sec = 0;
   selectTimeout.tv_usec = 50000;
 
-  fd_set exceptfds;
+  fd_set exceptfds{{0}};
   FD_ZERO(&exceptfds);
   FD_SET(socketFd, &exceptfds);
-  fd_set writefds;
+  fd_set writefds{{0}};
   FD_ZERO(&writefds);
   FD_SET(socketFd, &writefds);
   int selRes =
-      select(socketFd + 1, NULL, &writefds, &exceptfds, &selectTimeout);
+      select(socketFd + 1, nullptr, &writefds, &exceptfds, &selectTimeout);
   // std::cout << "GL: Send message changes: " << selRes << std::endl;
   if (selRes > 0) {
     if (FD_ISSET(socketFd, &exceptfds)) { // Some error
@@ -346,14 +342,14 @@ void GraylogConnection::ThreadFunction() {
     if (5 < connectionTries) {
       SetState(ConStatus::ADDR_RETRY_WAIT);
       connectionTries = 0;
-      endWait = time(NULL) + retryDelay;
+      endWait = time(nullptr) + retryDelay;
     }
     switch (stateMachine) {
     case ConStatus::ADDR_LOOKUP:
       GetServerAddr();
       break;
     case ConStatus::ADDR_RETRY_WAIT:
-      if (time(NULL) > endWait) {
+      if (time(nullptr) > endWait) {
         SetState(ConStatus::ADDR_LOOKUP);
       } else {
         std::this_thread::sleep_for(sleepTime);
@@ -363,7 +359,7 @@ void GraylogConnection::ThreadFunction() {
       ConnectToServer();
       break;
     case ConStatus::CONNECT_RETRY_WAIT:
-      if (time(NULL) > endWait) {
+      if (time(nullptr) > endWait) {
         SetState(ConStatus::CONNECT);
       } else {
         std::this_thread::sleep_for(sleepTime);

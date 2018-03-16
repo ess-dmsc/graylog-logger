@@ -16,7 +16,7 @@ const std::string usedFileName("testFileName.log");
 
 const std::string fileTestString("Some test string");
 
-std::string FileTestStringCreator(LogMessage &msg) { return fileTestString; }
+std::string FileTestStringCreator(const LogMessage &msg) { return fileTestString; }
 
 class FileInterfaceStandIn : public FileInterface {
 public:

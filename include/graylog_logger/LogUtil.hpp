@@ -12,6 +12,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <functional>
 
 typedef std::chrono::time_point<std::chrono::system_clock> system_time;
 
@@ -74,18 +75,18 @@ struct LogMessage {
 class BaseLogHandler {
 public:
   BaseLogHandler(const size_t maxQueueLength = 100);
-  virtual ~BaseLogHandler();
+  virtual ~BaseLogHandler() = default;
   virtual void AddMessage(const LogMessage &msg);
   virtual bool MessagesQueued();
   virtual size_t QueueSize();
   void
-  SetMessageStringCreatorFunction(std::string (*MsgParser)(LogMessage &msg));
+  SetMessageStringCreatorFunction(std::function<std::string(const LogMessage&)> ParserFunction);
 
 protected:
   size_t queueLength;
   ConcurrentQueue<LogMessage> logMessages;
-  std::string (*msgParser)(LogMessage &msg);
-  std::string MsgStringCreator(LogMessage &msg);
+  std::function<std::string(const LogMessage&)> MessageParser;
+  std::string MsgStringCreator(const LogMessage &msg);
 };
 
 typedef std::shared_ptr<BaseLogHandler> LogHandler_P;

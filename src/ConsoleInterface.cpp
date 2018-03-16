@@ -11,11 +11,11 @@
 #include <ciso646>
 #include <iostream>
 
-std::string ConsoleStringCreator(LogMessage &msg) {
+std::string ConsoleStringCreator(const LogMessage &msg) {
   std::array<std::string, 8> sevToStr = {{"EMERGENCY", "ALERT", "CRITICAL",
                                           "ERROR", "WARNING", "Notice", "Info",
                                           "Debug"}};
-  return sevToStr[int(msg.severity)] + std::string(": ") + msg.message;
+  return sevToStr.at(int(msg.severity)) + std::string(": ") + msg.message;
 }
 
 ConsoleInterface::ConsoleInterface(size_t maxQueueLength)

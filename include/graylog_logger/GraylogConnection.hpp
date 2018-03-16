@@ -40,12 +40,6 @@ public:
   ConStatus GetConnectionStatus();
 
 protected:
-  const time_t retryDelay = 10; // In seconds
-  time_t endWait;
-  int connectionTries;
-
-  ConStatus stateMachine;
-
   void EndThread();
 
   void ThreadFunction();
@@ -57,23 +51,27 @@ protected:
   void SendMessageLoop();
   void CheckConnectionStatus();
   void SetState(ConStatus newState);
+  
+  const time_t retryDelay = 10; // In seconds
+  time_t endWait;
+  int connectionTries{0};
+  
+  ConStatus stateMachine{ConStatus::ADDR_LOOKUP};
 
-  int queueLength;
-
-  std::atomic_bool closeThread;
+  std::atomic_bool closeThread{false};
 
   std::string currentMessage;
-  ssize_t bytesSent;
-  bool firstMessage;
+  ssize_t bytesSent{0};
+  bool firstMessage{true};
 
   std::string host;
   std::string port;
 
   std::thread connectionThread;
-  int socketFd;   // Socket id (file descriptor)
-  addrinfo hints; // Connection hints
-  addrinfo *conAddresses;
-  struct sockaddr_in serverConInfo; //
+  int socketFd{-1};   // Socket id (file descriptor)
+  addrinfo hints{0}; // Connection hints
+  addrinfo *conAddresses{nullptr};
+  struct sockaddr_in serverConInfo{0}; //
   ConcurrentQueue<std::string> logMessages;
 #ifdef MSG_NOSIGNAL
   const int sendOpt = MSG_NOSIGNAL;

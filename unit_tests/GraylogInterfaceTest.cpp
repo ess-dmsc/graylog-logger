@@ -70,7 +70,7 @@ public:
   static LogTestServer *logServer;
 };
 
-LogTestServer *GraylogConnectionCom::logServer = NULL;
+LogTestServer *GraylogConnectionCom::logServer = nullptr;
 
 TEST_F(GraylogConnectionCom, UnknownHostTest) {
   GraylogConnectionStandIn con("no_host", testPort);
@@ -183,8 +183,8 @@ void TestJsonString(std::string jsonMsg) {
   EXPECT_NO_THROW(read_json(ss, pt));
   LogMessage compLog = GetPopulatedLogMsg();
   std::string tempStr;
-  double tempDouble;
-  int tempInt;
+  double tempDouble = 0;
+  int tempInt = 0;
   EXPECT_NO_THROW(tempStr = pt.get<std::string>("short_message"));
   EXPECT_EQ(tempStr, compLog.message);
   EXPECT_NO_THROW(tempDouble = pt.get<double>("timestamp"));
@@ -240,7 +240,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldInt) {
   testMsg.AddField(key, value);
   std::string jsonStr = con.LogMsgToJSON(testMsg);
   ptree pt = ParseJSON(jsonStr);
-  std::int64_t tempVal;
+  std::int64_t tempVal = 0;
   EXPECT_NO_THROW(tempVal = pt.get<std::int64_t>("_" + key));
   EXPECT_EQ(tempVal, value);
 }

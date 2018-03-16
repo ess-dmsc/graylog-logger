@@ -8,6 +8,7 @@
 
 #include <chrono>
 #include <ciso646>
+#include <cmath>
 #include <graylog_logger/ConsoleInterface.hpp>
 #include <graylog_logger/FileInterface.hpp>
 #include <graylog_logger/GraylogInterface.hpp>
@@ -33,14 +34,14 @@ int main(int argc, char **argv) {
   std::string extraKey;
   AdditionalField extraField;
   static struct option long_options[]{
-      {"help", no_argument, 0, 'h'},
-      {"file", optional_argument, 0, 'f'},
-      {"address", optional_argument, 0, 'a'},
-      {"port", required_argument, 0, 'p'},
-      {"time", required_argument, 0, 't'},
-      {"level", required_argument, 0, 'l'},
-      {"message", required_argument, 0, 'm'},
-      {"extra", optional_argument, 0, 'e'},
+      {"help", no_argument, nullptr, 'h'},
+      {"file", optional_argument, nullptr, 'f'},
+      {"address", optional_argument, nullptr, 'a'},
+      {"port", required_argument, nullptr, 'p'},
+      {"time", required_argument, nullptr, 't'},
+      {"level", required_argument, nullptr, 'l'},
+      {"message", required_argument, nullptr, 'm'},
+      {"extra", optional_argument, nullptr, 'e'},
   };
   int option_index = 0;
   while (true) {
@@ -55,21 +56,21 @@ int main(int argc, char **argv) {
       return 0;
       break;
     case 'f':
-      if (optarg) {
+      if (optarg != nullptr) {
         fileName = std::string(optarg);
       } else {
         fileName = "";
       }
       break;
     case 'a':
-      if (optarg) {
+      if (optarg != nullptr) {
         address1 = std::string(optarg);
       } else {
         address1 = "";
       }
       break;
     case 'p':
-      if (optarg) {
+      if (optarg != nullptr) {
         std::string value(optarg);
         try {
           port = std::stoi(value);
@@ -81,7 +82,7 @@ int main(int argc, char **argv) {
       }
       break;
     case 't':
-      if (optarg) {
+      if (optarg != nullptr) {
         std::string value(optarg);
         try {
           timeout = std::stof(value);
@@ -93,12 +94,12 @@ int main(int argc, char **argv) {
       }
       break;
     case 'm':
-      if (optarg) {
+      if (optarg != nullptr) {
         msg = std::string(optarg);
       }
       break;
     case 'l':
-      if (optarg) {
+      if (optarg != nullptr) {
         std::string value(optarg);
         try {
           sevLevel = std::stoi(value);
@@ -115,15 +116,15 @@ int main(int argc, char **argv) {
       }
       break;
     case 'e':
-      if (optarg) {
+      if (optarg != nullptr) {
         std::string value(optarg);
-        size_t splitLoc = value.find(":");
+        size_t splitLoc = value.find(':');
         if (std::string::npos == splitLoc) {
           break;
         }
         extraKey = value.substr(0, splitLoc);
         extraField = value.substr(splitLoc + 1, value.size() - 1);
-        if (extraKey.size() == 0 or extraField.strVal.size() == 0) {
+        if (extraKey.empty() or extraField.strVal.empty()) {
           extraKey = "";
           std::cout << "Unable to parse extra field: \"" << value << "\""
                     << std::endl;
@@ -132,7 +133,7 @@ int main(int argc, char **argv) {
       break;
     }
   }
-  if (0 == msg.size()) {
+  if (msg.empty()) {
     PrintAlternatives();
     return 0;
   }
@@ -145,18 +146,18 @@ int main(int argc, char **argv) {
   Log::RemoveAllHandlers();
   Log::AddLogHandler(LogHandler_P(new ConsoleInterface()));
 
-  if (fileName.size() > 0) {
+  if (not fileName.empty()) {
     Log::AddLogHandler(LogHandler_P(new FileInterface(fileName)));
   }
 
-  if (address1.size() > 0) {
+  if (not address1.empty()) {
     if ("localhost" == address1) {
       Log::AddLogHandler(LogHandler_P(new GraylogInterface(address1, port)));
     } else {
       Log::AddLogHandler(LogHandler_P(new GraylogInterface(address1, port)));
     }
   }
-  if (extraKey.size() > 0) {
+  if (not extraKey.empty()) {
     Log::Msg(Severity(sevLevel), msg, {extraKey, extraField});
   } else {
     Log::Msg(Severity(sevLevel), msg);
@@ -165,20 +166,20 @@ int main(int argc, char **argv) {
   std::vector<LogHandler_P> allInterfaces = Log::GetHandlers();
   std::vector<LogHandler_P> graylogInt;
 
-  for (auto ptr : allInterfaces) {
+  for (auto &ptr : allInterfaces) {
     if (dynamic_cast<GraylogInterface *>(ptr.get()) != nullptr) {
       graylogInt.push_back(ptr);
     }
   }
-  if (graylogInt.size() > 0) {
+  if (not graylogInt.empty()) {
     int milisSleep = 20;
-    int waitLoops = int((timeout * 1000) / milisSleep + 0.5);
+    int waitLoops = std::lround((timeout * 1000) / milisSleep);
     auto sleepTime = std::chrono::milliseconds(milisSleep);
     bool continueLoop = true;
     for (int i = 0; i < waitLoops and continueLoop; i++) {
       std::this_thread::sleep_for(sleepTime);
       continueLoop = false;
-      for (auto ptr : graylogInt) {
+      for (auto &ptr : graylogInt) {
         if (dynamic_cast<GraylogInterface *>(ptr.get())->MessagesQueued()) {
           continueLoop = true;
         }
