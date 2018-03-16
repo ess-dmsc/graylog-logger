@@ -78,7 +78,7 @@ std::string get_process_name() {
   for (auto &path : filePaths) {
     int nameLen = readlink(path.c_str(), pathBuffer, sizeof(pathBuffer) - 1);
     if (-1 != nameLen) {
-      std::string tempPath(pathBuffer);
+      std::string tempPath(pathBuffer, nameLen);
       auto lastSlash = tempPath.rfind("/");
       if (std::string::npos == lastSlash) {
         return tempPath;
