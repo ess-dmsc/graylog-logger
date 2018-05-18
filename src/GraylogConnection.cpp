@@ -98,7 +98,7 @@ void GraylogConnection::ConnectToServer() {
     int value = 1;
     setsockopt(socketFd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
 #endif
-    // setsockopt(socketFd, SOL_SOCKET, SO_SNDTIMEO, const void *, socklen_t);
+// setsockopt(socketFd, SOL_SOCKET, SO_SNDTIMEO, const void *, socklen_t);
 
 #ifdef _WIN32
     u_long iMode = 1;

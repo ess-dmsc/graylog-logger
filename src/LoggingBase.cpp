@@ -117,10 +117,9 @@ void LoggingBase::Log(const Severity sev, const std::string &message) {
 void LoggingBase::Log(
     const Severity sev, const std::string &message,
     const std::pair<std::string, AdditionalField> &extraField) {
-  Log(sev, message,
-      std::vector<std::pair<std::string, AdditionalField>>{
-          extraField,
-      });
+  Log(sev, message, std::vector<std::pair<std::string, AdditionalField>>{
+                        extraField,
+                    });
 }
 
 void LoggingBase::Log(
