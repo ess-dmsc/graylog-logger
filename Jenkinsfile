@@ -40,7 +40,7 @@ node('docker') {
 
         stage('Get Dependencies') {
             def conan_remote = "ess-dmsc-local"
-            sh """docker exec ${container_name} sh -c \"
+            sh """docker exec ${container_name} bash -e -c \"
                 mkdir build
                 cd build
                 conan --version
@@ -52,7 +52,7 @@ node('docker') {
         }
 
         stage('Build') {
-            sh """docker exec ${container_name} sh -c \"
+            sh """docker exec ${container_name} bash -e -c \"
                 cd build
                 cmake --version
                 cmake3 ../${project} -DBUILD_EVERYTHING=ON
@@ -63,7 +63,7 @@ node('docker') {
 
         stage('Test') {
             def test_output = "AllResultsUnitTests.xml"
-            sh """docker exec ${container_name} sh -c \"
+            sh """docker exec ${container_name} bash -e -c \"
                 ./build/unit_tests/unit_tests --gtest_output=xml:${test_output}
             \""""
 
@@ -76,14 +76,14 @@ node('docker') {
         }
 
         stage('Analyse') {
-            sh """docker exec ${container_name} sh -c \"
+            sh """docker exec ${container_name} bash -e -c \"
                 cppcheck --version
                 make --directory=./build cppcheck
             \""""
         }
 
         stage('Archive') {
-            sh """docker exec ${container_name} sh -c \"
+            sh """docker exec ${container_name} bash -e -c \"
                 mkdir -p archive/${project}
                 make -C build install DESTDIR=\\\$(pwd)/archive/${project}
                 tar czvf ${project}.tar.gz -C archive ${project}
@@ -118,7 +118,7 @@ node('docker') {
         sh "docker cp ${project} ${container_name}:/home/jenkins/${project}"
 
         stage('Check Formatting') {
-            formattingResult = sh script: """docker exec ${container_name} sh -c \"
+            formattingResult = sh script: """docker exec ${container_name} bash -e -c \"
                 clang-format -version
                 cd ${project}
                 find . \\( -name '*.cpp' -or -name '*.h' -or -name '*.hpp' \\) \
