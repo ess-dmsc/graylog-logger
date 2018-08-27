@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
@@ -15,7 +16,6 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include <atomic>
 
 using namespace boost::asio;
 using namespace boost::system::errc;
