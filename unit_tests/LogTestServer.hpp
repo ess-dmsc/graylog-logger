@@ -15,6 +15,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <atomic>
 
 using namespace boost::asio;
 using namespace boost::system::errc;
@@ -54,8 +55,8 @@ private:
   char receiveBuffer[bufferSize];
 
   errc_t socketError;
-  int connections;
-  int receivedBytes;
+  std::atomic_int connections;
+  std::atomic_int receivedBytes;
 
   std::string currentMessage;
   std::string previousMessage;
