@@ -17,10 +17,10 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include("CppCheck")
 
 add_subdirectory(src)
-add_subdirectory(console_logger)
 
 option(BUILD_EVERYTHING "Build UnitTests & Console Logger" ON)
 
 IF(BUILD_EVERYTHING)
   add_subdirectory(unit_tests)
+  add_subdirectory(console_logger)
 ENDIF()
