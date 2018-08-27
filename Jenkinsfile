@@ -207,13 +207,13 @@ def get_macos_pipeline()
 
                 dir("${project}/build") {
                     try {
-                        sh "cmake ../code"
+                        sh ". ./activate_run.sh && cmake ../code"
                     } catch (e) {
                         failure_function(e, 'MacOSX / CMake failed')
                     }
 
                     try {
-                        sh "make all"
+                        sh ". ./activate_run.sh && make all"
                         sh ". ./activate_run.sh && ./unit_tests/unit_tests"
                     } catch (e) {
                         failure_function(e, 'MacOSX / build+test failed')
