@@ -207,7 +207,8 @@ def get_macos_pipeline()
 
                 dir("${project}/build") {
                     try {
-                        sh ". ./activate_run.sh && cmake ../code"
+                        sh "conan install --build=outdated .."
+                        sh "./activate_run.sh && cmake ../code"
                     } catch (e) {
                         failure_function(e, 'MacOSX / CMake failed')
                     }
