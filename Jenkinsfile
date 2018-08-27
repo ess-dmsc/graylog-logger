@@ -1,6 +1,6 @@
 project = "graylog-logger"
 clangformat_os = "fedora25"
-test_and_coverage_os = "centos7"
+test_os = "centos7"
 
 images = [
         'centos7': [
@@ -10,11 +10,11 @@ images = [
         'fedora25'    : [
                 'name': 'essdmscdm/fedora25-build-node:2.0.0',
                 'sh'  : 'bash -e'
-        ],
-        'ubuntu1804'  : [
+        ]/*,*/
+/*        'ubuntu1804'  : [
                 'name': 'essdmscdm/ubuntu18.04-build-node:1.1.0',
                 'sh'  : 'bash -e'
-        ]
+        ]*/
 ]
 
 base_container_name = "${project}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
