@@ -115,7 +115,7 @@ def docker_test(image_key) {
         def test_script = """
                         cd build
                         . ./activate_run.sh
-                        ./unit_tests/unit_tests -- --gtest_output=xml:${test_output}
+                        ./unit_tests/unit_tests --gtest_output=xml:${test_output}
                     """
         sh "docker exec ${container_name(image_key)} ${custom_sh} -c \"${test_script}\""
         sh "docker cp ${container_name(image_key)}:/home/jenkins/build ./"
@@ -208,14 +208,14 @@ def get_macos_pipeline()
                 dir("${project}/build") {
                     try {
                         sh "conan install --build=outdated ../code"
-                        sh "./activate_run.sh && cmake ../code"
+                        sh "source activate_run.sh && cmake ../code"
                     } catch (e) {
                         failure_function(e, 'MacOSX / CMake failed')
                     }
 
                     try {
-                        sh ". ./activate_run.sh && make all"
-                        sh ". ./activate_run.sh && ./unit_tests/unit_tests"
+                        sh "source activate_run.sh && make all"
+                        sh "source activate_run.sh && ./unit_tests/unit_tests"
                     } catch (e) {
                         failure_function(e, 'MacOSX / build+test failed')
                     }
