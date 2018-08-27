@@ -19,9 +19,9 @@ find_package(Boost COMPONENTS system thread regex filesystem)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIR})
     link_directories(${Boost_LIBRARY_DIRS})
-
-    # find_package(GTest) does not find Google Mock, so find it manually.
-    find_library(GMOCK_MAIN_LIB gmock_main)
+    
+    find_package(GTest REQUIRED)
+    find_library(GMOCK_MAIN_LIB gmock_main PATHS "${GTEST_ROOT}/lib")
 
     # Prevent GoogleTest from overriding our compiler/linker options
     # when building with Visual Studio
@@ -48,7 +48,7 @@ if(Boost_FOUND)
 
     add_executable(unit_tests ${UnitTest_SRC} ${UnitTest_INC})
 
-    target_link_libraries(unit_tests GraylogLogger::graylog_logger ${GMOCK_MAIN_LIB} ${Boost_LIBRARIES})
+    target_link_libraries(unit_tests GraylogLogger::graylog_logger ${GMOCK_MAIN_LIB} ${GTEST_LIBRARIES} ${Boost_LIBRARIES})
 
     add_test(TestAll unit_tests)
 
