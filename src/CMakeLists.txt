@@ -38,7 +38,20 @@ target_include_directories(graylog_logger
   PRIVATE
     "."
 )
+
+add_library(graylog_logger_static STATIC ${Graylog_SRC} ${Graylog_INC} ${Graylog_private_INC})
+add_library(GraylogLogger::graylog_logger_static ALIAS graylog_logger_static)
+target_link_libraries(graylog_logger_static ${CMAKE_THREAD_LIBS_INIT})
+target_include_directories(graylog_logger_static
+  PUBLIC
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+  PRIVATE
+    "."
+)
+
 set_target_properties(graylog_logger PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(graylog_logger_static PROPERTIES VERSION ${PROJECT_VERSION})
 
 add_cppcheck_target(
     graylog_logger
@@ -51,7 +64,7 @@ add_cppcheck_target(
 include(GNUInstallDirs)
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/GraylogLogger)
 
-install(TARGETS graylog_logger
+install(TARGETS graylog_logger graylog_logger_static
   EXPORT graylog_logger-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
