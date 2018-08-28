@@ -1,6 +1,7 @@
 [requires]
-gtest/3121b20@ess-dmsc/testing
+gtest/3121b20-dm3@ess-dmsc/stable
 Boost/1.65.1-dm1@ess-dmsc/stable
+cmake_installer/3.10.0@conan/stable
 
 [options]
 gtest:shared=True

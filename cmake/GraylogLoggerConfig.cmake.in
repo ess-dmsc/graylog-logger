@@ -1,0 +1,8 @@
+get_filename_component(GraylogLogger_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+if(NOT TARGET GraylogLogger::graylog_logger)
+    include("${GraylogLogger_CMAKE_DIR}/GraylogLoggerTargets.cmake")
+endif()
+
+set(GraylogLogger_LIBRARIES GraylogLogger::graylog_logger)

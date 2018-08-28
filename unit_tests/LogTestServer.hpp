@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
@@ -54,8 +55,8 @@ private:
   char receiveBuffer[bufferSize];
 
   errc_t socketError;
-  int connections;
-  int receivedBytes;
+  std::atomic_int connections;
+  std::atomic_int receivedBytes;
 
   std::string currentMessage;
   std::string previousMessage;

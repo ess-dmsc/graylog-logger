@@ -7,7 +7,7 @@
 //
 
 #include "graylog_logger/GraylogInterface.hpp"
-#include "graylog_logger/json.h"
+#include "json.h"
 #include <ciso646>
 #include <cstring>
 
