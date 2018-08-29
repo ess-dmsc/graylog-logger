@@ -13,11 +13,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
-#include <sstream>
 #include <thread>
 
 MATCHER(IsJSON, "") {
-  std::stringstream ss;
   try {
     auto Res = nlohmann::json::parse(arg);
   } catch (std::exception const &e) {
@@ -171,7 +169,6 @@ TEST(GraylogInterfaceCom, MessageJSONTest) {
 }
 
 void TestJsonString(std::string jsonMsg) {
-  std::stringstream ss;
   auto JsonObject = nlohmann::json::parse(jsonMsg);
   LogMessage compLog = GetPopulatedLogMsg();
   std::string tempStr;
