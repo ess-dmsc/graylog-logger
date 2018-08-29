@@ -14,7 +14,8 @@ if(MSVC)
     set(Boost_USE_STATIC_LIBS ON)
 endif()
 
-find_package(Boost COMPONENTS system thread regex filesystem)
+find_package(Boost COMPONENTS system filesystem)
+find_package(ASIO REQUIRED)
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIR})
@@ -49,6 +50,7 @@ if(Boost_FOUND)
     add_executable(unit_tests ${UnitTest_SRC} ${UnitTest_INC})
 
     target_link_libraries(unit_tests GraylogLogger::graylog_logger ${GMOCK_MAIN_LIB} ${GTEST_LIBRARIES} ${Boost_LIBRARIES})
+    target_include_directories(unit_tests PRIVATE ${ASIO_INCLUDE_DIR})
 
     add_test(TestAll unit_tests)
 

@@ -6,7 +6,6 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-// clang-format off
 #include <ciso646>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -17,7 +16,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <cmath>
-// clang-format on
 
 using namespace boost::property_tree;
 
@@ -77,19 +75,19 @@ TEST_F(GraylogConnectionCom, UnknownHostTest) {
   std::this_thread::sleep_for(sleepTime);
   ASSERT_EQ(logServer->GetNrOfConnections(), 0);
   ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
-  ASSERT_EQ(logServer->GetLastSocketError(), int(errc_t::success));
+  ASSERT_TRUE(!logServer->GetLastSocketError());
 }
 
 TEST_F(GraylogConnectionCom, ConnectionTest) {
   ASSERT_EQ(0, logServer->GetNrOfConnections());
   ASSERT_EQ(0, logServer->GetLatestMessage().size());
-  ASSERT_EQ(int(errc_t::success), logServer->GetLastSocketError());
+  ASSERT_TRUE(!logServer->GetLastSocketError());
   {
     GraylogConnectionStandIn con("localhost", testPort);
     std::this_thread::sleep_for(sleepTime);
     ASSERT_EQ(1, logServer->GetNrOfConnections());
     ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
-    ASSERT_EQ(logServer->GetLastSocketError(), int(errc_t::success));
+    ASSERT_TRUE(!logServer->GetLastSocketError());
     ASSERT_EQ(GraylogConnection::ConStatus::NEW_MESSAGE,
               con.GetConnectionStatus())
         << "Connection status returned " << int(con.GetConnectionStatus());
@@ -97,7 +95,7 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
   std::this_thread::sleep_for(sleepTime);
   ASSERT_EQ(0, logServer->GetNrOfConnections());
   ASSERT_EQ(0, logServer->GetLatestMessage().size());
-  ASSERT_EQ(int(errc_t::success), logServer->GetLastSocketError());
+  ASSERT_TRUE(!logServer->GetLastSocketError());
 }
 
 TEST_F(GraylogConnectionCom, CloseConnectionTest) {
@@ -124,7 +122,7 @@ TEST_F(GraylogConnectionCom, MessageTransmissionTest) {
     GraylogConnectionStandIn con("localhost", testPort);
     con.SendMessage(testString);
     std::this_thread::sleep_for(sleepTime);
-    ASSERT_EQ(int(errc_t::success), logServer->GetLastSocketError());
+    ASSERT_TRUE(!logServer->GetLastSocketError());
     ASSERT_EQ(testString, logServer->GetLatestMessage());
     ASSERT_EQ(testString.size() + 1, logServer->GetReceivedBytes());
     ASSERT_EQ(1, logServer->GetNrOfConnections());
@@ -143,7 +141,7 @@ TEST_F(GraylogConnectionCom, MultipleMessagesTest) {
       con.SendMessage(ln);
     }
     std::this_thread::sleep_for(sleepTime);
-    ASSERT_EQ(int(errc_t::success), logServer->GetLastSocketError());
+    ASSERT_TRUE(!logServer->GetLastSocketError());
     ASSERT_EQ(lines[lines.size() - 1], logServer->GetLatestMessage());
     ASSERT_EQ(totalBytes, logServer->GetReceivedBytes());
     ASSERT_EQ(1, logServer->GetNrOfConnections());

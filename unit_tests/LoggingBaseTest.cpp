@@ -7,13 +7,10 @@
 //
 
 #include <boost/asio.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/thread.hpp>
 #include <chrono>
 #include <ciso646>
 #include <gtest/gtest.h>
 #include <thread>
-//#include <boost/log/attributes/current_process_name.hpp>
 #include "BaseLogHandlerStandIn.hpp"
 #include "graylog_logger/LogUtil.hpp"
 #include "graylog_logger/LoggingBase.hpp"

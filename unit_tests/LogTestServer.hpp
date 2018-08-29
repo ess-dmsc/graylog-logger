@@ -9,18 +9,13 @@
 #pragma once
 
 #include <atomic>
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
-#include <boost/lexical_cast.hpp>
+#include <asio.hpp>
 #include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
 
-using namespace boost::asio;
-using namespace boost::system::errc;
-
-typedef std::shared_ptr<ip::tcp::socket> sock_ptr;
+typedef std::shared_ptr<asio::ip::tcp::socket> sock_ptr;
 
 //------------------------------------------------------------------------------
 //     THIS CLASS IS NOT THREAD SAFE AND MAY CRASH AT ANY MOMENT
@@ -31,22 +26,22 @@ public:
   LogTestServer(short port);
   ~LogTestServer();
   std::string GetLatestMessage();
-  errc_t GetLastSocketError();
+  std::error_code GetLastSocketError();
   void CloseAllConnections();
   int GetNrOfConnections();
   int GetReceivedBytes();
   void ClearReceivedBytes();
 
 private:
-  io_service service;
+  asio::io_service service;
   void ThreadFunction();
   std::thread asioThread;
 
-  ip::tcp::acceptor acceptor;
+  asio::ip::tcp::acceptor acceptor;
 
   void WaitForNewConnection();
-  void OnConnectionAccept(const boost::system::error_code &ec, sock_ptr cSock);
-  void HandleRead(boost::system::error_code ec, std::size_t bytesReceived,
+  void OnConnectionAccept(const std::error_code &ec, sock_ptr cSock);
+  void HandleRead(std::error_code ec, std::size_t bytesReceived,
                   sock_ptr cSock);
 
   void RemoveSocket(sock_ptr cSock);
@@ -54,7 +49,7 @@ private:
   static const int bufferSize = 100;
   char receiveBuffer[bufferSize];
 
-  errc_t socketError;
+  std::error_code socketError;
   std::atomic_int connections;
   std::atomic_int receivedBytes;
 

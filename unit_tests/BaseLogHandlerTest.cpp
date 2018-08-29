@@ -7,10 +7,9 @@
 //
 
 #include "BaseLogHandlerStandIn.hpp"
-#include <boost/regex.hpp>
 #include <ciso646>
 #include <gtest/gtest.h>
-#include <iostream>
+#include <regex>
 
 const std::string testString("Some test string");
 
@@ -24,9 +23,9 @@ TEST(BaseLogHandler, DefaultStringCreatorTest) {
   msg.severity = Severity::Alert;
   BaseLogHandlerStandIn standIn;
   std::string logString = standIn.MsgStringCreator(msg);
-  boost::regex exp("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2} \\(Nohost\\) "
+  std::regex exp("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2} \\(Nohost\\) "
                    "ALERT: Some test string");
-  ASSERT_TRUE(boost::regex_match(logString.c_str(), exp));
+  ASSERT_TRUE(std::regex_match(logString.c_str(), exp));
 }
 
 TEST(BaseLogHandler, SetStringCreatorTest) {

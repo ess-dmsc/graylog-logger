@@ -2,6 +2,8 @@
 gtest/3121b20-dm3@ess-dmsc/stable
 Boost/1.65.1-dm1@ess-dmsc/stable
 cmake_installer/3.10.0@conan/stable
+asio/1.11.0@bincrafters/stable
+jsonformoderncpp/3.1.0@vthiery/stable
 
 [options]
 gtest:shared=True
