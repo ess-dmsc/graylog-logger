@@ -8,6 +8,7 @@
 
 #include "LogTestServer.hpp"
 #include <ciso646>
+#include <functional>
 
 LogTestServer::LogTestServer(short port)
     : service(),
