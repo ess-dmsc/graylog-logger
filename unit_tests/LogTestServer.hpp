@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <atomic>
 #include <asio.hpp>
+#include <atomic>
 #include <iostream>
 #include <string>
 #include <thread>

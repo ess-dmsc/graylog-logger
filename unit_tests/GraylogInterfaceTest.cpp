@@ -6,15 +6,15 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-#include <ciso646>
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <thread>
-#include <sstream>
-#include "graylog_logger/GraylogInterface.hpp"
 #include "LogTestServer.hpp"
-#include <nlohmann/json.hpp>
+#include "graylog_logger/GraylogInterface.hpp"
+#include <ciso646>
 #include <cmath>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
+#include <sstream>
+#include <thread>
 
 MATCHER(IsJSON, "") {
   std::stringstream ss;

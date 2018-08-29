@@ -10,7 +10,8 @@
 #include <ciso646>
 
 LogTestServer::LogTestServer(short port)
-: service(), acceptor(service, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
+    : service(),
+      acceptor(service, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
   socketError.clear();
   connections = 0;
   receivedBytes = 0;
@@ -23,7 +24,7 @@ void LogTestServer::WaitForNewConnection() {
   sock_ptr cSock(new asio::ip::tcp::socket(service));
   acceptor.async_accept(*cSock.get(),
                         std::bind(&LogTestServer::OnConnectionAccept, this,
-                                    std::placeholders::_1, cSock));
+                                  std::placeholders::_1, cSock));
 }
 
 LogTestServer::~LogTestServer() {
@@ -60,7 +61,8 @@ void LogTestServer::ThreadFunction() { service.run(); }
 void LogTestServer::OnConnectionAccept(const std::error_code &ec,
                                        sock_ptr cSock) {
   socketError = ec;
-  if (asio::error::basic_errors::operation_aborted == ec or asio::error::basic_errors::bad_descriptor == ec) {
+  if (asio::error::basic_errors::operation_aborted == ec or
+      asio::error::basic_errors::bad_descriptor == ec) {
     return;
   } else if (ec) {
     return;
@@ -69,12 +71,12 @@ void LogTestServer::OnConnectionAccept(const std::error_code &ec,
   connections++;
   cSock->async_read_some(asio::buffer(receiveBuffer, bufferSize),
                          std::bind(&LogTestServer::HandleRead, this,
-                                   std::placeholders::_1,
-                                   std::placeholders::_2, cSock));
+                                   std::placeholders::_1, std::placeholders::_2,
+                                   cSock));
 }
 
-void LogTestServer::HandleRead(std::error_code ec,
-                               std::size_t bytesReceived, sock_ptr cSock) {
+void LogTestServer::HandleRead(std::error_code ec, std::size_t bytesReceived,
+                               sock_ptr cSock) {
   socketError = ec;
   if (asio::error::operation_aborted == ec) {
     RemoveSocket(cSock);
@@ -98,8 +100,8 @@ void LogTestServer::HandleRead(std::error_code ec,
   }
   cSock->async_read_some(asio::buffer(receiveBuffer, bufferSize),
                          std::bind(&LogTestServer::HandleRead, this,
-                                     std::placeholders::_1,
-                                     std::placeholders::_2, cSock));
+                                   std::placeholders::_1, std::placeholders::_2,
+                                   cSock));
 }
 
 void LogTestServer::RemoveSocket(sock_ptr cSock) {

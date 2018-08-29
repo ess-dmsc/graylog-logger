@@ -24,7 +24,7 @@ TEST(BaseLogHandler, DefaultStringCreatorTest) {
   BaseLogHandlerStandIn standIn;
   std::string logString = standIn.MsgStringCreator(msg);
   std::regex exp("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2} \\(Nohost\\) "
-                   "ALERT: Some test string");
+                 "ALERT: Some test string");
   ASSERT_TRUE(std::regex_match(logString.c_str(), exp));
 }
 

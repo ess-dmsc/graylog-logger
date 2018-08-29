@@ -6,14 +6,14 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-#include <chrono>
-#include <ciso646>
-#include <gtest/gtest.h>
-#include <asio.hpp>
-#include <thread>
 #include "BaseLogHandlerStandIn.hpp"
 #include "graylog_logger/LogUtil.hpp"
 #include "graylog_logger/LoggingBase.hpp"
+#include <asio.hpp>
+#include <chrono>
+#include <ciso646>
+#include <gtest/gtest.h>
+#include <thread>
 
 class LoggingBaseStandIn : public LoggingBase {
 public:

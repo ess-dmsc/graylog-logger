@@ -19,7 +19,8 @@ const std::string fileTestString("Some test string");
 void deleteFile(std::string Name) {
   auto Error = unlink(Name.c_str());
   if (Error) {
-    throw std::runtime_error("Failed to delete file with error code: " + std::to_string(Error));
+    throw std::runtime_error("Failed to delete file with error code: " +
+                             std::to_string(Error));
   }
 }
 
