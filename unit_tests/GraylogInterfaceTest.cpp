@@ -180,9 +180,12 @@ void TestJsonString(std::string jsonMsg) {
   EXPECT_NO_THROW(tempStr = JsonObject["short_message"]);
   EXPECT_EQ(tempStr, compLog.message);
   EXPECT_NO_THROW(tempDouble = JsonObject["timestamp"]);
-  EXPECT_NEAR(tempDouble,
-              double(std::chrono::system_clock::to_time_t(compLog.timestamp)),
-              0.01);
+  auto TempTS =
+      static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(
+                              compLog.timestamp.time_since_epoch())
+                              .count()) /
+      1000;
+  EXPECT_NEAR(tempDouble, TempTS, 0.01);
   EXPECT_NO_THROW(tempStr = JsonObject["host"]);
   EXPECT_EQ(tempStr, compLog.host);
   EXPECT_NO_THROW(tempInt = JsonObject["_process_id"]);
