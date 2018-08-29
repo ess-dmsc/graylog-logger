@@ -35,8 +35,7 @@ std::string GraylogInterface::LogMsgToJSON(const LogMessage &msg) {
   JsonObject["version"] = "1.1";
   JsonObject["level"] = int(msg.severity);
   JsonObject["host"] = msg.host;
-  JsonObject["timestamp"] =
-      double(std::chrono::system_clock::to_time_t(msg.timestamp));
+  JsonObject["timestamp"] = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(msg.timestamp.time_since_epoch()).count()) / 1000;
   JsonObject["_process_id"] = msg.processId;
   JsonObject["_process"] = msg.processName;
   JsonObject["_thread_id"] = msg.threadId;
