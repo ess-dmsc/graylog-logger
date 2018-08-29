@@ -1,6 +1,6 @@
 //
 //  LogTestServer.cpp
-//  BoostAsioTest
+//  AsioTest
 //
 //  Created by Jonas Nilsson on 2016-12-21.
 //  Copyright © 2016 European Spallation Source. All rights reserved.
@@ -59,6 +59,7 @@ void LogTestServer::ThreadFunction() { service.run(); }
 
 void LogTestServer::OnConnectionAccept(const std::error_code &ec,
                                        sock_ptr cSock) {
+  socketError = ec;
   if (asio::error::basic_errors::operation_aborted == ec or asio::error::basic_errors::bad_descriptor == ec) {
     return;
   } else if (ec) {
@@ -74,6 +75,7 @@ void LogTestServer::OnConnectionAccept(const std::error_code &ec,
 
 void LogTestServer::HandleRead(std::error_code ec,
                                std::size_t bytesReceived, sock_ptr cSock) {
+  socketError = ec;
   if (asio::error::operation_aborted == ec) {
     RemoveSocket(cSock);
     connections--;
