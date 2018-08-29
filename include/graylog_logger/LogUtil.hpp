@@ -24,6 +24,7 @@ enum class Severity : int {
   Warning = 4,
   Notice = 5,
   Informational = 6,
+  Info = 6,
   Debug = 7,
 };
 
