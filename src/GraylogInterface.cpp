@@ -7,9 +7,9 @@
 //
 
 #include "graylog_logger/GraylogInterface.hpp"
-#include "json.h"
 #include <ciso646>
 #include <cstring>
+#include <nlohmann/json.hpp>
 
 GraylogInterface::GraylogInterface(const std::string &host, const int port,
                                    const size_t maxQueueLength)
@@ -30,25 +30,27 @@ void GraylogInterface::AddMessage(const LogMessage &msg) {
 }
 
 std::string GraylogInterface::LogMsgToJSON(const LogMessage &msg) {
-  Json::Value root;
-  root["short_message"] = msg.message;
-  root["version"] = "1.1";
-  root["level"] = int(msg.severity);
-  root["host"] = msg.host;
-  root["timestamp"] =
-      double(std::chrono::system_clock::to_time_t(msg.timestamp));
-  root["_process_id"] = msg.processId;
-  root["_process"] = msg.processName;
-  root["_thread_id"] = msg.threadId;
+  nlohmann::json JsonObject;
+  JsonObject["short_message"] = msg.message;
+  JsonObject["version"] = "1.1";
+  JsonObject["level"] = int(msg.severity);
+  JsonObject["host"] = msg.host;
+  JsonObject["timestamp"] =
+      static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(
+                              msg.timestamp.time_since_epoch())
+                              .count()) /
+      1000;
+  JsonObject["_process_id"] = msg.processId;
+  JsonObject["_process"] = msg.processName;
+  JsonObject["_thread_id"] = msg.threadId;
   for (auto &field : msg.additionalFields) {
     if (AdditionalField::Type::typeStr == field.second.FieldType) {
-      root["_" + field.first] = field.second.strVal;
+      JsonObject["_" + field.first] = field.second.strVal;
     } else if (AdditionalField::Type::typeDbl == field.second.FieldType) {
-      root["_" + field.first] = field.second.dblVal;
+      JsonObject["_" + field.first] = field.second.dblVal;
     } else if (AdditionalField::Type::typeInt == field.second.FieldType) {
-      root["_" + field.first] = field.second.intVal;
+      JsonObject["_" + field.first] = field.second.intVal;
     }
   }
-  Json::FastWriter writer;
-  return writer.write(root);
+  return JsonObject.dump();
 }

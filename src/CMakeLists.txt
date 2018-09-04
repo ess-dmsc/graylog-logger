@@ -5,7 +5,6 @@ set(Graylog_SRC
     FileInterface.cpp
     GraylogConnection.cpp
     GraylogInterface.cpp
-    jsoncpp.cpp
     Log.cpp
     Logger.cpp
     LoggingBase.cpp
@@ -24,11 +23,7 @@ set(Graylog_INC
     ../include/graylog_logger/LogUtil.hpp
 )
 
-set(Graylog_private_INC
-  json.h
-)
-
-add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC} ${Graylog_private_INC})
+add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(GraylogLogger::graylog_logger ALIAS graylog_logger)
 target_link_libraries(graylog_logger ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(graylog_logger
@@ -55,8 +50,6 @@ set_target_properties(graylog_logger_static PROPERTIES VERSION ${PROJECT_VERSION
 
 add_cppcheck_target(
     graylog_logger
-    "../src/jsoncpp.cpp"
-    "../include/graylog_logger/json.h"
     "../include/graylog_logger/ConcurrentQueue.hpp"
 )
 

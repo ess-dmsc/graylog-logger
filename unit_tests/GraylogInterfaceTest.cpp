@@ -6,27 +6,18 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-// clang-format off
-#include <ciso646>
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <thread>
-#include <sstream>
-#include "graylog_logger/GraylogInterface.hpp"
 #include "LogTestServer.hpp"
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
+#include "graylog_logger/GraylogInterface.hpp"
+#include <ciso646>
 #include <cmath>
-// clang-format on
-
-using namespace boost::property_tree;
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
+#include <thread>
 
 MATCHER(IsJSON, "") {
-  std::stringstream ss;
-  ss << arg;
-  ptree pt;
   try {
-    read_json(ss, pt);
+    auto Res = nlohmann::json::parse(arg);
   } catch (std::exception const &e) {
     return false;
   }
@@ -77,19 +68,19 @@ TEST_F(GraylogConnectionCom, UnknownHostTest) {
   std::this_thread::sleep_for(sleepTime);
   ASSERT_EQ(logServer->GetNrOfConnections(), 0);
   ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
-  ASSERT_EQ(logServer->GetLastSocketError(), int(errc_t::success));
+  ASSERT_TRUE(!logServer->GetLastSocketError());
 }
 
 TEST_F(GraylogConnectionCom, ConnectionTest) {
   ASSERT_EQ(0, logServer->GetNrOfConnections());
   ASSERT_EQ(0, logServer->GetLatestMessage().size());
-  ASSERT_EQ(int(errc_t::success), logServer->GetLastSocketError());
+  ASSERT_TRUE(!logServer->GetLastSocketError());
   {
     GraylogConnectionStandIn con("localhost", testPort);
     std::this_thread::sleep_for(sleepTime);
     ASSERT_EQ(1, logServer->GetNrOfConnections());
     ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
-    ASSERT_EQ(logServer->GetLastSocketError(), int(errc_t::success));
+    ASSERT_TRUE(!logServer->GetLastSocketError());
     ASSERT_EQ(GraylogConnection::ConStatus::NEW_MESSAGE,
               con.GetConnectionStatus())
         << "Connection status returned " << int(con.GetConnectionStatus());
@@ -97,7 +88,8 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
   std::this_thread::sleep_for(sleepTime);
   ASSERT_EQ(0, logServer->GetNrOfConnections());
   ASSERT_EQ(0, logServer->GetLatestMessage().size());
-  ASSERT_EQ(int(errc_t::success), logServer->GetLastSocketError());
+  auto SocketError = logServer->GetLastSocketError();
+  ASSERT_TRUE(SocketError == asio::error::misc_errors::eof);
 }
 
 TEST_F(GraylogConnectionCom, CloseConnectionTest) {
@@ -124,7 +116,7 @@ TEST_F(GraylogConnectionCom, MessageTransmissionTest) {
     GraylogConnectionStandIn con("localhost", testPort);
     con.SendMessage(testString);
     std::this_thread::sleep_for(sleepTime);
-    ASSERT_EQ(int(errc_t::success), logServer->GetLastSocketError());
+    ASSERT_TRUE(!logServer->GetLastSocketError());
     ASSERT_EQ(testString, logServer->GetLatestMessage());
     ASSERT_EQ(testString.size() + 1, logServer->GetReceivedBytes());
     ASSERT_EQ(1, logServer->GetNrOfConnections());
@@ -143,7 +135,7 @@ TEST_F(GraylogConnectionCom, MultipleMessagesTest) {
       con.SendMessage(ln);
     }
     std::this_thread::sleep_for(sleepTime);
-    ASSERT_EQ(int(errc_t::success), logServer->GetLastSocketError());
+    ASSERT_TRUE(!logServer->GetLastSocketError());
     ASSERT_EQ(lines[lines.size() - 1], logServer->GetLatestMessage());
     ASSERT_EQ(totalBytes, logServer->GetReceivedBytes());
     ASSERT_EQ(1, logServer->GetNrOfConnections());
@@ -177,29 +169,29 @@ TEST(GraylogInterfaceCom, MessageJSONTest) {
 }
 
 void TestJsonString(std::string jsonMsg) {
-  std::stringstream ss;
-  ss << jsonMsg;
-  ptree pt;
-  EXPECT_NO_THROW(read_json(ss, pt));
+  auto JsonObject = nlohmann::json::parse(jsonMsg);
   LogMessage compLog = GetPopulatedLogMsg();
   std::string tempStr;
   double tempDouble = 0;
   int tempInt = 0;
-  EXPECT_NO_THROW(tempStr = pt.get<std::string>("short_message"));
+  EXPECT_NO_THROW(tempStr = JsonObject["short_message"]);
   EXPECT_EQ(tempStr, compLog.message);
-  EXPECT_NO_THROW(tempDouble = pt.get<double>("timestamp"));
-  EXPECT_NEAR(tempDouble,
-              double(std::chrono::system_clock::to_time_t(compLog.timestamp)),
-              0.01);
-  EXPECT_NO_THROW(tempStr = pt.get<std::string>("host"));
+  EXPECT_NO_THROW(tempDouble = JsonObject["timestamp"]);
+  auto TempTS =
+      static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(
+                              compLog.timestamp.time_since_epoch())
+                              .count()) /
+      1000;
+  EXPECT_NEAR(tempDouble, TempTS, 0.01);
+  EXPECT_NO_THROW(tempStr = JsonObject["host"]);
   EXPECT_EQ(tempStr, compLog.host);
-  EXPECT_NO_THROW(tempInt = pt.get<int>("_process_id"));
+  EXPECT_NO_THROW(tempInt = JsonObject["_process_id"]);
   EXPECT_EQ(tempInt, compLog.processId);
-  EXPECT_NO_THROW(tempStr = pt.get<std::string>("_process"));
+  EXPECT_NO_THROW(tempStr = JsonObject["_process"]);
   EXPECT_EQ(tempStr, compLog.processName);
-  EXPECT_NO_THROW(tempInt = pt.get<int>("level"));
+  EXPECT_NO_THROW(tempInt = JsonObject["level"]);
   EXPECT_EQ(tempInt, int(compLog.severity));
-  EXPECT_NO_THROW(tempStr = pt.get<std::string>("_thread_id"));
+  EXPECT_NO_THROW(tempStr = JsonObject["_thread_id"]);
   EXPECT_EQ(tempStr, compLog.threadId);
 }
 
@@ -211,14 +203,6 @@ TEST(GraylogInterfaceCom, MessageJSONContentTest) {
   con.AddMessage(msg);
 }
 
-ptree ParseJSON(std::string str) {
-  std::stringstream ss;
-  ss << str;
-  ptree pt;
-  EXPECT_NO_THROW(read_json(ss, pt));
-  return pt;
-}
-
 TEST(GraylogInterfaceCom, TestAdditionalFieldString) {
   GraylogInterfaceStandIn con("localhost", testPort, 100);
   LogMessage testMsg = GetPopulatedLogMsg();
@@ -226,9 +210,9 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldString) {
   std::string value = "yet another value";
   testMsg.AddField(key, value);
   std::string jsonStr = con.LogMsgToJSON(testMsg);
-  ptree pt = ParseJSON(jsonStr);
+  auto JsonObject = nlohmann::json::parse(jsonStr);
   std::string tempStr;
-  EXPECT_NO_THROW(tempStr = pt.get<std::string>("_" + key));
+  EXPECT_NO_THROW(tempStr = JsonObject["_" + key]);
   EXPECT_EQ(tempStr, value);
 }
 
@@ -239,9 +223,9 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldInt) {
   std::int64_t value = -12431454;
   testMsg.AddField(key, value);
   std::string jsonStr = con.LogMsgToJSON(testMsg);
-  ptree pt = ParseJSON(jsonStr);
+  auto JsonObject = nlohmann::json::parse(jsonStr);
   std::int64_t tempVal = 0;
-  EXPECT_NO_THROW(tempVal = pt.get<std::int64_t>("_" + key));
+  EXPECT_NO_THROW(tempVal = JsonObject["_" + key]);
   EXPECT_EQ(tempVal, value);
 }
 
@@ -252,8 +236,8 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldDouble) {
   double value = 3.1415926535897932384626433832795028841;
   testMsg.AddField(key, value);
   std::string jsonStr = con.LogMsgToJSON(testMsg);
-  ptree pt = ParseJSON(jsonStr);
+  auto JsonObject = nlohmann::json::parse(jsonStr);
   double tempVal;
-  EXPECT_NO_THROW(tempVal = pt.get<double>("_" + key));
+  EXPECT_NO_THROW(tempVal = JsonObject["_" + key]);
   EXPECT_EQ(tempVal, value);
 }

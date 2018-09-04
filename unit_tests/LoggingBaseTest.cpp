@@ -6,17 +6,14 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-#include <boost/asio.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/thread.hpp>
+#include "BaseLogHandlerStandIn.hpp"
+#include "graylog_logger/LogUtil.hpp"
+#include "graylog_logger/LoggingBase.hpp"
+#include <asio.hpp>
 #include <chrono>
 #include <ciso646>
 #include <gtest/gtest.h>
 #include <thread>
-//#include <boost/log/attributes/current_process_name.hpp>
-#include "BaseLogHandlerStandIn.hpp"
-#include "graylog_logger/LogUtil.hpp"
-#include "graylog_logger/LoggingBase.hpp"
 
 class LoggingBaseStandIn : public LoggingBase {
 public:
@@ -203,13 +200,11 @@ TEST(LoggingBase, MachineInfoTest) {
   log.AddLogHandler(standIn);
   log.Log(Severity::Critical, "No message");
   LogMessage msg = standIn->cMsg;
-  ASSERT_EQ(msg.host, boost::asio::ip::host_name()) << "Incorrect host name.";
+  ASSERT_EQ(msg.host, asio::ip::host_name()) << "Incorrect host name.";
   std::ostringstream ss;
   ss << std::this_thread::get_id();
   ASSERT_EQ(msg.threadId, ss.str()) << "Incorrect thread id.";
   ASSERT_EQ(msg.processId, getpid()) << "Incorrect process id.";
-  // ASSERT_EQ(msg.processName, boost::log::aux::get_process_name()) <<
-  // "Incorrect process name.";
 }
 
 TEST(LoggingBase, TimestampTest) {
