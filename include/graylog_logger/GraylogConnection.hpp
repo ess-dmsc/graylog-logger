@@ -41,7 +41,7 @@ protected:
   bool IsMessagePolling{false};
 
   void ThreadFunction();
-  void SetState(Status newState);
+  void SetState(Status NewState);
 
   Status ConnectionState{Status::ADDR_LOOKUP};
 
@@ -60,7 +60,8 @@ private:
                        asio::ip::tcp::resolver::iterator EndpointIter);
   void connectHandler(const asio::error_code &Error, QueryResult AllEndpoints);
   void sentMessageHandler(const asio::error_code &Error, std::size_t BytesSent);
-  void receiveHandler(const asio::error_code &Error, std::size_t BytesReceived);
+  void receiveHandler(const asio::error_code &Error,
+                      __attribute__((unused)) std::size_t BytesReceived);
   void trySendMessage();
   void waitForMessage();
   void doAddressQuery();

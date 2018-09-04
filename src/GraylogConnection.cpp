@@ -10,14 +10,15 @@
 #include <chrono>
 #include <ciso646>
 #include <iostream>
+#include <utility>
 
 struct QueryResult {
-  explicit QueryResult(asio::ip::tcp::resolver::iterator Endpoints)
-      : EndpointIterator(Endpoints) {
-    while (Endpoints != asio::ip::tcp::resolver::iterator()) {
-      auto CEndpoint = *Endpoints;
+  explicit QueryResult(asio::ip::tcp::resolver::iterator &&Endpoints)
+      : EndpointIterator(std::move(Endpoints)) {
+    while (EndpointIterator != asio::ip::tcp::resolver::iterator()) {
+      auto CEndpoint = *EndpointIterator;
       EndpointList.emplace_back(CEndpoint);
-      ++Endpoints;
+      ++EndpointIterator;
     }
     std::sort(EndpointList.begin(), EndpointList.end(), [](auto &a, auto &b) {
       return a.address().is_v6() < b.address().is_v6();
@@ -27,7 +28,7 @@ struct QueryResult {
     if (NextEndpoint < EndpointList.size()) {
       return EndpointList[NextEndpoint++];
     }
-    return asio::ip::tcp::endpoint();
+    return {};
   }
   bool isDone() const { return NextEndpoint >= EndpointList.size(); }
   asio::ip::tcp::resolver::iterator EndpointIterator;
@@ -51,7 +52,7 @@ void GraylogConnection::resolverHandler(
     reConnect(ReconnectDelay::LONG);
     return;
   }
-  QueryResult AllEndpoints(EndpointIter);
+  QueryResult AllEndpoints(std::move(EndpointIter));
   auto CurrentEndpoint = AllEndpoints.getNextEndpoint();
   auto HandlerGlue = [this, AllEndpoints](auto &Err) {
     this->connectHandler(Err, AllEndpoints);
@@ -101,6 +102,7 @@ void GraylogConnection::reConnect(ReconnectDelay Delay) {
 }
 
 void GraylogConnection::receiveHandler(const asio::error_code &Error,
+                                       __attribute__((unused))
                                        std::size_t BytesReceived) {
   if (Error) {
     Socket.close();
