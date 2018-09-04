@@ -116,7 +116,6 @@ void GraylogConnection::trySendMessage() {
   }
   bool PopResult = LogMessages.try_pop(CurrentMessage);
   if (PopResult) {
-    TotalBytesSent = 0;
     auto HandlerGlue = [this](auto &Err, auto Size) {
       this->sentMessageHandler(Err, Size);
     };
