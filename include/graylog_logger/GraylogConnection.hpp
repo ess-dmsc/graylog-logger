@@ -18,20 +18,19 @@
 
 struct QueryResult;
 
+/// \todo Implement timeouts in the ASIO code in case we ever have problems with
+/// bad connections.
+
 class GraylogConnection {
 public:
   GraylogConnection(std::string Host, int Port);
   virtual ~GraylogConnection();
   virtual void SendMessage(std::string msg) { LogMessages.push(msg); };
   enum class Status {
-    NONE,
     ADDR_LOOKUP,
     ADDR_RETRY_WAIT,
     CONNECT,
-    CONNECT_WAIT,
-    CONNECT_RETRY_WAIT,
     SEND_LOOP,
-    NEW_MESSAGE
   };
   Status GetConnectionStatus() const;
 
