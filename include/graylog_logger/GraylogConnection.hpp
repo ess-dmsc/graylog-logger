@@ -9,12 +9,12 @@
 #pragma once
 
 #include "graylog_logger/ConcurrentQueue.hpp"
+#include <array>
+#include <asio.hpp>
 #include <atomic>
 #include <memory>
-#include <asio.hpp>
 #include <string>
 #include <thread>
-#include <array>
 
 struct QueryResult;
 
@@ -22,7 +22,7 @@ class GraylogConnection {
 public:
   GraylogConnection(const std::string &Host, int Port);
   virtual ~GraylogConnection();
-  virtual void SendMessage(std::string msg) {LogMessages.push(msg);};
+  virtual void SendMessage(std::string msg) { LogMessages.push(msg); };
   enum class Status {
     NONE,
     ADDR_LOOKUP,
@@ -36,35 +36,28 @@ public:
   Status GetConnectionStatus();
 
 protected:
-  enum class ReconnectDelay {
-    LONG,
-    SHORT
-  };
-  
+  enum class ReconnectDelay { LONG, SHORT };
+
   bool IsMessagePolling{false};
-  
+
   void ThreadFunction();
   void SetState(Status newState);
-
-  const time_t retryDelay = 10; // In seconds
-  time_t endWait;
-  int connectionTries{0};
 
   Status ConnectionState{Status::ADDR_LOOKUP};
 
   std::atomic_bool closeThread{false};
 
   std::string CurrentMessage;
-  ssize_t TotalBytesSent{0};
-  bool firstMessage{true};
 
   std::string HostAddress;
   std::string HostPort;
 
   std::thread AsioThread;
   ConcurrentQueue<std::string> LogMessages;
+
 private:
-  void resolverHandler(const asio::error_code &Error, asio::ip::tcp::resolver::iterator EndpointIter);
+  void resolverHandler(const asio::error_code &Error,
+                       asio::ip::tcp::resolver::iterator EndpointIter);
   void connectHandler(const asio::error_code &Error, QueryResult AllEndpoints);
   void sentMessageHandler(const asio::error_code &Error, std::size_t BytesSent);
   void receiveHandler(const asio::error_code &Error, std::size_t BytesReceived);
@@ -72,9 +65,9 @@ private:
   void waitForMessage();
   void doAddressQuery();
   void reConnect(ReconnectDelay Delay);
-  
+
   typedef std::unique_ptr<asio::io_service::work> WorkPtr;
-  
+
   std::array<std::uint8_t, 64> InputBuffer;
   asio::io_service Service;
   WorkPtr Work;
