@@ -20,7 +20,7 @@ struct QueryResult;
 
 class GraylogConnection {
 public:
-  GraylogConnection(const std::string &Host, int Port);
+  GraylogConnection(std::string Host, int Port);
   virtual ~GraylogConnection();
   virtual void SendMessage(std::string msg) { LogMessages.push(msg); };
   enum class Status {
@@ -69,7 +69,7 @@ private:
 
   typedef std::unique_ptr<asio::io_service::work> WorkPtr;
 
-  std::array<std::uint8_t, 64> InputBuffer;
+  std::array<std::uint8_t, 64> InputBuffer{};
   asio::io_service Service;
   WorkPtr Work;
   asio::ip::tcp::socket Socket;

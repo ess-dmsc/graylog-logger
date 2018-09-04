@@ -36,8 +36,8 @@ struct QueryResult {
   int NextEndpoint{0};
 };
 
-GraylogConnection::GraylogConnection(const std::string &Host, int Port)
-    : HostAddress(Host), HostPort(std::to_string(Port)), Service(),
+GraylogConnection::GraylogConnection(std::string Host, int Port)
+    : HostAddress(std::move(Host)), HostPort(std::to_string(Port)), Service(),
       Work(new asio::io_service::work(Service)), Socket(Service),
       Resolver(Service), ReconnectTimeout(Service, std::chrono::seconds(10)) {
   doAddressQuery();
