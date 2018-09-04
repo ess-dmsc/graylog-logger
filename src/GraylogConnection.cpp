@@ -12,7 +12,7 @@
 #include <iostream>
 
 struct QueryResult {
-  QueryResult(asio::ip::tcp::resolver::iterator Endpoints)
+  explicit QueryResult(asio::ip::tcp::resolver::iterator Endpoints)
       : EndpointIterator(Endpoints) {
     while (Endpoints != asio::ip::tcp::resolver::iterator()) {
       auto CEndpoint = *Endpoints;
@@ -29,7 +29,7 @@ struct QueryResult {
     }
     return asio::ip::tcp::endpoint();
   }
-  bool isDone() { return NextEndpoint >= EndpointList.size(); }
+  bool isDone() const { return NextEndpoint >= EndpointList.size(); }
   asio::ip::tcp::resolver::iterator EndpointIterator;
   std::vector<asio::ip::tcp::endpoint> EndpointList;
   int NextEndpoint{0};
@@ -169,7 +169,7 @@ GraylogConnection::~GraylogConnection() {
   Socket.close();
 }
 
-GraylogConnection::Status GraylogConnection::GetConnectionStatus() {
+GraylogConnection::Status GraylogConnection::GetConnectionStatus() const {
   return ConnectionState;
 }
 

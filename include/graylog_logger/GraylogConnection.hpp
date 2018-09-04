@@ -33,7 +33,7 @@ public:
     SEND_LOOP,
     NEW_MESSAGE
   };
-  Status GetConnectionStatus();
+  Status GetConnectionStatus() const;
 
 protected:
   enum class ReconnectDelay { LONG, SHORT };
