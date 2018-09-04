@@ -12,7 +12,7 @@
 
 LogTestServer::LogTestServer(short port)
     : service(),
-      acceptor(service, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
+      acceptor(service, asio::ip::tcp::endpoint(asio::ip::tcp::v6(), port)) {
   socketError.clear();
   connections = 0;
   receivedBytes = 0;
