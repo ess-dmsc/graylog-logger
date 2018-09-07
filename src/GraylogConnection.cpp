@@ -12,6 +12,9 @@
 #include <iostream>
 #include <utility>
 
+using std::chrono_literals::operator""ms;
+using std::chrono_literals::operator""s;
+
 struct QueryResult {
   explicit QueryResult(asio::ip::tcp::resolver::iterator &&Endpoints)
       : EndpointIterator(std::move(Endpoints)) {
@@ -36,10 +39,19 @@ struct QueryResult {
   int NextEndpoint{0};
 };
 
+void GraylogConnection::tryConnect(QueryResult AllEndpoints) {
+  asio::ip::tcp::endpoint CurrentEndpoint = AllEndpoints.getNextEndpoint();
+  auto HandlerGlue = [this, AllEndpoints](auto &Err) {
+    this->connectHandler(Err, AllEndpoints);
+  };
+  Socket.async_connect(CurrentEndpoint, HandlerGlue);
+  SetState(Status::CONNECT);
+}
+
 GraylogConnection::GraylogConnection(std::string Host, int Port)
     : HostAddress(std::move(Host)), HostPort(std::to_string(Port)), Service(),
       Work(new asio::io_service::work(Service)), Socket(Service),
-      Resolver(Service), ReconnectTimeout(Service, std::chrono::seconds(10)) {
+      Resolver(Service), ReconnectTimeout(Service, 10s) {
   doAddressQuery();
   AsioThread = std::thread(&GraylogConnection::ThreadFunction, this);
 }
@@ -49,16 +61,11 @@ void GraylogConnection::resolverHandler(
     asio::ip::tcp::resolver::iterator EndpointIter) {
   if (Error) {
     SetState(Status::ADDR_RETRY_WAIT);
-    reConnect(ReconnectDelay::LONG);
+    reconnect(ReconnectDelay::LONG);
     return;
   }
   QueryResult AllEndpoints(std::move(EndpointIter));
-  auto CurrentEndpoint = AllEndpoints.getNextEndpoint();
-  auto HandlerGlue = [this, AllEndpoints](auto &Err) {
-    this->connectHandler(Err, AllEndpoints);
-  };
-  Socket.async_connect(CurrentEndpoint, HandlerGlue);
-  SetState(Status::CONNECT);
+  tryConnect(AllEndpoints);
 }
 
 void GraylogConnection::connectHandler(const asio::error_code &Error,
@@ -75,26 +82,21 @@ void GraylogConnection::connectHandler(const asio::error_code &Error,
   }
   Socket.close();
   if (AllEndpoints.isDone()) {
-    reConnect(ReconnectDelay::LONG);
+    reconnect(ReconnectDelay::LONG);
     return;
   }
-  asio::ip::tcp::endpoint CurrentEndpoint = AllEndpoints.getNextEndpoint();
-  auto HandlerGlue = [this, AllEndpoints](auto &Err) {
-    this->connectHandler(Err, AllEndpoints);
-  };
-  Socket.async_connect(CurrentEndpoint, HandlerGlue);
-  SetState(Status::CONNECT);
+  tryConnect(AllEndpoints);
 }
 
-void GraylogConnection::reConnect(ReconnectDelay Delay) {
+void GraylogConnection::reconnect(ReconnectDelay Delay) {
   auto HandlerGlue = [this](auto &Err) { this->doAddressQuery(); };
   switch (Delay) {
   case ReconnectDelay::SHORT:
-    ReconnectTimeout.expires_after(std::chrono::milliseconds(50));
+    ReconnectTimeout.expires_after(50ms);
     break;
-  case ReconnectDelay::LONG:
+  case ReconnectDelay::LONG: // Fallthrough
   default:
-    ReconnectTimeout.expires_after(std::chrono::seconds(10));
+    ReconnectTimeout.expires_after(10s);
     break;
   }
   ReconnectTimeout.async_wait(HandlerGlue);
@@ -106,9 +108,13 @@ void GraylogConnection::receiveHandler(const asio::error_code &Error,
                                        std::size_t BytesReceived) {
   if (Error) {
     Socket.close();
-    reConnect(ReconnectDelay::SHORT);
+    reconnect(ReconnectDelay::SHORT);
     return;
   }
+  auto HandlerGlue = [this](auto &Error, auto Size) {
+    this->receiveHandler(Error, Size);
+  };
+  Socket.async_receive(asio::buffer(InputBuffer), HandlerGlue);
 }
 
 void GraylogConnection::trySendMessage() {
@@ -154,7 +160,7 @@ void GraylogConnection::waitForMessage() {
 
 void GraylogConnection::doAddressQuery() {
   if (IsMessagePolling) {
-    reConnect(GraylogConnection::ReconnectDelay::SHORT);
+    reconnect(GraylogConnection::ReconnectDelay::SHORT);
   }
   SetState(Status::ADDR_LOOKUP);
   asio::ip::tcp::resolver::query Query(HostAddress, HostPort);
@@ -166,7 +172,6 @@ void GraylogConnection::doAddressQuery() {
 
 GraylogConnection::~GraylogConnection() {
   Service.stop();
-  Work.reset();
   AsioThread.join();
   Socket.close();
 }
