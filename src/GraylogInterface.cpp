@@ -16,15 +16,15 @@ GraylogInterface::GraylogInterface(const std::string &host, const int port,
     : BaseLogHandler(maxQueueLength), GraylogConnection(host, port) {}
 
 bool GraylogInterface::MessagesQueued() {
-  return GraylogConnection::logMessages.size() > 0;
+  return GraylogConnection::LogMessages.size() > 0;
 }
 
 size_t GraylogInterface::QueueSize() {
-  return GraylogConnection::logMessages.size();
+  return GraylogConnection::LogMessages.size();
 }
 
 void GraylogInterface::AddMessage(const LogMessage &msg) {
-  if (GraylogConnection::logMessages.size() < BaseLogHandler::queueLength) {
+  if (GraylogConnection::LogMessages.size() < BaseLogHandler::queueLength) {
     SendMessage(LogMsgToJSON(msg));
   }
 }

@@ -10,7 +10,6 @@
 
 #include <asio.hpp>
 #include <atomic>
-#include <iostream>
 #include <string>
 #include <thread>
 #include <vector>

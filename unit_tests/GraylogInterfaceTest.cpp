@@ -12,6 +12,7 @@
 #include <cmath>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include <thread>
 
@@ -37,7 +38,6 @@ public:
   GraylogConnectionStandIn(std::string host, int port, int queueLength = 100)
       : GraylogConnection(host, port){};
   ~GraylogConnectionStandIn(){};
-  using GraylogConnection::EndThread;
 };
 
 const int testPort = 2526;
@@ -45,9 +45,11 @@ const std::chrono::milliseconds sleepTime(100);
 
 class GraylogConnectionCom : public ::testing::Test {
 public:
-  static void SetUpTestCase() { logServer = new LogTestServer(testPort); };
+  static void SetUpTestCase() {
+    logServer = std::make_unique<LogTestServer>(testPort);
+  };
 
-  static void TearDownTestCase() { delete logServer; };
+  static void TearDownTestCase() { logServer.reset(); };
 
   virtual void SetUp(){};
 
@@ -58,10 +60,10 @@ public:
     logServer->ClearReceivedBytes();
   };
 
-  static LogTestServer *logServer;
+  static std::unique_ptr<LogTestServer> logServer;
 };
 
-LogTestServer *GraylogConnectionCom::logServer = nullptr;
+std::unique_ptr<LogTestServer> GraylogConnectionCom::logServer;
 
 TEST_F(GraylogConnectionCom, UnknownHostTest) {
   GraylogConnectionStandIn con("no_host", testPort);
@@ -69,6 +71,7 @@ TEST_F(GraylogConnectionCom, UnknownHostTest) {
   ASSERT_EQ(logServer->GetNrOfConnections(), 0);
   ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
   ASSERT_TRUE(!logServer->GetLastSocketError());
+  EXPECT_NE(con.GetConnectionStatus(), GraylogConnection::Status::SEND_LOOP);
 }
 
 TEST_F(GraylogConnectionCom, ConnectionTest) {
@@ -81,8 +84,7 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
     ASSERT_EQ(1, logServer->GetNrOfConnections());
     ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
     ASSERT_TRUE(!logServer->GetLastSocketError());
-    ASSERT_EQ(GraylogConnection::ConStatus::NEW_MESSAGE,
-              con.GetConnectionStatus())
+    ASSERT_EQ(GraylogConnection::Status::SEND_LOOP, con.GetConnectionStatus())
         << "Connection status returned " << int(con.GetConnectionStatus());
   }
   std::this_thread::sleep_for(sleepTime);
@@ -92,22 +94,49 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
   ASSERT_TRUE(SocketError == asio::error::misc_errors::eof);
 }
 
+TEST_F(GraylogConnectionCom, IPv6ConnectionTest) {
+  ASSERT_EQ(0, logServer->GetNrOfConnections());
+  ASSERT_EQ(0, logServer->GetLatestMessage().size());
+  ASSERT_TRUE(!logServer->GetLastSocketError());
+  {
+    GraylogConnectionStandIn con("::1", testPort);
+    std::this_thread::sleep_for(sleepTime);
+    ASSERT_EQ(1, logServer->GetNrOfConnections());
+    ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
+    ASSERT_TRUE(!logServer->GetLastSocketError());
+    ASSERT_EQ(GraylogConnection::Status::SEND_LOOP, con.GetConnectionStatus())
+        << "Connection status returned " << int(con.GetConnectionStatus());
+  }
+  std::this_thread::sleep_for(sleepTime);
+  ASSERT_EQ(0, logServer->GetNrOfConnections());
+  ASSERT_EQ(0, logServer->GetLatestMessage().size());
+  auto SocketError = logServer->GetLastSocketError();
+  ASSERT_TRUE(SocketError == asio::error::misc_errors::eof);
+}
+
+TEST_F(GraylogConnectionCom, WrongPortTest) {
+  GraylogConnectionStandIn con("localhost", testPort + 1);
+  std::this_thread::sleep_for(sleepTime);
+  ASSERT_EQ(logServer->GetNrOfConnections(), 0);
+  ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
+  ASSERT_TRUE(!logServer->GetLastSocketError());
+  EXPECT_NE(con.GetConnectionStatus(), GraylogConnection::Status::SEND_LOOP);
+}
+
 TEST_F(GraylogConnectionCom, CloseConnectionTest) {
   {
     GraylogConnectionStandIn con("localhost", testPort);
     std::this_thread::sleep_for(sleepTime);
-    ASSERT_EQ(GraylogConnection::ConStatus::NEW_MESSAGE,
-              con.GetConnectionStatus());
+    ASSERT_EQ(GraylogConnection::Status::SEND_LOOP, con.GetConnectionStatus());
     ASSERT_EQ(1, logServer->GetNrOfConnections());
     logServer->CloseAllConnections();
-    std::this_thread::sleep_for(sleepTime);
-    ASSERT_EQ(GraylogConnection::ConStatus::NEW_MESSAGE,
-              con.GetConnectionStatus());
-    ASSERT_EQ(1, logServer->GetNrOfConnections())
+    std::this_thread::sleep_for(sleepTime * 2);
+    EXPECT_EQ(GraylogConnection::Status::SEND_LOOP, con.GetConnectionStatus());
+    EXPECT_EQ(1, logServer->GetNrOfConnections())
         << "Failed to reconnect after connection was closed remotely.";
   }
   std::this_thread::sleep_for(sleepTime);
-  ASSERT_EQ(0, logServer->GetNrOfConnections());
+  EXPECT_EQ(0, logServer->GetNrOfConnections());
 }
 
 TEST_F(GraylogConnectionCom, MessageTransmissionTest) {
@@ -117,8 +146,8 @@ TEST_F(GraylogConnectionCom, MessageTransmissionTest) {
     con.SendMessage(testString);
     std::this_thread::sleep_for(sleepTime);
     ASSERT_TRUE(!logServer->GetLastSocketError());
-    ASSERT_EQ(testString, logServer->GetLatestMessage());
     ASSERT_EQ(testString.size() + 1, logServer->GetReceivedBytes());
+    ASSERT_EQ(testString, logServer->GetLatestMessage());
     ASSERT_EQ(1, logServer->GetNrOfConnections());
   }
 }

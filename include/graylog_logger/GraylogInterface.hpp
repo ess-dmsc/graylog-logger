@@ -19,7 +19,7 @@ public:
   virtual void AddMessage(const LogMessage &msg) override;
   virtual bool MessagesQueued() override;
   virtual size_t QueueSize() override;
-  using GraylogConnection::ConStatus;
+  using GraylogConnection::Status;
   using GraylogConnection::GetConnectionStatus;
 
 protected:
