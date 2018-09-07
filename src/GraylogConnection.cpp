@@ -20,7 +20,7 @@ struct QueryResult {
       : EndpointIterator(std::move(Endpoints)) {
     while (EndpointIterator != asio::ip::tcp::resolver::iterator()) {
       auto CEndpoint = *EndpointIterator;
-      EndpointList.emplace_back(CEndpoint);
+      EndpointList.push_back(CEndpoint);
       ++EndpointIterator;
     }
     std::sort(EndpointList.begin(), EndpointList.end(), [](auto &a, auto &b) {
