@@ -76,8 +76,24 @@ The items in the following list is in no particular order. Suggestions and/or pa
 
 ## Changes
 
+### Version 1.1.0
+* Completely removed the dependency on boost for unit testing.
+* Switched out the networking code for code using ASIO.
+* Updated to CMake code to use modern CMake features.
+* Switched to using the JSONForModernCPP library. This library is not included in the repository.
+* Added the `Info` severity level which is exactly the same as the `Informational` severity level.
+* Updated the CI-code (Jenkins) to build the library on more (modern) operating systems.
+* Messages are now passed to the graylog-server with millisecond resolution timestamps.
+* The code now requires C++14 to compile.
+* Updated the documentation.
+
+### Version 1.0.5
+* Improved the code based on clang-tidy static analysis results.
+* (Very) minor changes to the interface.
+
 ### Version 1.0.4
-* 
+* Switched to using position independent code (-fPIC). When building the static version of the library.
+* Updated the Jenkins-script.
 
 ### Version 1.0.3
 * Fixed serious excessive CPU usage bug and related memory leak in the Graylog server conenction code.
