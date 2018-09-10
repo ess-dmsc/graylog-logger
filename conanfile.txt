@@ -6,7 +6,6 @@ jsonformoderncpp/3.1.0@vthiery/stable
 
 [options]
 gtest:shared=True
-Boost:shared=True
 
 [generators]
 cmake
