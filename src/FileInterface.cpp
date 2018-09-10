@@ -1,10 +1,11 @@
-//
-//  FileInterface.cpp
-//  dm-graylog-logger
-//
-//  Created by Jonas Nilsson on 2016-12-19.
-//  Copyright © 2016 European Spallation Source. All rights reserved.
-//
+/* Copyright (C) 2018 European Spallation Source, ERIC. See LICENSE file */
+//===----------------------------------------------------------------------===//
+///
+/// \file
+///
+/// \brief Implements of the file writing module.
+///
+//===----------------------------------------------------------------------===//
 
 #include "graylog_logger/FileInterface.hpp"
 #include <ciso646>

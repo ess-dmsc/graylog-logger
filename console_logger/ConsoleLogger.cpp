@@ -1,10 +1,12 @@
-//
-//  main.cpp
-//  dm-graylog-logger
-//
-//  Created by Jonas Nilsson on 2016-12-15.
-//  Copyright © 2016 European Spallation Source. All rights reserved.
-//
+/* Copyright (C) 2018 European Spallation Source, ERIC. See LICENSE file */
+//===----------------------------------------------------------------------===//
+///
+/// \file
+///
+/// \brief Example application making use of logging.
+///
+//===----------------------------------------------------------------------===//
+
 
 #include <chrono>
 #include <ciso646>

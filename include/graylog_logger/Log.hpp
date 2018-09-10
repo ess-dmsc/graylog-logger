@@ -1,10 +1,13 @@
-//
-//  Log.hpp
-//  dm-graylog-logger
-//
-//  Created by Jonas Nilsson on 2016-12-19.
-//  Copyright © 2016 European Spallation Source. All rights reserved.
-//
+/* Copyright (C) 2018 European Spallation Source, ERIC. See LICENSE file */
+//===----------------------------------------------------------------------===//
+///
+/// \file
+///
+/// \brief Header file with declarations of the functions used to interface to
+/// the library.
+///
+//===----------------------------------------------------------------------===//
+
 
 #pragma once
 
