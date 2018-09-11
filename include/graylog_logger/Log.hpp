@@ -83,7 +83,7 @@ void Msg(const int sev, const std::string &message,
 ///
 /// \param[in] sev The severity level of the message.
 /// \param[in] message The log message as text.
-/// \param[in] extraField Multiple extra meta-data fields about the message.
+/// \param[in] extraFields Multiple extra meta-data fields about the message.
 void Msg(
     const Severity sev, const std::string &message,
     const std::vector<std::pair<std::string, AdditionalField>> &extraFields);
@@ -100,14 +100,14 @@ void Msg(
 /// \param[in] sev The severity level of the message as an integer value.
 /// Should probably fall within the range 0 to 7.
 /// \param[in] message The log message as text.
-/// \param[in] extraField Multiple extra meta-data fields about the message.
+/// \param[in] extraFields Multiple extra meta-data fields about the message.
 void Msg(
     const int sev, const std::string &message,
     const std::vector<std::pair<std::string, AdditionalField>> &extraFields);
 
 /// \brief Add a default field of meta-data to every message.
 ///
-/// It is possible to override the value of the default message by bassing
+/// It is possible to override the value of the default message by passing
 /// an additional field using the relevant key in one of the Log::Msg()
 /// functions.
 /// \param[in] key The key of the new default field.

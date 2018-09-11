@@ -43,7 +43,7 @@ struct AdditionalField {
 
   /// \brief Sets the instance of this struct to contain a floating point value
   /// (double).
-  /// \param[in] val The float value that will be stored by the struct.
+  /// \param[in] val The floating-point value that will be stored by the struct.
   AdditionalField(double val)
       : FieldType(Type::typeDbl), intVal(0), dblVal(val){};
   /// \brief Sets the instance of this struct to contain a std::string.
@@ -108,7 +108,7 @@ public:
   BaseLogHandler(const size_t maxQueueLength = 100);
   virtual ~BaseLogHandler() = default;
   /// \brief Called by the logging library when a new log message is created.
-  /// \note If the queue of messages is full; any new messages are discarded
+  /// \note If the queue of messages is full, any new messages are discarded
   /// without any indication that this has been done.
   /// \param[in] msg The log message.
   virtual void AddMessage(const LogMessage &msg);
@@ -117,13 +117,20 @@ public:
   /// expect that the return value will change between two calls.
   /// \return true if there are one or more messages in the queue, otherwise
   /// false.
+  /// \todo Change name to something slightly more logical.
   virtual bool MessagesQueued();
   /// \brief The number of messages in the queue.
   /// \note As messages can be added and removed by several different threads,
   /// expect that the return value will change between two calls.
   /// \return The number of messages in the queue.
   virtual size_t QueueSize();
-  /// \brief Used to
+  /// \brief Used to set a custom log message to std::string formatting
+  /// function.
+  ///
+  /// \note Use of this functionality can result in crashes if the function
+  /// uses resources that are de-allocated before the logging system is
+  /// de-allocated.
+  /// \param[in] ParserFunction The new custom message parsing function.
   void SetMessageStringCreatorFunction(
       std::function<std::string(const LogMessage &)> ParserFunction);
 

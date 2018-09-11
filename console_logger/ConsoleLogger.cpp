@@ -3,7 +3,7 @@
 ///
 /// \file
 ///
-/// \brief Example application making use of logging.
+/// \brief Example application making use of the graylog-logger library.
 ///
 //===----------------------------------------------------------------------===//
 

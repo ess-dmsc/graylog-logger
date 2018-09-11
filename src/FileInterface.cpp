@@ -3,7 +3,7 @@
 ///
 /// \file
 ///
-/// \brief Implements of the file writing module.
+/// \brief Implements the file writing module.
 ///
 //===----------------------------------------------------------------------===//
 

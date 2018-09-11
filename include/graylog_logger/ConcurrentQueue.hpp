@@ -3,7 +3,7 @@
 ///
 /// \file
 ///
-/// \brief Simple thread safe message queue.
+/// \brief Simple thread-safe message queue.
 ///
 //===----------------------------------------------------------------------===//
 

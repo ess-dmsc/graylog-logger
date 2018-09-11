@@ -3,7 +3,7 @@
 ///
 /// \file
 ///
-/// \brief Header file console interface.
+/// \brief Header file of console interface.
 ///
 //===----------------------------------------------------------------------===//
 

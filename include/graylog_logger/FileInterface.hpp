@@ -3,7 +3,7 @@
 ///
 /// \file
 ///
-/// \brief Header of file logging interface.
+/// \brief Header file of logging interface.
 ///
 //===----------------------------------------------------------------------===//
 

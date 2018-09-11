@@ -3,7 +3,7 @@
 ///
 /// \file
 ///
-/// \brief The interface implementation for sending messages to a graylgo
+/// \brief The interface implementation for sending messages to a graylog
 /// server.
 ///
 //===----------------------------------------------------------------------===//
