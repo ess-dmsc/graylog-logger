@@ -66,7 +66,14 @@ If compiled, the unit tests are run by running the ```unit_tests``` application 
 The basic interface to the library is very simple and it should be possible to get a understanding of it by studying the ``Log.hpp`` file. A practical example can be found in the source code for the console application, e.g. ``graylog-logger/console_logger/ConsoleLogger.cpp``. More examples on usage can be found on the ESS wiki page.
 
 ## Documentation
-The code has only limited documentation. Examples illustrating how the library can be used can be found on the ESS wiki and in the `EXAMPLES.md` file.
+The code has some documentation. To generate it, run _doxygen_ in the root of the repository i.e.:
+
+```
+cd graylog-logger
+doxygen
+```
+
+Examples illustrating how the library can be used can be found in the `EXAMPLES.md` file.
 
 ## To do
 The items in the following list is in no particular order. Suggestions and/or patches are welcome.
