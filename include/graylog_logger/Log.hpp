@@ -117,7 +117,7 @@ void AddField(const std::string &key, const AdditionalField &value);
 /// \brief Used to set the maximum severity level.
 ///
 /// Messages above this level will not be passed on. The default level is
-/// Severit::Notice, i.e. debug level messages will not be shown.
+/// Severity::Notice, i.e. debug level messages will not be shown.
 /// \param[in] sev The maximum severity level.
 void SetMinimumSeverity(const Severity sev);
 
