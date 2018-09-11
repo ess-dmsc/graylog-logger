@@ -14,40 +14,38 @@ The repository is split into three parts:
 A sister project to this library is the Python logging handler [GraylogHandler](https://github.com/ess-dmsc/graylog-handler).
 
 ## Requirements
-The logging library uses only standard libraries with one exception: [Jsoncpp](https://github.com/open-source-parsers/jsoncpp). This library is included in the project in the form of a header file and an implementation file and will thus not require any packages to be installed.
-C++11 features are used extensively and ignoring possible bugs, thread safety is only guaranteed if the compiler used has a correct C++11 (or above) implementation. Although the library should compile on most \*nix systems and, small differences in how sockets are handled could introduce bugs. The library may also compile on Windows (testing welcome 😀).
+The logging library depends on several external libraries:
 
-In order to build the unit tests, the following libraries are also required:
+* [GTest](https://github.com/google/googletest) (For testing.)
+* [JSONForModernCPP](https://github.com/nlohmann/json)
+* [ASIO](http://think-async.com) (For networking.)
 
-* [boost](http://boost.org)
+You will also need CMake (version ≥ 3.9) to build the project. The project makes use of library and language features provided by C++14. It might be possible to link to the library using compilers that only supports C++11 though this has not been tested.
 
-Conan will automatically download and build Google Test if required. For building it, CMake 2.8.12 or a more recent version is required.
+Due to the use of ASIO, the library should compile on most \*nix systems with no issues though only limited testing has been done. The library should also compile and work on Windows though this has not been tested.
 
 ## Build and install
-The library uses [Conan](https://conan.io) and [CMake](https://cmake.org) for building. To use Conan, set up the external repositories with the commands
+The library uses [Conan](https://conan.io) for providing dependencies and [CMake](https://cmake.org) for setting up a build environment. For Conan to be able to download the dependencies, the locations of the dependencies must be specified. Do that by running the following commands:
 
 ```
-conan remote add <remote> https://api.bintray.com/conan/conan-community/conan
-conan remote add <remote> https://api.bintray.com/conan/amues/graylog-logger
+conan remote add community https://api.bintray.com/conan/conan-community/conan
+conan remote add ess-dmsc https://api.bintray.com/conan/ess-dmsc/conan
+conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 ```
-where `<remote>` must be substituted by local names for the repositories.
 
-Use the following commands to build everything and to install the library:
+To checkout and build the library, run the following commands:
 
 ```
+git clone https://github.com/ess-dmsc/graylog-logger.git
+cd graylog-logger
 mkdir build
 cd build
-conan install <path_to_src_folder>/conan -o build_everything=True
-cmake <path_to_src_folder>
-make
+conan install .. --build=missing
+cmake ..
 make install
 ```
 
-In order to only build the library, call `conan` without the `build_everything` argument and set the **BUILD_EVERYTHING** variable to **OFF**, i.e. replace `cmake <path_to_src_folder>` with:
-
-```
-cmake <path_to_src_folder> -DBUILD_EVERYTHING=OFF
-```
+If you do not want to use Conan for providing the dependencies; install them in the way you prefer and simply follow the instructions above but ignore the Conan-step.
 
 ## Usage
 There are currently two alternatives for including this library in your own project.
@@ -55,10 +53,7 @@ There are currently two alternatives for including this library in your own proj
 ### 1. Include it as a Conan Package
 In this case, building the library from this repository is not necessary. See an example at https://github.com/ess-dmsc/conan-graylog-logger-test.
 
-### 2. Include source files
-As the library only depends on standard libraries, the easiest solution is likely to simply copy the implementation files from ```src``` and the directory containing the header files (```graylog_logger```in ```include```) to your own project.
-
-### 3. Use the compiled library
+### 2. Use the compiled library
 If the instructions under **Build and install** are followed, a compiled binary of the library and the relevant header files will be installed into some system location. Probably ```/usr/local/```. Simply link to the library in the same way as other libraries (e.g. ```-lgraylog_logger```).
 
 ### Optional: Using the command line application
@@ -71,20 +66,43 @@ If compiled, the unit tests are run by running the ```unit_tests``` application 
 The basic interface to the library is very simple and it should be possible to get a understanding of it by studying the ``Log.hpp`` file. A practical example can be found in the source code for the console application, e.g. ``graylog-logger/console_logger/ConsoleLogger.cpp``. More examples on usage can be found on the ESS wiki page.
 
 ## Documentation
-The code is currently not documented. Examples illustrating how the library can be used can be found on the ESS wiki and in the `EXAMPLES.md` file.
+The code has some documentation. To generate it, run _doxygen_ in the root of the repository i.e.:
+
+```
+cd graylog-logger
+doxygen
+```
+
+Examples illustrating how the library can be used can be found in the `EXAMPLES.md` file.
 
 ## To do
 The items in the following list is in no particular order. Suggestions and/or patches are welcome.
 
-* Document the code
-* Add more advanced logging features
-* Clean up the graylog code
-* Fix IPv4/IPv6 support
-* Add UDP support
-* Determine process name
-* ...
+* Log file rotation
+* UDP Messages
+* Integrate the fmt library?
+* Add example logging macros
 
 ## Changes
+
+### Version 1.1.0
+* Completely removed the dependency on boost for unit testing.
+* Switched out the networking code for code using ASIO.
+* Updated to CMake code to use modern CMake features.
+* Switched to using the JSONForModernCPP library. This library is not included in the repository.
+* Added the `Info` severity level which is exactly the same as the `Informational` severity level.
+* Updated the CI-code (Jenkins) to build the library on more (modern) operating systems.
+* Messages are now passed to the graylog-server with millisecond resolution timestamps.
+* The code now requires C++14 to compile.
+* Updated the documentation.
+
+### Version 1.0.5
+* Improved the code based on clang-tidy static analysis results.
+* (Very) minor changes to the interface.
+
+### Version 1.0.4
+* Switched to using position independent code (-fPIC). When building the static version of the library.
+* Updated the Jenkins-script.
 
 ### Version 1.0.3
 * Fixed serious excessive CPU usage bug and related memory leak in the Graylog server conenction code.

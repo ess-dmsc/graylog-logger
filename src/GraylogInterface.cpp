@@ -1,10 +1,12 @@
-
-//  KafkaInterface.cpp
-//  dm-graylog-logger
-//
-//  Created by Jonas Nilsson on 2016-12-15.
-//  Copyright © 2016 European Spallation Source. All rights reserved.
-//
+/* Copyright (C) 2018 European Spallation Source, ERIC. See LICENSE file */
+//===----------------------------------------------------------------------===//
+///
+/// \file
+///
+/// \brief The interface implementation for sending messages to a graylog
+/// server.
+///
+//===----------------------------------------------------------------------===//
 
 #include "graylog_logger/GraylogInterface.hpp"
 #include <ciso646>

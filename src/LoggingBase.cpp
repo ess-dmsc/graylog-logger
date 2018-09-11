@@ -1,10 +1,11 @@
-//
-//  LoggingBase.cpp
-//  dm-graylog-logger
-//
-//  Created by Jonas Nilsson on 2016-12-19.
-//  Copyright © 2016 European Spallation Source. All rights reserved.
-//
+/* Copyright (C) 2018 European Spallation Source, ERIC. See LICENSE file */
+//===----------------------------------------------------------------------===//
+///
+/// \file
+///
+/// \brief Implementation of the base logging class.
+///
+//===----------------------------------------------------------------------===//
 
 #include "graylog_logger/LoggingBase.hpp"
 #include <chrono>

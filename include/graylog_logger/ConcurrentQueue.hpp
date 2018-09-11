@@ -1,5 +1,11 @@
-//
-//  ConcurrentQueue.hpp
+/* Copyright (C) 2018 European Spallation Source, ERIC. See LICENSE file */
+//===----------------------------------------------------------------------===//
+///
+/// \file
+///
+/// \brief Simple thread-safe message queue.
+///
+//===----------------------------------------------------------------------===//
 
 #pragma once
 

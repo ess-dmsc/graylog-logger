@@ -1,10 +1,11 @@
-//
-//  ConsoleInterface.cpp
-//  dm-graylog-logger
-//
-//  Created by Jonas Nilsson on 2016-12-21.
-//  Copyright © 2016 European Spallation Source. All rights reserved.
-//
+/* Copyright (C) 2018 European Spallation Source, ERIC. See LICENSE file */
+//===----------------------------------------------------------------------===//
+///
+/// \file
+///
+/// \brief Implementation file for the console logging class.
+///
+//===----------------------------------------------------------------------===//
 
 #include "graylog_logger/ConsoleInterface.hpp"
 #include <array>
