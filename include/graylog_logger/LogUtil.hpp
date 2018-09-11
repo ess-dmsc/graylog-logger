@@ -8,7 +8,6 @@
 ///
 //===----------------------------------------------------------------------===//
 
-
 #pragma once
 
 #include "graylog_logger/ConcurrentQueue.hpp"
