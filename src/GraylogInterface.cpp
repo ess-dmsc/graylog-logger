@@ -41,9 +41,9 @@ std::string GraylogInterface::logMsgToJSON(const LogMessage &Message) {
   JsonObject["level"] = int(Message.SeverityLevel);
   JsonObject["host"] = Message.Host;
   JsonObject["timestamp"] =
-      static_cast<double>(duration_cast<milliseconds>(
-                              Message.Timestamp.time_since_epoch())
-                              .count()) /
+      static_cast<double>(
+          duration_cast<milliseconds>(Message.Timestamp.time_since_epoch())
+              .count()) /
       1000;
   JsonObject["_process_id"] = Message.ProcessId;
   JsonObject["_process"] = Message.ProcessName;
@@ -59,5 +59,5 @@ std::string GraylogInterface::logMsgToJSON(const LogMessage &Message) {
   }
   return JsonObject.dump();
 }
-  
-  } // namespace Log
+
+} // namespace Log

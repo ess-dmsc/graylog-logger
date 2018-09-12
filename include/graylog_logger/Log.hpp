@@ -52,9 +52,9 @@ void Msg(const int Level, const std::string &Message);
 ///
 /// \param[in] Level The severity level of the message.
 /// \param[in] Message The log message as text.
-/// \param[in] extraField An extra field of information about the log message.
+/// \param[in] ExtraField An extra field of information about the log message.
 void Msg(const Severity Level, const std::string &Message,
-         const std::pair<std::string, AdditionalField> &extraField);
+         const std::pair<std::string, AdditionalField> &ExtraField);
 
 /// \brief Submit a log message to the logging library.
 ///
@@ -68,9 +68,9 @@ void Msg(const Severity Level, const std::string &Message,
 /// \param[in] Level The severity level of the message as an integer value.
 /// Should probably fall within the range 0 to 7.
 /// \param[in] Message The log message as text.
-/// \param[in] extraField An extra field of information about the log message.
+/// \param[in] ExtraField An extra field of information about the log message.
 void Msg(const int Level, const std::string &Message,
-         const std::pair<std::string, AdditionalField> &extraField);
+         const std::pair<std::string, AdditionalField> &ExtraField);
 
 /// \brief Submit a log message to the logging library.
 ///
@@ -83,10 +83,10 @@ void Msg(const int Level, const std::string &Message,
 ///
 /// \param[in] Level The severity level of the message.
 /// \param[in] Message The log message as text.
-/// \param[in] extraFields Multiple extra meta-data fields about the message.
+/// \param[in] ExtraFields Multiple extra meta-data fields about the message.
 void Msg(
     const Severity Level, const std::string &Message,
-    const std::vector<std::pair<std::string, AdditionalField>> &extraFields);
+    const std::vector<std::pair<std::string, AdditionalField>> &ExtraFields);
 
 /// \brief Submit a log message to the logging library.
 ///
@@ -100,19 +100,19 @@ void Msg(
 /// \param[in] Level The severity level of the message as an integer value.
 /// Should probably fall within the range 0 to 7.
 /// \param[in] Message The log message as text.
-/// \param[in] extraFields Multiple extra meta-data fields about the message.
+/// \param[in] ExtraFields Multiple extra meta-data fields about the message.
 void Msg(
     const int Level, const std::string &Message,
-    const std::vector<std::pair<std::string, AdditionalField>> &extraFields);
+    const std::vector<std::pair<std::string, AdditionalField>> &ExtraFields);
 
 /// \brief Add a default field of meta-data to every message.
 ///
 /// It is possible to override the value of the default message by passing
 /// an additional field using the relevant key in one of the Log::Msg()
 /// functions.
-/// \param[in] key The key of the new default field.
-/// \param[in] value The default value of the field.
-void AddField(const std::string &key, const AdditionalField &value);
+/// \param[in] Key The key of the new default field.
+/// \param[in] Value The default value of the field.
+void AddField(const std::string &Key, const AdditionalField &Value);
 
 /// \brief Used to set the maximum severity level.
 ///
@@ -129,7 +129,7 @@ void SetMinimumSeverity(const Severity Level);
 /// \note If you try to add a log handler that inherits from ConsoleLogger,
 /// it will replace the existing one if the logging library has one already.
 /// \param[in] handler A shared pointer to the log handler.
-void AddLogHandler(const LogHandler_P &handler);
+void AddLogHandler(const LogHandler_P &Handler);
 
 /// \brief Add a log handler that will consume log messages.
 ///
@@ -155,10 +155,10 @@ AddLogHandler(T *ptr) {
 /// from Log::BaseLogHandler.
 /// \note If you try to add a log handler that inherits from ConsoleLogger,
 /// it will replace the existing one if the logging library has one already.
-/// \param[in] handler A raw pointer to the base class of the log handler.
+/// \param[in] Handler A raw pointer to the base class of the log handler.
 /// \note The logging library will take ownership of the pointer. You MUST NOT
 /// de-allocate it yourself.
-void AddLogHandler(const BaseLogHandler *handler);
+void AddLogHandler(const BaseLogHandler *Handler);
 
 /// \brief Remove all log message handlers.
 ///

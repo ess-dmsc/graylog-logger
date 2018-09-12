@@ -189,5 +189,5 @@ void GraylogConnection::ThreadFunction() { Service.run(); }
 void GraylogConnection::SetState(GraylogConnection::Status NewState) {
   ConnectionState = NewState;
 }
-  
-  } // namespace Log
+
+} // namespace Log

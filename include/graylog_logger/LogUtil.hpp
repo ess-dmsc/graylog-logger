@@ -147,5 +147,5 @@ protected:
 };
 
 typedef std::shared_ptr<BaseLogHandler> LogHandler_P;
-  
-  } // namespace Log
+
+} // namespace Log

@@ -44,7 +44,7 @@ public:
   FileInterfaceStandIn(const std::string &fileName) : FileInterface(fileName){};
   ~FileInterfaceStandIn(){};
   using FileInterface::FileName;
-  using FileInterface::fileThread;
+  using FileInterface::FileThread;
   using FileInterface::MessageQueue;
 };
 

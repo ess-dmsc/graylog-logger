@@ -94,46 +94,46 @@ std::string get_process_name() {
 #endif
 
 LoggingBase::LoggingBase() {
-  std::lock_guard<std::mutex> guard1(vectorMutex);
-  minSeverity = Severity::Notice;
+  std::lock_guard<std::mutex> guard1(VectorMutex);
+  MinSeverity = Severity::Notice;
   const int stringBufferSize = 100;
   char stringBuffer[stringBufferSize];
   int res;
   res = gethostname(stringBuffer, stringBufferSize);
-  std::lock_guard<std::mutex> guard2(baseMsgMutex);
+  std::lock_guard<std::mutex> guard2(BaseMsgMutex);
   if (0 == res) {
-    baseMsg.Host = std::string(stringBuffer);
+    BaseMsg.Host = std::string(stringBuffer);
   }
-  baseMsg.ProcessId = getpid();
-  baseMsg.ProcessName = get_process_name();
+  BaseMsg.ProcessId = getpid();
+  BaseMsg.ProcessName = get_process_name();
 }
 
 LoggingBase::~LoggingBase() {
-  std::lock_guard<std::mutex> guard(vectorMutex);
-  handlers.clear();
+  std::lock_guard<std::mutex> guard(VectorMutex);
+  Handlers.clear();
 }
 
-void LoggingBase::Log(const Severity sev, const std::string &message) {
-  Log(sev, message, std::vector<std::pair<std::string, AdditionalField>>());
+void LoggingBase::log(const Severity sev, const std::string &message) {
+  log(sev, message, std::vector<std::pair<std::string, AdditionalField>>());
 }
 
-void LoggingBase::Log(
+void LoggingBase::log(
     const Severity sev, const std::string &message,
     const std::pair<std::string, AdditionalField> &extraField) {
-  Log(sev, message, std::vector<std::pair<std::string, AdditionalField>>{
+  log(sev, message, std::vector<std::pair<std::string, AdditionalField>>{
                         extraField,
                     });
 }
 
-void LoggingBase::Log(
+void LoggingBase::log(
     const Severity sev, const std::string &message,
     const std::vector<std::pair<std::string, AdditionalField>> &extraFields) {
-  if (int(sev) > int(minSeverity)) {
+  if (int(sev) > int(MinSeverity)) {
     return;
   }
-  baseMsgMutex.lock();
-  LogMessage cMsg(baseMsg);
-  baseMsgMutex.unlock();
+  BaseMsgMutex.lock();
+  LogMessage cMsg(BaseMsg);
+  BaseMsgMutex.unlock();
   for (auto &fld : extraFields) {
     cMsg.AddField(fld.first, fld.second);
   }
@@ -143,30 +143,30 @@ void LoggingBase::Log(
   std::ostringstream ss;
   ss << std::this_thread::get_id();
   cMsg.ThreadId = ss.str();
-  std::lock_guard<std::mutex> guard(vectorMutex);
-  for (auto &ptr : handlers) {
+  std::lock_guard<std::mutex> guard(VectorMutex);
+  for (auto &ptr : Handlers) {
     ptr->addMessage(cMsg);
   }
 }
 
-void LoggingBase::AddLogHandler(const LogHandler_P &handler) {
-  std::lock_guard<std::mutex> guard(vectorMutex);
-  handlers.push_back(handler);
+void LoggingBase::addLogHandler(const LogHandler_P &Handler) {
+  std::lock_guard<std::mutex> guard(VectorMutex);
+  Handlers.push_back(Handler);
 }
 
-void LoggingBase::RemoveAllHandlers() {
-  std::lock_guard<std::mutex> guard(vectorMutex);
-  handlers.clear();
+void LoggingBase::removeAllHandlers() {
+  std::lock_guard<std::mutex> guard(VectorMutex);
+  Handlers.clear();
 }
 
-std::vector<LogHandler_P> LoggingBase::GetHandlers() {
-  std::lock_guard<std::mutex> guard(vectorMutex);
-  return handlers;
+std::vector<LogHandler_P> LoggingBase::getHandlers() {
+  std::lock_guard<std::mutex> guard(VectorMutex);
+  return Handlers;
 }
 
-void LoggingBase::SetMinSeverity(Severity sev) {
-  std::lock_guard<std::mutex> guard(vectorMutex);
-  minSeverity = sev;
+void LoggingBase::setMinSeverity(Severity Level) {
+  std::lock_guard<std::mutex> guard(VectorMutex);
+  MinSeverity = Level;
 }
 
-  } // namespace Log
+} // namespace Log

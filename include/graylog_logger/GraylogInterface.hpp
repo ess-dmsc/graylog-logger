@@ -29,4 +29,4 @@ protected:
   std::string logMsgToJSON(const LogMessage &Message);
 };
 
-  } // namespace Log
+} // namespace Log

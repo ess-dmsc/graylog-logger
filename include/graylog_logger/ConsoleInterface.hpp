@@ -16,13 +16,13 @@ namespace Log {
 
 class ConsoleInterface : public BaseLogHandler {
 public:
-  ConsoleInterface(size_t maxQueueLength = 100);
+  ConsoleInterface(size_t MaxQueueLength = 100);
   ~ConsoleInterface();
 
 protected:
-  void ExitThread();
-  void ThreadFunction();
-  std::thread consoleThread;
+  void exitThread();
+  void threadFunction();
+  std::thread ConsoleThread;
 };
 
 } // namespace Log

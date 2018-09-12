@@ -13,29 +13,29 @@
 
 namespace Log {
 
-FileInterface::FileInterface(std::string Name,
-                             const size_t MaxQueueLength)
-: BaseLogHandler(MaxQueueLength), FileName(std::move(Name)),
-      fileThread(&FileInterface::ThreadFunction, this) {}
+FileInterface::FileInterface(std::string Name, const size_t MaxQueueLength)
+    : BaseLogHandler(MaxQueueLength), FileName(std::move(Name)),
+      FileThread(&FileInterface::threadFunction, this) {}
 
-FileInterface::~FileInterface() { ExitThread(); }
+FileInterface::~FileInterface() { exitThread(); }
 
-void FileInterface::ExitThread() {
+void FileInterface::exitThread() {
   LogMessage ExitMsg;
   ExitMsg.MessageString = "exit";
   ExitMsg.ProcessId = -1;
   addMessage(ExitMsg);
-  if (fileThread.joinable()) {
-    fileThread.join();
+  if (FileThread.joinable()) {
+    FileThread.join();
   }
 }
 
-void FileInterface::ThreadFunction() {
+void FileInterface::threadFunction() {
   std::ofstream outStream(FileName, std::ios_base::app);
   LogMessage TmpMsg;
   while (true) {
     MessageQueue.wait_and_pop(TmpMsg);
-    if (std::string("exit") == TmpMsg.MessageString and -1 == TmpMsg.ProcessId) {
+    if (std::string("exit") == TmpMsg.MessageString and
+        -1 == TmpMsg.ProcessId) {
       break;
     }
     if (outStream.good() and outStream.is_open()) {
@@ -43,5 +43,5 @@ void FileInterface::ThreadFunction() {
     }
   }
 }
-  
-  } // namespace Log
+
+} // namespace Log

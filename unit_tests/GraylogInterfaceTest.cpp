@@ -176,7 +176,8 @@ TEST_F(GraylogConnectionCom, MultipleMessagesTest) {
 LogMessage GetPopulatedLogMsg() {
   LogMessage retMsg;
   retMsg.Host = "Some host";
-  retMsg.MessageString = "This is some multi line\n error message with \"quotes\".";
+  retMsg.MessageString =
+      "This is some multi line\n error message with \"quotes\".";
   retMsg.ProcessId = 667;
   retMsg.ProcessName = "some_process_name";
   retMsg.SeverityLevel = Severity::Alert;

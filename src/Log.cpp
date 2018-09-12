@@ -12,49 +12,49 @@
 #include <ciso646>
 
 namespace Log {
-void Msg(const Severity sev, const std::string &message) {
-  Logger::Inst().Log(sev, message);
+void Msg(const Severity Level, const std::string &Message) {
+  Logger::Inst().log(Level, Message);
 }
 
-void Msg(const int sev, const std::string &message) {
-  Logger::Inst().Log(Severity(sev), message);
+void Msg(const int Level, const std::string &Message) {
+  Logger::Inst().log(Severity(Level), Message);
 }
 
-void Msg(const Severity sev, const std::string &message,
-         const std::pair<std::string, AdditionalField> &extraField) {
-  Logger::Inst().Log(sev, message, extraField);
+void Msg(const Severity Level, const std::string &Message,
+         const std::pair<std::string, AdditionalField> &ExtraField) {
+  Logger::Inst().log(Level, Message, ExtraField);
 }
 
-void Msg(const int sev, const std::string &message,
-         const std::pair<std::string, AdditionalField> &extraField) {
-  Logger::Inst().Log(Severity(sev), message, extraField);
-}
-
-void Msg(
-    const Severity sev, const std::string &message,
-    const std::vector<std::pair<std::string, AdditionalField>> &extraFields) {
-  Logger::Inst().Log(sev, message, extraFields);
+void Msg(const int Level, const std::string &Message,
+         const std::pair<std::string, AdditionalField> &ExtraField) {
+  Logger::Inst().log(Severity(Level), Message, ExtraField);
 }
 
 void Msg(
-    const int sev, const std::string &message,
-    const std::vector<std::pair<std::string, AdditionalField>> &extraFields) {
-  Logger::Inst().Log(Severity(sev), message, extraFields);
+    const Severity Level, const std::string &Message,
+    const std::vector<std::pair<std::string, AdditionalField>> &ExtraFields) {
+  Logger::Inst().log(Level, Message, ExtraFields);
 }
 
-void AddField(const std::string &key, const AdditionalField &value) {
-  Logger::Inst().AddField(key, value);
+void Msg(
+    const int Level, const std::string &Message,
+    const std::vector<std::pair<std::string, AdditionalField>> &ExtraFields) {
+  Logger::Inst().log(Severity(Level), Message, ExtraFields);
 }
 
-void SetMinimumSeverity(const Severity sev) {
-  Logger::Inst().SetMinSeverity(sev);
+void AddField(const std::string &Key, const AdditionalField &Value) {
+  Logger::Inst().addField(Key, Value);
 }
 
-void AddLogHandler(const LogHandler_P &handler) {
-  Logger::Inst().AddLogHandler(handler);
+void SetMinimumSeverity(const Severity Level) {
+  Logger::Inst().setMinSeverity(Level);
 }
 
-void RemoveAllHandlers() { Logger::Inst().RemoveAllHandlers(); }
+void AddLogHandler(const LogHandler_P &Handler) {
+  Logger::Inst().addLogHandler(Handler);
+}
 
-std::vector<LogHandler_P> GetHandlers() { return Logger::Inst().GetHandlers(); }
+void RemoveAllHandlers() { Logger::Inst().removeAllHandlers(); }
+
+std::vector<LogHandler_P> GetHandlers() { return Logger::Inst().getHandlers(); }
 } // namespace Log

@@ -18,36 +18,38 @@ std::string ConsoleStringCreator(const LogMessage &Message) {
   std::array<std::string, 8> sevToStr = {{"EMERGENCY", "ALERT", "CRITICAL",
                                           "ERROR", "WARNING", "Notice", "Info",
                                           "Debug"}};
-  return sevToStr.at(int(Message.SeverityLevel)) + std::string(": ") + Message.MessageString;
+  return sevToStr.at(int(Message.SeverityLevel)) + std::string(": ") +
+         Message.MessageString;
 }
 
-ConsoleInterface::ConsoleInterface(size_t maxQueueLength)
-    : BaseLogHandler(maxQueueLength),
-      consoleThread(&ConsoleInterface::ThreadFunction, this) {
+ConsoleInterface::ConsoleInterface(size_t MaxQueueLength)
+    : BaseLogHandler(MaxQueueLength),
+      ConsoleThread(&ConsoleInterface::threadFunction, this) {
   BaseLogHandler::setMessageStringCreatorFunction(ConsoleStringCreator);
 }
 
-ConsoleInterface::~ConsoleInterface() { ExitThread(); }
+ConsoleInterface::~ConsoleInterface() { exitThread(); }
 
-void ConsoleInterface::ExitThread() {
+void ConsoleInterface::exitThread() {
   LogMessage ExitMsg;
   ExitMsg.MessageString = "exit";
   ExitMsg.ProcessId = -1;
   addMessage(ExitMsg);
-  if (consoleThread.joinable()) {
-    consoleThread.join();
+  if (ConsoleThread.joinable()) {
+    ConsoleThread.join();
   }
 }
 
-void ConsoleInterface::ThreadFunction() {
+void ConsoleInterface::threadFunction() {
   LogMessage tmpMsg;
   while (true) {
     MessageQueue.wait_and_pop(tmpMsg);
-    if (std::string("exit") == tmpMsg.MessageString and -1 == tmpMsg.ProcessId) {
+    if (std::string("exit") == tmpMsg.MessageString and
+        -1 == tmpMsg.ProcessId) {
       break;
     }
     std::cout << messageToString(tmpMsg) << std::endl;
   }
 }
-  
-  } // namespace Log
+
+} // namespace Log

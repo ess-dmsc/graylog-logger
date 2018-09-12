@@ -18,16 +18,16 @@ public:
   static Logger &Inst();
   Logger(const Logger &) = delete;
   Logger &operator=(const Logger &) = delete;
-  virtual void AddLogHandler(const LogHandler_P &handler) override;
-  using LoggingBase::AddField;
-  using LoggingBase::GetHandlers;
-  using LoggingBase::Log;
-  using LoggingBase::RemoveAllHandlers;
-  using LoggingBase::SetMinSeverity;
+  virtual void addLogHandler(const LogHandler_P &Handler) override;
+  using LoggingBase::addField;
+  using LoggingBase::getHandlers;
+  using LoggingBase::log;
+  using LoggingBase::removeAllHandlers;
+  using LoggingBase::setMinSeverity;
 
 private:
   Logger();
   ~Logger() = default;
 };
-  
-  } // namespace Log
+
+} // namespace Log

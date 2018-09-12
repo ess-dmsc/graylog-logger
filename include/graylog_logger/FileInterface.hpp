@@ -17,14 +17,14 @@ namespace Log {
 
 class FileInterface : public BaseLogHandler {
 public:
-  FileInterface(std::string FileName, const size_t maxQueueLength = 100);
+  FileInterface(std::string FileName, const size_t MaxQueueLength = 100);
   ~FileInterface();
 
 protected:
-  void ExitThread();
+  void exitThread();
   std::string FileName;
-  void ThreadFunction();
-  std::thread fileThread;
+  void threadFunction();
+  std::thread FileThread;
 };
 
 } // namespace Log

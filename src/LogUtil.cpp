@@ -47,5 +47,5 @@ std::string BaseLogHandler::messageToString(const LogMessage &Message) {
          std::string(") ") + sevToStr.at(int(Message.SeverityLevel)) +
          std::string(": ") + Message.MessageString;
 }
-  
-  } // namespace Log
+
+} // namespace Log

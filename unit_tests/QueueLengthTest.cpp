@@ -18,14 +18,14 @@ using namespace Log;
 class ConsoleInterfaceStandIn : public ConsoleInterface {
 public:
   ConsoleInterfaceStandIn(int queueSize) : ConsoleInterface(queueSize){};
-  using ConsoleInterface::ExitThread;
+  using ConsoleInterface::exitThread;
 };
 
 class FileInterfaceStandIn : public FileInterface {
 public:
   FileInterfaceStandIn(int queueSize)
       : FileInterface("messages.log", queueSize){};
-  using FileInterface::ExitThread;
+  using FileInterface::exitThread;
 };
 
 class QueueLength : public ::testing::Test {
@@ -42,7 +42,8 @@ public:
 LogMessage GetLogMsg() {
   LogMessage retMsg;
   retMsg.Host = "Some host";
-  retMsg.MessageString = "This is some multi line\n error message with \"quotes\".";
+  retMsg.MessageString =
+      "This is some multi line\n error message with \"quotes\".";
   retMsg.ProcessId = 667;
   retMsg.ProcessName = "some_process_name";
   retMsg.SeverityLevel = Severity::Alert;
@@ -66,7 +67,7 @@ void TestFunc(BaseLogHandler *basePtr, int testLimit) {
 TEST_F(QueueLength, ConsoleInterfaceTest) {
   int queueLength = 50;
   auto console = new ConsoleInterfaceStandIn(queueLength);
-  console->ExitThread();
+  console->exitThread();
   TestFunc((BaseLogHandler *)console, queueLength);
   delete console;
 }
@@ -74,7 +75,7 @@ TEST_F(QueueLength, ConsoleInterfaceTest) {
 TEST_F(QueueLength, FileInterfaceTest) {
   int queueLength = 50;
   auto file = new FileInterfaceStandIn(queueLength);
-  file->ExitThread();
+  file->exitThread();
   TestFunc((BaseLogHandler *)file, queueLength);
   delete file;
 }
