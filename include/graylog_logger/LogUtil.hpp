@@ -45,15 +45,17 @@ struct AdditionalField {
 
   /// \brief Sets the instance of this struct to contain a floating point value
   /// (double).
-  /// \param[in] val The floating-point value that will be stored by the struct.
+  /// \param[in] Value The floating-point value that will be stored by the
+  /// struct.
   AdditionalField(double Value) : FieldType(Type::typeDbl), dblVal(Value){};
   /// \brief Sets the instance of this struct to contain a std::string.
-  /// \param[in] val The std::string value that will be stored by the struct.
+  /// \param[in] Value The std::string value that will be stored by the struct.
   AdditionalField(const std::string &Value)
       : FieldType(Type::typeStr), strVal(Value){};
 
   /// \brief Sets the instance of this struct to contain a signed integer value.
-  /// \param[in] val The signed integer value that will be stored by the struct.
+  /// \param[in] Value The signed integer value that will be stored by the
+  /// struct.
   AdditionalField(std::int64_t Value)
       : FieldType(Type::typeInt), intVal(Value){};
 

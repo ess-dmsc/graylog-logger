@@ -128,7 +128,7 @@ void SetMinimumSeverity(const Severity Level);
 /// from Log::BaseLogHandler.
 /// \note If you try to add a log handler that inherits from ConsoleLogger,
 /// it will replace the existing one if the logging library has one already.
-/// \param[in] handler A shared pointer to the log handler.
+/// \param[in] Handler A shared pointer to the log handler.
 void AddLogHandler(const LogHandler_P &Handler);
 
 /// \brief Add a log handler that will consume log messages.
@@ -138,7 +138,7 @@ void AddLogHandler(const LogHandler_P &Handler);
 /// from Log::BaseLogHandler.
 /// \note If you try to add a log handler that inherits from ConsoleLogger,
 /// it will replace the existing one if the logging library has one already.
-/// \param[in] handler A raw pointer to the instance of the log handler.
+/// \param[in] Handler A raw pointer to the instance of the log handler.
 /// \note The logging library will take ownership of the pointer. You MUST NOT
 /// de-allocate it yourself.
 template <typename T>

@@ -89,7 +89,7 @@ The items in the following list is in no particular order. Suggestions and/or pa
 * Completely removed the dependency on boost for unit testing.
 * Switched out the networking code for code using ASIO.
 * Updated to CMake code to use modern CMake features.
-* Switched to using the LLVM coding standard. **This has changed the interface, you might have to update function names.** 
+* Moved towards using the LLVM coding standard. **This has changed the interface, you might have to update your code.** 
 * Switched to using the JSONForModernCPP library. This library is not included in the repository.
 * Added the `Info` severity level which is exactly the same as the `Informational` severity level.
 * Updated the CI-code (Jenkins) to build the library on more (modern) operating systems.

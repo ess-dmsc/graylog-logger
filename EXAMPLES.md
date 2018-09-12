@@ -7,6 +7,8 @@ By default, the library will log messages to console.
 ```c++
 #include <graylog_logger/Log.hpp>
 
+using Log:Severity;
+
 int main() {
     Log::Msg(Severity::Warning, "Some message.");
     return 0;
@@ -27,8 +29,10 @@ In order to set-up the library to write messages to file, a file writer has to b
 #include <graylog_logger/Log.hpp>
 #include <graylog_logger/FileInterface.hpp>
 
+using namespace Log;
+
 int main() {
-    Log::AddLogHandler(new FileInterface("new_log_file.log"));
+    Log::AddLogHandler(std::make_shared<FileInterface>("new_log_file.log"));
     Log::Msg(Severity::Error, "This is an error.");
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return 0;
@@ -51,8 +55,8 @@ To use the library for its original purpose, a Graylog server interface has to b
 #include <graylog_logger/GraylogInterface.hpp>
 
 int main() {
-    Log::AddLogHandler(new GraylogInterface("somehost.com", 12201));
-    Log::Msg(Severity::Error, "This message will be sent to a Graylog server.");
+    Log::AddLogHandler(new Log::GraylogInterface("somehost.com", 12201));
+    Log::Msg(Log::Severity::Error, "This message will be sent to a Graylog server.");
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return 0;
 }
@@ -70,11 +74,13 @@ In order to prevent the logger from writing messages to (e.g.) console but still
 #include <graylog_logger/FileInterface.hpp>
 #include <graylog_logger/GraylogInterface.hpp>
 
+using namespace Log;
+
 int main() {
-    Log::RemoveAllHandlers();
-    Log::AddLogHandler(new FileInterface("new_log_file.log"));
-    Log::AddLogHandler(new GraylogInterface("somehost.com", 12201));
-    Log::Msg(Severity::Error, "This is an error.");
+    RemoveAllHandlers();
+    AddLogHandler(new FileInterface("new_log_file.log"));
+    AddLogHandler(new GraylogInterface("somehost.com", 12201));
+    Msg(Severity::Error, "This is an error.");
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return 0;
 }
@@ -85,6 +91,8 @@ This library currently uses a global severity limit setting. The following code 
 
 ```c++
 #include <graylog_logger/Log.hpp>
+
+using Log::Severity;
 
 int main() {
     Log::Msg(Severity::Debug, "This debug message will not be shown.");
@@ -107,6 +115,8 @@ It is possible to supply your own string formatting function as shown below.
 #include <graylog_logger/Log.hpp>
 #include <graylog_logger/ConsoleInterface.hpp>
 
+using namespace Log;
+
 std::string MyFormatter(LogMessage &msg) {
     std::time_t cTime = std::chrono::system_clock::to_time_t(msg.timestamp);
     char timeBuffer[50];
@@ -115,11 +125,11 @@ std::string MyFormatter(LogMessage &msg) {
 }
 
 int main() {
-    Log::RemoveAllHandlers();
+    RemoveAllHandlers();
     auto ci = new ConsoleInterface();
     ci->SetMessageStringCreatorFunction(MyFormatter);
-    Log::AddLogHandler(ci);
-    Log::Msg(Severity::Warning, "A warning with a custom format.");
+    AddLogHandler(ci);
+    Msg(Severity::Warning, "A warning with a custom format.");
     return 0;
 }
 ```
@@ -140,16 +150,16 @@ Pointers to used logging interfaces can be retrieved from the logging system. Th
 #include <graylog_logger/GraylogInterface.hpp>
 
 int main() {
-    Log::AddLogHandler(new GraylogInterface("somehost.com", 12201));
-    std::vector<LogHandler_P> interfaces = Log::GetHandlers();
+    Log::AddLogHandler(new Log::GraylogInterface("somehost.com", 12201));
+    std::vector<Log::LogHandler_P> interfaces = Log::GetHandlers();
     auto checkFunc = [&](){for (auto h : interfaces) {
-        auto casted = dynamic_cast<GraylogInterface*>(h.get());
+        auto casted = dynamic_cast<Log::GraylogInterface*>(h.get());
         if (casted != nullptr) {
             std::cout << "Queued messages (true/false): "<< casted->MessagesQueued() << std::endl;
         }
     }};
     checkFunc();
-    Log::Msg(Severity::Error, "An error message");
+    Log::Msg(Log::Severity::Error, "An error message");
     checkFunc();
     return 0;
 }
@@ -178,9 +188,9 @@ The standard fields provided with every log message sent to the Graylog server a
 
 It is possible to add more fields if so required and this can be done globally or on a message by message basis. Only three types of fields are currently supported:
 
-* std::int64_t
-* double
-* std::string
+* `std::int64_t`
+* `double`
+* `std::string`
 
 ### Additional global fields
 Additional global fields are added using the `Log::AddField()` function. It can be used as follows:
@@ -188,8 +198,8 @@ Additional global fields are added using the `Log::AddField()` function. It can 
 ```c++
 int main() {
     Log::AddField("some_key", "some_value");
-    Log::AddLogHandler(new GraylogInterface("somehost.com", 12201));
-    Log::Msg(Severity::Error, "This message will be sent to a Graylog servers.");
+    Log::AddLogHandler(new Log::GraylogInterface("somehost.com", 12201));
+    Log::Msg(Log::Severity::Error, "This message will be sent to a Graylog servers.");
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return 0;
 }
@@ -202,8 +212,8 @@ Adding fields on a per message basis is done when calling the `Log::Msg()`-funct
 
 ```c++
 int main() {
-    Log::AddLogHandler(new GraylogInterface("somehost.com", 12201));
-    Log::Msg(Severity::Error, "A message.", {"another_key", 3.14});
+    Log::AddLogHandler(new Log::GraylogInterface("somehost.com", 12201));
+    Log::Msg(Log::Severity::Error, "A message.", {"another_key", 3.14});
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return 0;
 }
@@ -213,6 +223,7 @@ It is possible to add several new fields as well.
 
 ```c++
 int main() {
+    using Log::GraylogInterface;
     Log::AddLogHandler(new GraylogInterface("somehost.com", 12201));
     Log::Msg(Severity::Error, "A message.", {{"another_key", 3.14}, {"a_third_key", "some_other_value"}});
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -224,8 +235,9 @@ Finally, an extra field added to a message will change the value (including the 
 
 ```c++
 int main() {
+    using Log::Severity;
     Log::AddField("some_key", "some_value");
-    Log::AddLogHandler(new GraylogInterface("somehost.com", 12201));
+    Log::AddLogHandler(new Log::GraylogInterface("somehost.com", 12201));
     Log::Msg(Severity::Error, "Yet another message", {"some_key", 42});
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return 0;
