@@ -30,7 +30,7 @@ public:
   template <typename valueType>
   void addField(std::string Key, const valueType &Value) {
     std::lock_guard<std::mutex> Guard(BaseMsgMutex);
-    BaseMsg.AddField(Key, Value);
+    BaseMsg.addField(Key, Value);
   };
   virtual void removeAllHandlers();
   virtual void setMinSeverity(Severity Level);

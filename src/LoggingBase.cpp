@@ -113,33 +113,33 @@ LoggingBase::~LoggingBase() {
   Handlers.clear();
 }
 
-void LoggingBase::log(const Severity sev, const std::string &message) {
-  log(sev, message, std::vector<std::pair<std::string, AdditionalField>>());
+void LoggingBase::log(const Severity Level, const std::string &Message) {
+  log(Level, Message, std::vector<std::pair<std::string, AdditionalField>>());
 }
 
 void LoggingBase::log(
-    const Severity sev, const std::string &message,
-    const std::pair<std::string, AdditionalField> &extraField) {
-  log(sev, message, std::vector<std::pair<std::string, AdditionalField>>{
-                        extraField,
-                    });
+    const Severity Level, const std::string &Message,
+    const std::pair<std::string, AdditionalField> &ExtraField) {
+  log(Level, Message, std::vector<std::pair<std::string, AdditionalField>>{
+                          ExtraField,
+                      });
 }
 
 void LoggingBase::log(
-    const Severity sev, const std::string &message,
-    const std::vector<std::pair<std::string, AdditionalField>> &extraFields) {
-  if (int(sev) > int(MinSeverity)) {
+    const Severity Level, const std::string &Message,
+    const std::vector<std::pair<std::string, AdditionalField>> &ExtraFields) {
+  if (int(Level) > int(MinSeverity)) {
     return;
   }
   BaseMsgMutex.lock();
   LogMessage cMsg(BaseMsg);
   BaseMsgMutex.unlock();
-  for (auto &fld : extraFields) {
-    cMsg.AddField(fld.first, fld.second);
+  for (auto &fld : ExtraFields) {
+    cMsg.addField(fld.first, fld.second);
   }
   cMsg.Timestamp = std::chrono::system_clock::now();
-  cMsg.MessageString = message;
-  cMsg.SeverityLevel = sev;
+  cMsg.MessageString = Message;
+  cMsg.SeverityLevel = Level;
   std::ostringstream ss;
   ss << std::this_thread::get_id();
   cMsg.ThreadId = ss.str();

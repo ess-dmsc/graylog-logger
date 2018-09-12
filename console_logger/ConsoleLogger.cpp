@@ -146,17 +146,17 @@ int main(int argc, char **argv) {
   Log::AddField("arguments", commandLineArguments);
   Log::SetMinimumSeverity(Severity::Debug);
   Log::RemoveAllHandlers();
-  Log::AddLogHandler(LogHandler_P(new ConsoleInterface()));
+  Log::AddLogHandler(std::make_shared<ConsoleInterface>());
 
   if (not fileName.empty()) {
-    Log::AddLogHandler(LogHandler_P(new FileInterface(fileName)));
+    Log::AddLogHandler(std::make_shared<FileInterface>(fileName));
   }
 
   if (not address1.empty()) {
     if ("localhost" == address1) {
-      Log::AddLogHandler(LogHandler_P(new GraylogInterface(address1, port)));
+      Log::AddLogHandler(std::make_shared<GraylogInterface>(address1, port));
     } else {
-      Log::AddLogHandler(LogHandler_P(new GraylogInterface(address1, port)));
+      Log::AddLogHandler(std::make_shared<GraylogInterface>(address1, port));
     }
   }
   if (not extraKey.empty()) {

@@ -240,7 +240,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldString) {
   LogMessage testMsg = GetPopulatedLogMsg();
   std::string key = "yet_another_key";
   std::string value = "yet another value";
-  testMsg.AddField(key, value);
+  testMsg.addField(key, value);
   std::string jsonStr = con.logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   std::string tempStr;
@@ -253,7 +253,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldInt) {
   LogMessage testMsg = GetPopulatedLogMsg();
   std::string key = "yet_another_key";
   std::int64_t value = -12431454;
-  testMsg.AddField(key, value);
+  testMsg.addField(key, value);
   std::string jsonStr = con.logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   std::int64_t tempVal = 0;
@@ -266,7 +266,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldDouble) {
   LogMessage testMsg = GetPopulatedLogMsg();
   std::string key = "yet_another_key";
   double value = 3.1415926535897932384626433832795028841;
-  testMsg.AddField(key, value);
+  testMsg.addField(key, value);
   std::string jsonStr = con.logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   double tempVal;

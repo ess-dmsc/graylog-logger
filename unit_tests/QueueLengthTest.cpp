@@ -66,23 +66,21 @@ void TestFunc(BaseLogHandler *basePtr, int testLimit) {
 
 TEST_F(QueueLength, ConsoleInterfaceTest) {
   int queueLength = 50;
-  auto console = new ConsoleInterfaceStandIn(queueLength);
+  auto console = std::make_unique<ConsoleInterfaceStandIn>(queueLength);
   console->exitThread();
-  TestFunc((BaseLogHandler *)console, queueLength);
-  delete console;
+  TestFunc((BaseLogHandler *)console.get(), queueLength);
 }
 
 TEST_F(QueueLength, FileInterfaceTest) {
   int queueLength = 50;
-  auto file = new FileInterfaceStandIn(queueLength);
+  auto file = std::make_unique<FileInterfaceStandIn>(queueLength);
   file->exitThread();
-  TestFunc((BaseLogHandler *)file, queueLength);
-  delete file;
+  TestFunc((BaseLogHandler *)file.get(), queueLength);
 }
 
 TEST_F(QueueLength, GraylogInterfaceTest) {
   int queueLength = 50;
-  auto file = new GraylogInterface("some_addr", 22222, queueLength);
-  TestFunc((BaseLogHandler *)file, queueLength);
-  delete file;
+  auto file =
+      std::make_unique<GraylogInterface>("some_addr", 22222, queueLength);
+  TestFunc((BaseLogHandler *)file.get(), queueLength);
 }

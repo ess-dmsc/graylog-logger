@@ -20,7 +20,7 @@ GraylogInterface::GraylogInterface(const std::string &Host, const int Port,
     : BaseLogHandler(MaxQueueLength), GraylogConnection(Host, Port) {}
 
 bool GraylogInterface::emptyQueue() {
-  return GraylogConnection::LogMessages.size() > 0;
+  return GraylogConnection::LogMessages.empty();
 }
 
 size_t GraylogInterface::queueSize() {
@@ -34,7 +34,9 @@ void GraylogInterface::addMessage(const LogMessage &Message) {
 }
 
 std::string GraylogInterface::logMsgToJSON(const LogMessage &Message) {
-  using namespace std::chrono;
+  using std::chrono::duration_cast;
+  using std::chrono::milliseconds;
+
   nlohmann::json JsonObject;
   JsonObject["short_message"] = Message.MessageString;
   JsonObject["version"] = "1.1";

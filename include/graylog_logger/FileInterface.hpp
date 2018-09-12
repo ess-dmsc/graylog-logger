@@ -17,7 +17,7 @@ namespace Log {
 
 class FileInterface : public BaseLogHandler {
 public:
-  FileInterface(std::string FileName, const size_t MaxQueueLength = 100);
+  explicit FileInterface(std::string Name, const size_t MaxQueueLength = 100);
   ~FileInterface();
 
 protected:

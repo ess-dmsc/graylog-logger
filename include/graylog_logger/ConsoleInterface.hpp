@@ -16,7 +16,7 @@ namespace Log {
 
 class ConsoleInterface : public BaseLogHandler {
 public:
-  ConsoleInterface(size_t MaxQueueLength = 100);
+  explicit ConsoleInterface(size_t MaxQueueLength = 100);
   ~ConsoleInterface();
 
 protected:

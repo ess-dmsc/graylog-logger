@@ -21,8 +21,7 @@ Logger &Logger::Inst() {
 }
 
 Logger::Logger() {
-  LogHandler_P ptr1(new ConsoleInterface());
-  Logger::addLogHandler(ptr1);
+  Logger::addLogHandler(std::make_shared<ConsoleInterface>());
 }
 
 void Logger::addLogHandler(const LogHandler_P &Handler) {

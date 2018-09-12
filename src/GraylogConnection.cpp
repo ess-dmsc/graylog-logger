@@ -54,7 +54,7 @@ void GraylogConnection::tryConnect(QueryResult AllEndpoints) {
 
 GraylogConnection::GraylogConnection(std::string Host, int Port)
     : HostAddress(std::move(Host)), HostPort(std::to_string(Port)), Service(),
-      Work(new asio::io_service::work(Service)), Socket(Service),
+      Work(std::make_unique<asio::io_service::work>(Service)), Socket(Service),
       Resolver(Service), ReconnectTimeout(Service, 10s) {
   doAddressQuery();
   AsioThread = std::thread(&GraylogConnection::ThreadFunction, this);
