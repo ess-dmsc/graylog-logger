@@ -1,4 +1,4 @@
-# *graylog-logger* examples
+# graylog-logger example code
 Instructions on how to install the C++ library *graylog-logger* can be found on the [repository page](https://github.com/ess-dmsc/graylog-logger). The intent of this document is to give you examples on how the library can be used and extended. There is currently no code documentation except for the examples given here. For more information on implementation and interfaces see the header and implementation files. Most of the relevant interface information can be found in the header files `graylog_logger/Log.hpp` and `graylog_logger/LogUtil.hpp`.
 
 ## Basic example
