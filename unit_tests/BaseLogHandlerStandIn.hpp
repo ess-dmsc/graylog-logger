@@ -15,7 +15,9 @@ using namespace Log;
 class BaseLogHandlerStandIn : public BaseLogHandler {
 public:
   BaseLogHandlerStandIn() : BaseLogHandler(){};
-  virtual void addMessage(const LogMessage &Message) { CurrentMessage = Message; };
+  virtual void addMessage(const LogMessage &Message) {
+    CurrentMessage = Message;
+  };
   LogMessage CurrentMessage;
   using BaseLogHandler::MessageParser;
   using BaseLogHandler::messageToString;
