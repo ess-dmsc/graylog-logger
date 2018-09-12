@@ -13,6 +13,8 @@
 #include "graylog_logger/GraylogInterface.hpp"
 #include <ciso646>
 
+namespace Log {
+
 Logger &Logger::Inst() {
   static Logger inst;
   return inst;
@@ -40,3 +42,5 @@ void Logger::AddLogHandler(const LogHandler_P &handler) {
     handlers.push_back(handler);
   }
 }
+  
+  } // namespace Log

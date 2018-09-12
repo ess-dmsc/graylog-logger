@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+namespace Log {
+
 class LoggingBase {
 public:
   LoggingBase();
@@ -41,3 +43,5 @@ protected:
   std::vector<LogHandler_P> handlers;
   LogMessage baseMsg;
 };
+  
+  } // namespace Log

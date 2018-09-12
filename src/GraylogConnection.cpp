@@ -14,6 +14,8 @@
 #include <iostream>
 #include <utility>
 
+namespace Log {
+
 using std::chrono_literals::operator""ms;
 using std::chrono_literals::operator""s;
 
@@ -187,3 +189,5 @@ void GraylogConnection::ThreadFunction() { Service.run(); }
 void GraylogConnection::SetState(GraylogConnection::Status NewState) {
   ConnectionState = NewState;
 }
+  
+  } // namespace Log

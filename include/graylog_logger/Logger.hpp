@@ -11,6 +11,8 @@
 
 #include "graylog_logger/LoggingBase.hpp"
 
+namespace Log {
+
 class Logger : private LoggingBase {
 public:
   static Logger &Inst();
@@ -27,3 +29,5 @@ private:
   Logger();
   ~Logger() = default;
 };
+  
+  } // namespace Log

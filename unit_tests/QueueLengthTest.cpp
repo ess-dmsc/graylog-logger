@@ -13,6 +13,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+using namespace Log;
+
 class ConsoleInterfaceStandIn : public ConsoleInterface {
 public:
   ConsoleInterfaceStandIn(int queueSize) : ConsoleInterface(queueSize){};
@@ -39,25 +41,25 @@ public:
 
 LogMessage GetLogMsg() {
   LogMessage retMsg;
-  retMsg.host = "Some host";
-  retMsg.message = "This is some multi line\n error message with \"quotes\".";
-  retMsg.processId = 667;
-  retMsg.processName = "some_process_name";
-  retMsg.severity = Severity::Alert;
-  retMsg.threadId = "0xff0011aacc";
-  retMsg.timestamp = std::chrono::system_clock::now();
+  retMsg.Host = "Some host";
+  retMsg.MessageString = "This is some multi line\n error message with \"quotes\".";
+  retMsg.ProcessId = 667;
+  retMsg.ProcessName = "some_process_name";
+  retMsg.SeverityLevel = Severity::Alert;
+  retMsg.ThreadId = "0xff0011aacc";
+  retMsg.Timestamp = std::chrono::system_clock::now();
   return retMsg;
 }
 
 void TestFunc(BaseLogHandler *basePtr, int testLimit) {
   LogMessage usedMsg = GetLogMsg();
   for (int i = 0; i < testLimit; i++) {
-    basePtr->AddMessage(usedMsg);
-    ASSERT_EQ(i + 1, basePtr->QueueSize());
+    basePtr->addMessage(usedMsg);
+    ASSERT_EQ(i + 1, basePtr->queueSize());
   }
   for (int u = 0; u < 10; u++) {
-    basePtr->AddMessage(usedMsg);
-    ASSERT_EQ(testLimit, basePtr->QueueSize());
+    basePtr->addMessage(usedMsg);
+    ASSERT_EQ(testLimit, basePtr->queueSize());
   }
 }
 

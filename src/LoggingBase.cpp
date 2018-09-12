@@ -26,6 +26,8 @@
 #include <unistd.h>
 #endif
 
+namespace Log {
+
 #ifdef _WIN32
 std::string get_process_name() {
   std::wstring buf;
@@ -100,10 +102,10 @@ LoggingBase::LoggingBase() {
   res = gethostname(stringBuffer, stringBufferSize);
   std::lock_guard<std::mutex> guard2(baseMsgMutex);
   if (0 == res) {
-    baseMsg.host = std::string(stringBuffer);
+    baseMsg.Host = std::string(stringBuffer);
   }
-  baseMsg.processId = getpid();
-  baseMsg.processName = get_process_name();
+  baseMsg.ProcessId = getpid();
+  baseMsg.ProcessName = get_process_name();
 }
 
 LoggingBase::~LoggingBase() {
@@ -135,15 +137,15 @@ void LoggingBase::Log(
   for (auto &fld : extraFields) {
     cMsg.AddField(fld.first, fld.second);
   }
-  cMsg.timestamp = std::chrono::system_clock::now();
-  cMsg.message = message;
-  cMsg.severity = sev;
+  cMsg.Timestamp = std::chrono::system_clock::now();
+  cMsg.MessageString = message;
+  cMsg.SeverityLevel = sev;
   std::ostringstream ss;
   ss << std::this_thread::get_id();
-  cMsg.threadId = ss.str();
+  cMsg.ThreadId = ss.str();
   std::lock_guard<std::mutex> guard(vectorMutex);
   for (auto &ptr : handlers) {
-    ptr->AddMessage(cMsg);
+    ptr->addMessage(cMsg);
   }
 }
 
@@ -166,3 +168,5 @@ void LoggingBase::SetMinSeverity(Severity sev) {
   std::lock_guard<std::mutex> guard(vectorMutex);
   minSeverity = sev;
 }
+
+  } // namespace Log

@@ -12,6 +12,8 @@
 #include "graylog_logger/LogUtil.hpp"
 #include <thread>
 
+namespace Log {
+
 class ConsoleInterface : public BaseLogHandler {
 public:
   ConsoleInterface(size_t maxQueueLength = 100);
@@ -22,3 +24,5 @@ protected:
   void ThreadFunction();
   std::thread consoleThread;
 };
+
+} // namespace Log

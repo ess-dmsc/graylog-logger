@@ -23,9 +23,9 @@ namespace Log {
 ///   - Thread id
 ///   - Host name
 ///
-/// \param[in] sev The severity level of the message.
-/// \param[in] message The log message as text.
-void Msg(const Severity sev, const std::string &message);
+/// \param[in] Level The severity level of the message.
+/// \param[in] Message The log message as text.
+void Msg(const Severity Level, const std::string &Message);
 
 /// \brief Submit a log message to the logging library.
 ///
@@ -36,10 +36,10 @@ void Msg(const Severity sev, const std::string &message);
 ///   - Thread id
 ///   - Host name
 ///
-/// \param[in] sev The severity level of the message as an integer value.
+/// \param[in] Level The severity level of the message as an integer value.
 /// Should probably fall within the range 0 to 7.
-/// \param[in] message The log message as text.
-void Msg(const int sev, const std::string &message);
+/// \param[in] Message The log message as text.
+void Msg(const int Level, const std::string &Message);
 
 /// \brief Submit a log message to the logging library.
 ///
@@ -50,10 +50,10 @@ void Msg(const int sev, const std::string &message);
 ///   - Thread id
 ///   - Host name
 ///
-/// \param[in] sev The severity level of the message.
-/// \param[in] message The log message as text.
+/// \param[in] Level The severity level of the message.
+/// \param[in] Message The log message as text.
 /// \param[in] extraField An extra field of information about the log message.
-void Msg(const Severity sev, const std::string &message,
+void Msg(const Severity Level, const std::string &Message,
          const std::pair<std::string, AdditionalField> &extraField);
 
 /// \brief Submit a log message to the logging library.
@@ -65,11 +65,11 @@ void Msg(const Severity sev, const std::string &message,
 ///   - Thread id
 ///   - Host name
 ///
-/// \param[in] sev The severity level of the message as an integer value.
+/// \param[in] Level The severity level of the message as an integer value.
 /// Should probably fall within the range 0 to 7.
-/// \param[in] message The log message as text.
+/// \param[in] Message The log message as text.
 /// \param[in] extraField An extra field of information about the log message.
-void Msg(const int sev, const std::string &message,
+void Msg(const int Level, const std::string &Message,
          const std::pair<std::string, AdditionalField> &extraField);
 
 /// \brief Submit a log message to the logging library.
@@ -81,11 +81,11 @@ void Msg(const int sev, const std::string &message,
 ///   - Thread id
 ///   - Host name
 ///
-/// \param[in] sev The severity level of the message.
-/// \param[in] message The log message as text.
+/// \param[in] Level The severity level of the message.
+/// \param[in] Message The log message as text.
 /// \param[in] extraFields Multiple extra meta-data fields about the message.
 void Msg(
-    const Severity sev, const std::string &message,
+    const Severity Level, const std::string &Message,
     const std::vector<std::pair<std::string, AdditionalField>> &extraFields);
 
 /// \brief Submit a log message to the logging library.
@@ -97,12 +97,12 @@ void Msg(
 ///   - Thread id
 ///   - Host name
 ///
-/// \param[in] sev The severity level of the message as an integer value.
+/// \param[in] Level The severity level of the message as an integer value.
 /// Should probably fall within the range 0 to 7.
-/// \param[in] message The log message as text.
+/// \param[in] Message The log message as text.
 /// \param[in] extraFields Multiple extra meta-data fields about the message.
 void Msg(
-    const int sev, const std::string &message,
+    const int Level, const std::string &Message,
     const std::vector<std::pair<std::string, AdditionalField>> &extraFields);
 
 /// \brief Add a default field of meta-data to every message.
@@ -118,8 +118,8 @@ void AddField(const std::string &key, const AdditionalField &value);
 ///
 /// Messages above this level will not be passed on. The default level is
 /// Severity::Notice, i.e. debug level messages will not be shown.
-/// \param[in] sev The maximum severity level.
-void SetMinimumSeverity(const Severity sev);
+/// \param[in] Level The maximum severity level.
+void SetMinimumSeverity(const Severity Level);
 
 /// \brief Add a log handler that will consume log messages.
 ///

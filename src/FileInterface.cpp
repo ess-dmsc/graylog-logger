@@ -11,33 +11,37 @@
 #include <ciso646>
 #include <fstream>
 
-FileInterface::FileInterface(const std::string &fileName,
-                             const size_t maxQueueLength)
-    : BaseLogHandler(maxQueueLength), fName(fileName),
+namespace Log {
+
+FileInterface::FileInterface(std::string Name,
+                             const size_t MaxQueueLength)
+: BaseLogHandler(MaxQueueLength), FileName(std::move(Name)),
       fileThread(&FileInterface::ThreadFunction, this) {}
 
 FileInterface::~FileInterface() { ExitThread(); }
 
 void FileInterface::ExitThread() {
-  LogMessage exitMsg;
-  exitMsg.message = "exit";
-  exitMsg.processId = -1;
-  AddMessage(exitMsg);
+  LogMessage ExitMsg;
+  ExitMsg.MessageString = "exit";
+  ExitMsg.ProcessId = -1;
+  addMessage(ExitMsg);
   if (fileThread.joinable()) {
     fileThread.join();
   }
 }
 
 void FileInterface::ThreadFunction() {
-  std::ofstream outStream(fName, std::ios_base::app);
-  LogMessage tmpMsg;
+  std::ofstream outStream(FileName, std::ios_base::app);
+  LogMessage TmpMsg;
   while (true) {
-    logMessages.wait_and_pop(tmpMsg);
-    if (std::string("exit") == tmpMsg.message and -1 == tmpMsg.processId) {
+    MessageQueue.wait_and_pop(TmpMsg);
+    if (std::string("exit") == TmpMsg.MessageString and -1 == TmpMsg.ProcessId) {
       break;
     }
     if (outStream.good() and outStream.is_open()) {
-      outStream << MsgStringCreator(tmpMsg) << std::endl;
+      outStream << messageToString(TmpMsg) << std::endl;
     }
   }
 }
+  
+  } // namespace Log

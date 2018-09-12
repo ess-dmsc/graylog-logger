@@ -26,6 +26,7 @@
 void PrintAlternatives();
 
 int main(int argc, char **argv) {
+  using namespace Log;
   std::string fileName("messages.log");
   std::string address1("localhost");
   std::string msg;
@@ -181,7 +182,7 @@ int main(int argc, char **argv) {
       std::this_thread::sleep_for(sleepTime);
       continueLoop = false;
       for (auto &ptr : graylogInt) {
-        if (dynamic_cast<GraylogInterface *>(ptr.get())->MessagesQueued()) {
+        if (not dynamic_cast<GraylogInterface *>(ptr.get())->emptyQueue()) {
           continueLoop = true;
         }
       }

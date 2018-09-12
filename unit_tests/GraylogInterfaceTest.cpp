@@ -16,6 +16,8 @@
 #include <nlohmann/json.hpp>
 #include <thread>
 
+using namespace Log;
+
 MATCHER(IsJSON, "") {
   try {
     auto Res = nlohmann::json::parse(arg);
@@ -30,7 +32,7 @@ public:
   GraylogInterfaceStandIn(std::string host, int port, int queueLength)
       : GraylogInterface(host, port, queueLength){};
   MOCK_METHOD1(SendMessage, void(std::string));
-  using GraylogInterface::LogMsgToJSON;
+  using GraylogInterface::logMsgToJSON;
 };
 
 class GraylogConnectionStandIn : public GraylogConnection {
@@ -173,13 +175,13 @@ TEST_F(GraylogConnectionCom, MultipleMessagesTest) {
 
 LogMessage GetPopulatedLogMsg() {
   LogMessage retMsg;
-  retMsg.host = "Some host";
-  retMsg.message = "This is some multi line\n error message with \"quotes\".";
-  retMsg.processId = 667;
-  retMsg.processName = "some_process_name";
-  retMsg.severity = Severity::Alert;
-  retMsg.threadId = "0xff0011aacc";
-  retMsg.timestamp = std::chrono::system_clock::now();
+  retMsg.Host = "Some host";
+  retMsg.MessageString = "This is some multi line\n error message with \"quotes\".";
+  retMsg.ProcessId = 667;
+  retMsg.ProcessName = "some_process_name";
+  retMsg.SeverityLevel = Severity::Alert;
+  retMsg.ThreadId = "0xff0011aacc";
+  retMsg.Timestamp = std::chrono::system_clock::now();
   return retMsg;
 }
 
@@ -187,14 +189,14 @@ TEST(GraylogInterfaceCom, AddMessageTest) {
   GraylogInterfaceStandIn con("localhost", testPort, 100);
   EXPECT_CALL(con, SendMessage(::testing::_)).Times(::testing::Exactly(1));
   LogMessage msg = GetPopulatedLogMsg();
-  con.AddMessage(msg);
+  con.addMessage(msg);
 }
 
 TEST(GraylogInterfaceCom, MessageJSONTest) {
   LogMessage msg = GetPopulatedLogMsg();
   GraylogInterfaceStandIn con("localhost", testPort, 100);
   EXPECT_CALL(con, SendMessage(IsJSON())).Times(::testing::Exactly(1));
-  con.AddMessage(msg);
+  con.addMessage(msg);
 }
 
 void TestJsonString(std::string jsonMsg) {
@@ -204,24 +206,24 @@ void TestJsonString(std::string jsonMsg) {
   double tempDouble = 0;
   int tempInt = 0;
   EXPECT_NO_THROW(tempStr = JsonObject["short_message"]);
-  EXPECT_EQ(tempStr, compLog.message);
+  EXPECT_EQ(tempStr, compLog.MessageString);
   EXPECT_NO_THROW(tempDouble = JsonObject["timestamp"]);
   auto TempTS =
       static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(
-                              compLog.timestamp.time_since_epoch())
+                              compLog.Timestamp.time_since_epoch())
                               .count()) /
       1000;
   EXPECT_NEAR(tempDouble, TempTS, 0.01);
   EXPECT_NO_THROW(tempStr = JsonObject["host"]);
-  EXPECT_EQ(tempStr, compLog.host);
+  EXPECT_EQ(tempStr, compLog.Host);
   EXPECT_NO_THROW(tempInt = JsonObject["_process_id"]);
-  EXPECT_EQ(tempInt, compLog.processId);
+  EXPECT_EQ(tempInt, compLog.ProcessId);
   EXPECT_NO_THROW(tempStr = JsonObject["_process"]);
-  EXPECT_EQ(tempStr, compLog.processName);
+  EXPECT_EQ(tempStr, compLog.ProcessName);
   EXPECT_NO_THROW(tempInt = JsonObject["level"]);
-  EXPECT_EQ(tempInt, int(compLog.severity));
+  EXPECT_EQ(tempInt, int(compLog.SeverityLevel));
   EXPECT_NO_THROW(tempStr = JsonObject["_thread_id"]);
-  EXPECT_EQ(tempStr, compLog.threadId);
+  EXPECT_EQ(tempStr, compLog.ThreadId);
 }
 
 TEST(GraylogInterfaceCom, MessageJSONContentTest) {
@@ -229,7 +231,7 @@ TEST(GraylogInterfaceCom, MessageJSONContentTest) {
   GraylogInterfaceStandIn con("localhost", testPort, 100);
   EXPECT_CALL(con, SendMessage(::testing::_))
       .WillOnce(testing::Invoke(&TestJsonString));
-  con.AddMessage(msg);
+  con.addMessage(msg);
 }
 
 TEST(GraylogInterfaceCom, TestAdditionalFieldString) {
@@ -238,7 +240,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldString) {
   std::string key = "yet_another_key";
   std::string value = "yet another value";
   testMsg.AddField(key, value);
-  std::string jsonStr = con.LogMsgToJSON(testMsg);
+  std::string jsonStr = con.logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   std::string tempStr;
   EXPECT_NO_THROW(tempStr = JsonObject["_" + key]);
@@ -251,7 +253,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldInt) {
   std::string key = "yet_another_key";
   std::int64_t value = -12431454;
   testMsg.AddField(key, value);
-  std::string jsonStr = con.LogMsgToJSON(testMsg);
+  std::string jsonStr = con.logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   std::int64_t tempVal = 0;
   EXPECT_NO_THROW(tempVal = JsonObject["_" + key]);
@@ -264,7 +266,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldDouble) {
   std::string key = "yet_another_key";
   double value = 3.1415926535897932384626433832795028841;
   testMsg.AddField(key, value);
-  std::string jsonStr = con.LogMsgToJSON(testMsg);
+  std::string jsonStr = con.logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   double tempVal;
   EXPECT_NO_THROW(tempVal = JsonObject["_" + key]);

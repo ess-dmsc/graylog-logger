@@ -13,14 +13,18 @@
 #include <string>
 #include <thread>
 
+namespace Log {
+
 class FileInterface : public BaseLogHandler {
 public:
-  FileInterface(const std::string &fileName, const size_t maxQueueLength = 100);
+  FileInterface(std::string FileName, const size_t maxQueueLength = 100);
   ~FileInterface();
 
 protected:
   void ExitThread();
-  std::string fName;
+  std::string FileName;
   void ThreadFunction();
   std::thread fileThread;
 };
+
+} // namespace Log

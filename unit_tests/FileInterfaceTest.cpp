@@ -12,6 +12,8 @@
 #include <gtest/gtest.h>
 #include <unistd.h>
 
+using namespace Log;
+
 const std::string usedFileName("testFileName.log");
 
 const std::string fileTestString("Some test string");
@@ -41,9 +43,9 @@ class FileInterfaceStandIn : public FileInterface {
 public:
   FileInterfaceStandIn(const std::string &fileName) : FileInterface(fileName){};
   ~FileInterfaceStandIn(){};
-  using FileInterface::fName;
+  using FileInterface::FileName;
   using FileInterface::fileThread;
-  using FileInterface::logMessages;
+  using FileInterface::MessageQueue;
 };
 
 class FileInterfaceTest : public ::testing::Test {
@@ -76,15 +78,15 @@ TEST_F(FileInterfaceTest, LogFileCreationTest) {
 
 TEST_F(FileInterfaceTest, FileNameSetVarTest) {
   FileInterfaceStandIn flInt(usedFileName);
-  ASSERT_EQ(flInt.fName, usedFileName);
+  ASSERT_EQ(flInt.FileName, usedFileName);
 }
 
 TEST_F(FileInterfaceTest, FileWriteMsgTest) {
   {
     LogMessage msg;
     FileInterfaceStandIn flInt(usedFileName);
-    flInt.SetMessageStringCreatorFunction(FileTestStringCreator);
-    flInt.AddMessage(msg);
+    flInt.setMessageStringCreatorFunction(FileTestStringCreator);
+    flInt.addMessage(msg);
   }
   std::ifstream inStream(usedFileName, std::ios::in);
   std::string logLine;

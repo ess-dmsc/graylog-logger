@@ -11,6 +11,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+using namespace Log;
+
 class LogMessageTesting : public ::testing::Test {
 public:
   static void SetUpTestCase(){};
@@ -27,11 +29,11 @@ TEST_F(LogMessageTesting, AddDoubleExtraField) {
   std::string someKey = "my_key";
   double someValue = 3.43234;
   testMsg.AddField(someKey, someValue);
-  ASSERT_EQ(testMsg.additionalFields.at(0).first, someKey);
-  ASSERT_EQ(testMsg.additionalFields.at(0).second.dblVal, someValue);
-  ASSERT_EQ(testMsg.additionalFields.at(0).second.FieldType,
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).first, someKey);
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).second.dblVal, someValue);
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).second.FieldType,
             AdditionalField::Type::typeDbl);
-  ASSERT_EQ(testMsg.additionalFields.size(), 1);
+  ASSERT_EQ(testMsg.AdditionalFields.size(), 1);
 }
 
 TEST_F(LogMessageTesting, AddStringExtraField) {
@@ -39,11 +41,11 @@ TEST_F(LogMessageTesting, AddStringExtraField) {
   std::string someKey = "my_key";
   std::string someValue = "some_random_value_string";
   testMsg.AddField(someKey, someValue);
-  ASSERT_EQ(testMsg.additionalFields.at(0).first, someKey);
-  ASSERT_EQ(testMsg.additionalFields.at(0).second.strVal, someValue);
-  ASSERT_EQ(testMsg.additionalFields.at(0).second.FieldType,
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).first, someKey);
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).second.strVal, someValue);
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).second.FieldType,
             AdditionalField::Type::typeStr);
-  ASSERT_EQ(testMsg.additionalFields.size(), 1);
+  ASSERT_EQ(testMsg.AdditionalFields.size(), 1);
 }
 
 TEST_F(LogMessageTesting, AddIntExtraField) {
@@ -51,11 +53,11 @@ TEST_F(LogMessageTesting, AddIntExtraField) {
   std::string someKey = "my_key";
   std::int64_t someValue = 9124432895;
   testMsg.AddField(someKey, someValue);
-  ASSERT_EQ(testMsg.additionalFields.at(0).first, someKey);
-  ASSERT_EQ(testMsg.additionalFields.at(0).second.intVal, someValue);
-  ASSERT_EQ(testMsg.additionalFields.at(0).second.FieldType,
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).first, someKey);
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).second.intVal, someValue);
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).second.FieldType,
             AdditionalField::Type::typeInt);
-  ASSERT_EQ(testMsg.additionalFields.size(), 1);
+  ASSERT_EQ(testMsg.AdditionalFields.size(), 1);
 }
 
 TEST_F(LogMessageTesting, AddTwoKeys1) {
@@ -64,7 +66,7 @@ TEST_F(LogMessageTesting, AddTwoKeys1) {
   std::int64_t someValue = 9124432895;
   testMsg.AddField(someKey, someValue);
   testMsg.AddField(someKey, someValue);
-  ASSERT_EQ(testMsg.additionalFields.size(), 1);
+  ASSERT_EQ(testMsg.AdditionalFields.size(), 1);
 }
 
 TEST_F(LogMessageTesting, AddTwoKeys2) {
@@ -73,12 +75,12 @@ TEST_F(LogMessageTesting, AddTwoKeys2) {
   std::int64_t someValue1 = 9124432895;
   std::string someValue2 = "912";
   testMsg.AddField(someKey, someValue1);
-  ASSERT_EQ(testMsg.additionalFields.at(0).second.FieldType,
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).second.FieldType,
             AdditionalField::Type::typeInt);
-  ASSERT_EQ(testMsg.additionalFields.at(0).second.intVal, someValue1);
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).second.intVal, someValue1);
   testMsg.AddField(someKey, someValue2);
-  ASSERT_EQ(testMsg.additionalFields.size(), 1);
-  ASSERT_EQ(testMsg.additionalFields.at(0).second.FieldType,
+  ASSERT_EQ(testMsg.AdditionalFields.size(), 1);
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).second.FieldType,
             AdditionalField::Type::typeStr);
-  ASSERT_EQ(testMsg.additionalFields.at(0).second.strVal, someValue2);
+  ASSERT_EQ(testMsg.AdditionalFields.at(0).second.strVal, someValue2);
 }

@@ -10,11 +10,13 @@
 
 #include "graylog_logger/LogUtil.hpp"
 
+using namespace Log;
+
 class BaseLogHandlerStandIn : public BaseLogHandler {
 public:
   BaseLogHandlerStandIn() : BaseLogHandler(){};
-  virtual void AddMessage(const LogMessage &msg) { cMsg = msg; };
-  LogMessage cMsg;
+  virtual void addMessage(const LogMessage &Message) { CurrentMessage = Message; };
+  LogMessage CurrentMessage;
   using BaseLogHandler::MessageParser;
-  using BaseLogHandler::MsgStringCreator;
+  using BaseLogHandler::messageToString;
 };

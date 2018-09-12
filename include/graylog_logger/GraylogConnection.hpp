@@ -17,6 +17,8 @@
 #include <string>
 #include <thread>
 
+namespace Log {
+
 struct QueryResult;
 
 /// \todo Implement timeouts in the ASIO code in case we ever have problems with
@@ -77,3 +79,5 @@ private:
   asio::ip::tcp::resolver Resolver;
   asio::system_timer ReconnectTimeout;
 };
+
+} // namespace Log
