@@ -29,7 +29,7 @@ size_t GraylogInterface::queueSize() {
 
 void GraylogInterface::addMessage(const LogMessage &Message) {
   if (GraylogConnection::LogMessages.size() < BaseLogHandler::QueueLength) {
-    SendMessage(logMsgToJSON(Message));
+    sendMessage(logMsgToJSON(Message));
   }
 }
 

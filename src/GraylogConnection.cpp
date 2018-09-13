@@ -49,7 +49,7 @@ void GraylogConnection::tryConnect(QueryResult AllEndpoints) {
     this->connectHandler(Err, AllEndpoints);
   };
   Socket.async_connect(CurrentEndpoint, HandlerGlue);
-  SetState(Status::CONNECT);
+  setState(Status::CONNECT);
 }
 
 GraylogConnection::GraylogConnection(std::string Host, int Port)
@@ -57,14 +57,14 @@ GraylogConnection::GraylogConnection(std::string Host, int Port)
       Work(std::make_unique<asio::io_service::work>(Service)), Socket(Service),
       Resolver(Service), ReconnectTimeout(Service, 10s) {
   doAddressQuery();
-  AsioThread = std::thread(&GraylogConnection::ThreadFunction, this);
+  AsioThread = std::thread(&GraylogConnection::threadFunction, this);
 }
 
 void GraylogConnection::resolverHandler(
     const asio::error_code &Error,
     asio::ip::tcp::resolver::iterator EndpointIter) {
   if (Error) {
-    SetState(Status::ADDR_RETRY_WAIT);
+    setState(Status::ADDR_RETRY_WAIT);
     reconnect(ReconnectDelay::LONG);
     return;
   }
@@ -75,7 +75,7 @@ void GraylogConnection::resolverHandler(
 void GraylogConnection::connectHandler(const asio::error_code &Error,
                                        QueryResult AllEndpoints) {
   if (!Error) {
-    SetState(Status::SEND_LOOP);
+    setState(Status::SEND_LOOP);
     auto HandlerGlue = [this](auto &Error, auto Size) {
       this->receiveHandler(Error, Size);
     };
@@ -104,7 +104,7 @@ void GraylogConnection::reconnect(ReconnectDelay Delay) {
     break;
   }
   ReconnectTimeout.async_wait(HandlerGlue);
-  SetState(Status::ADDR_RETRY_WAIT);
+  setState(Status::ADDR_RETRY_WAIT);
 }
 
 void GraylogConnection::receiveHandler(const asio::error_code &Error,
@@ -166,7 +166,7 @@ void GraylogConnection::doAddressQuery() {
   if (IsMessagePolling) {
     reconnect(GraylogConnection::ReconnectDelay::SHORT);
   }
-  SetState(Status::ADDR_LOOKUP);
+  setState(Status::ADDR_LOOKUP);
   asio::ip::tcp::resolver::query Query(HostAddress, HostPort);
   auto HandlerGlue = [this](auto &Error, auto EndpointIter) {
     this->resolverHandler(Error, EndpointIter);
@@ -180,13 +180,13 @@ GraylogConnection::~GraylogConnection() {
   Socket.close();
 }
 
-GraylogConnection::Status GraylogConnection::GetConnectionStatus() const {
+GraylogConnection::Status GraylogConnection::getConnectionStatus() const {
   return ConnectionState;
 }
 
-void GraylogConnection::ThreadFunction() { Service.run(); }
+void GraylogConnection::threadFunction() { Service.run(); }
 
-void GraylogConnection::SetState(GraylogConnection::Status NewState) {
+void GraylogConnection::setState(GraylogConnection::Status NewState) {
   ConnectionState = NewState;
 }
 

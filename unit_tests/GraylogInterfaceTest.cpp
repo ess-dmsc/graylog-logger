@@ -31,7 +31,7 @@ class GraylogInterfaceStandIn : public GraylogInterface {
 public:
   GraylogInterfaceStandIn(std::string host, int port, int queueLength)
       : GraylogInterface(host, port, queueLength){};
-  MOCK_METHOD1(SendMessage, void(std::string));
+  MOCK_METHOD1(sendMessage, void(std::string));
   using GraylogInterface::logMsgToJSON;
 };
 
@@ -73,7 +73,7 @@ TEST_F(GraylogConnectionCom, UnknownHostTest) {
   ASSERT_EQ(logServer->GetNrOfConnections(), 0);
   ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
   ASSERT_TRUE(!logServer->GetLastSocketError());
-  EXPECT_NE(con.GetConnectionStatus(), GraylogConnection::Status::SEND_LOOP);
+  EXPECT_NE(con.getConnectionStatus(), GraylogConnection::Status::SEND_LOOP);
 }
 
 TEST_F(GraylogConnectionCom, ConnectionTest) {
@@ -86,8 +86,8 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
     ASSERT_EQ(1, logServer->GetNrOfConnections());
     ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
     ASSERT_TRUE(!logServer->GetLastSocketError());
-    ASSERT_EQ(GraylogConnection::Status::SEND_LOOP, con.GetConnectionStatus())
-        << "Connection status returned " << int(con.GetConnectionStatus());
+    ASSERT_EQ(GraylogConnection::Status::SEND_LOOP, con.getConnectionStatus())
+        << "Connection status returned " << int(con.getConnectionStatus());
   }
   std::this_thread::sleep_for(sleepTime);
   ASSERT_EQ(0, logServer->GetNrOfConnections());
@@ -106,8 +106,8 @@ TEST_F(GraylogConnectionCom, IPv6ConnectionTest) {
     ASSERT_EQ(1, logServer->GetNrOfConnections());
     ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
     ASSERT_TRUE(!logServer->GetLastSocketError());
-    ASSERT_EQ(GraylogConnection::Status::SEND_LOOP, con.GetConnectionStatus())
-        << "Connection status returned " << int(con.GetConnectionStatus());
+    ASSERT_EQ(GraylogConnection::Status::SEND_LOOP, con.getConnectionStatus())
+        << "Connection status returned " << int(con.getConnectionStatus());
   }
   std::this_thread::sleep_for(sleepTime);
   ASSERT_EQ(0, logServer->GetNrOfConnections());
@@ -122,18 +122,18 @@ TEST_F(GraylogConnectionCom, WrongPortTest) {
   ASSERT_EQ(logServer->GetNrOfConnections(), 0);
   ASSERT_EQ(logServer->GetLatestMessage().size(), 0);
   ASSERT_TRUE(!logServer->GetLastSocketError());
-  EXPECT_NE(con.GetConnectionStatus(), GraylogConnection::Status::SEND_LOOP);
+  EXPECT_NE(con.getConnectionStatus(), GraylogConnection::Status::SEND_LOOP);
 }
 
 TEST_F(GraylogConnectionCom, CloseConnectionTest) {
   {
     GraylogConnectionStandIn con("localhost", testPort);
     std::this_thread::sleep_for(sleepTime);
-    ASSERT_EQ(GraylogConnection::Status::SEND_LOOP, con.GetConnectionStatus());
+    ASSERT_EQ(GraylogConnection::Status::SEND_LOOP, con.getConnectionStatus());
     ASSERT_EQ(1, logServer->GetNrOfConnections());
     logServer->CloseAllConnections();
     std::this_thread::sleep_for(sleepTime * 2);
-    EXPECT_EQ(GraylogConnection::Status::SEND_LOOP, con.GetConnectionStatus());
+    EXPECT_EQ(GraylogConnection::Status::SEND_LOOP, con.getConnectionStatus());
     EXPECT_EQ(1, logServer->GetNrOfConnections())
         << "Failed to reconnect after connection was closed remotely.";
   }
@@ -145,7 +145,7 @@ TEST_F(GraylogConnectionCom, MessageTransmissionTest) {
   {
     std::string testString("This is a test string!");
     GraylogConnectionStandIn con("localhost", testPort);
-    con.SendMessage(testString);
+    con.sendMessage(testString);
     std::this_thread::sleep_for(sleepTime);
     ASSERT_TRUE(!logServer->GetLastSocketError());
     ASSERT_EQ(testString.size() + 1, logServer->GetReceivedBytes());
@@ -163,7 +163,7 @@ TEST_F(GraylogConnectionCom, MultipleMessagesTest) {
     int totalBytes = 0;
     for (auto ln : lines) {
       totalBytes += (ln.size() + 1);
-      con.SendMessage(ln);
+      con.sendMessage(ln);
     }
     std::this_thread::sleep_for(sleepTime);
     ASSERT_TRUE(!logServer->GetLastSocketError());
@@ -188,7 +188,7 @@ LogMessage GetPopulatedLogMsg() {
 
 TEST(GraylogInterfaceCom, AddMessageTest) {
   GraylogInterfaceStandIn con("localhost", testPort, 100);
-  EXPECT_CALL(con, SendMessage(::testing::_)).Times(::testing::Exactly(1));
+  EXPECT_CALL(con, sendMessage(::testing::_)).Times(::testing::Exactly(1));
   LogMessage msg = GetPopulatedLogMsg();
   con.addMessage(msg);
 }
@@ -196,7 +196,7 @@ TEST(GraylogInterfaceCom, AddMessageTest) {
 TEST(GraylogInterfaceCom, MessageJSONTest) {
   LogMessage msg = GetPopulatedLogMsg();
   GraylogInterfaceStandIn con("localhost", testPort, 100);
-  EXPECT_CALL(con, SendMessage(IsJSON())).Times(::testing::Exactly(1));
+  EXPECT_CALL(con, sendMessage(IsJSON())).Times(::testing::Exactly(1));
   con.addMessage(msg);
 }
 
@@ -230,7 +230,7 @@ void TestJsonString(std::string jsonMsg) {
 TEST(GraylogInterfaceCom, MessageJSONContentTest) {
   LogMessage msg = GetPopulatedLogMsg();
   GraylogInterfaceStandIn con("localhost", testPort, 100);
-  EXPECT_CALL(con, SendMessage(::testing::_))
+  EXPECT_CALL(con, sendMessage(::testing::_))
       .WillOnce(testing::Invoke(&TestJsonString));
   con.addMessage(msg);
 }

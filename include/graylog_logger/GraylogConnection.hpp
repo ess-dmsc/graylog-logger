@@ -28,22 +28,22 @@ class GraylogConnection {
 public:
   GraylogConnection(std::string Host, int Port);
   virtual ~GraylogConnection();
-  virtual void SendMessage(std::string msg) { LogMessages.push(msg); };
+  virtual void sendMessage(std::string msg) { LogMessages.push(msg); };
   enum class Status {
     ADDR_LOOKUP,
     ADDR_RETRY_WAIT,
     CONNECT,
     SEND_LOOP,
   };
-  Status GetConnectionStatus() const;
+  Status getConnectionStatus() const;
 
 protected:
   enum class ReconnectDelay { LONG, SHORT };
 
   bool IsMessagePolling{false};
 
-  void ThreadFunction();
-  void SetState(Status NewState);
+  void threadFunction();
+  void setState(Status NewState);
 
   Status ConnectionState{Status::ADDR_LOOKUP};
 

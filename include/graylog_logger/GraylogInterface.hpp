@@ -23,7 +23,7 @@ public:
   virtual bool emptyQueue() override;
   virtual size_t queueSize() override;
   using GraylogConnection::Status;
-  using GraylogConnection::GetConnectionStatus;
+  using GraylogConnection::getConnectionStatus;
 
 protected:
   std::string logMsgToJSON(const LogMessage &Message);
