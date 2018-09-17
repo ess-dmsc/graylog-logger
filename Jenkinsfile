@@ -106,7 +106,7 @@ builders = pipeline_builder.createBuilders { container ->
 
 }  // createBuilders
 
-node('docker') {
+node {
   // Delete workspace when build is done
   cleanWs()
 
