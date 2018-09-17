@@ -30,7 +30,6 @@ pipeline_builder.activateEmailFailureNotifications()
 pipeline_builder.activateSlackFailureNotifications()
 
 builders = pipeline_builder.createBuilders { container ->
-
   pipeline_builder.stage("${container.key}: checkout") {
     dir(pipeline_builder.project) {
       checkout scm
@@ -103,7 +102,6 @@ builders = pipeline_builder.createBuilders { container ->
       ])
     }  // stage
   }  // if
-
 }  // createBuilders
 
 node {
