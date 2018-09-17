@@ -1,4 +1,4 @@
-@Library('ecdc-pipeline')
+pipeline_builder@Library('ecdc-pipeline')
 import ecdcpipeline.ContainerBuildNode
 import ecdcpipeline.PipelineBuilder
 
@@ -25,38 +25,38 @@ container_build_nodes = [
   'fedora25': new ContainerBuildNode('essdmscdm/fedora25-build-node:2.0.0', 'bash -e')
 ]
 
-pipelineBuilder = new PipelineBuilder(this, containerBuildNodes)
-pipelineBuilder.activateEmailFailureNotifications()
-pipelineBuilder.activateSlackFailureNotifications()
+pipeline_builder = new PipelineBuilder(this, container_build_nodes)
+pipeline_builder.activateEmailFailureNotifications()
+pipeline_builder.activateSlackFailureNotifications()
 
-builders = pipelineBuilder.createBuilders { container ->
+builders = pipeline_builder.createBuilders { container ->
 
-  pipelineBuilder.stage("${container.key}: checkout") {
-    dir(pipelineBuilder.project) {
+  pipeline_builder.stage("${container.key}: checkout") {
+    dir(pipeline_builder.project) {
       checkout scm
     }
     // Copy source code to container
-    container.copyTo(pipelineBuilder.project, pipelineBuilder.project)
+    container.copyTo(pipeline_builder.project, pipeline_builder.project)
   }  // stage
 
-  pipelineBuilder.stage("${container.key}: get dependencies") {
+  pipeline_builder.stage("${container.key}: get dependencies") {
     container.sh """
       mkdir build
       cd build
       conan remote add --insert 0 ${conan_remote} ${local_conan_server}
-      conan install --build outdated ../${pipelineBuilder.project}
+      conan install --build outdated ../${pipeline_builder.project}
     """
   }  // stage
 
-  pipelineBuilder.stage("${container.key}: configure") {
+  pipeline_builder.stage("${container.key}: configure") {
     container.sh """
       cd build
       . ./activate_run.sh
-      cmake ../${pipelineBuilder.project} -DBUILD_EVERYTHING=ON
+      cmake ../${pipeline_builder.project} -DBUILD_EVERYTHING=ON
     """
   }  // stage
 
-  pipelineBuilder.stage("${container.key}: build") {
+  pipeline_builder.stage("${container.key}: build") {
     container.sh """
       cd build
       . ./activate_run.sh
@@ -65,7 +65,7 @@ builders = pipelineBuilder.createBuilders { container ->
   }  // stage
 
   if (container.key == test_os) {
-    pipelineBuilder.stage("${container.key}: test") {
+    pipeline_builder.stage("${container.key}: test") {
       def test_output = "TestResults.xml"
       container.sh """
         cd build
@@ -78,22 +78,22 @@ builders = pipelineBuilder.createBuilders { container ->
   }  // if
 
   if (container.key == clangformat_os) {
-    pipelineBuilder.stage("${container.key}: check formatting") {
+    pipeline_builder.stage("${container.key}: check formatting") {
       container.sh """
         clang-format -version
-        cd ${pipelineBuilder.project}
+        cd ${pipeline_builder.project}
         find . \\\\( -name '*.cpp' -or -name '*.cxx' -or -name '*.h' -or -name '*.hpp' \\\\) \\
           -exec clangformatdiff.sh {} +
       """
     }  // stage
 
-    pipelineBuilder.stage("${container.key}: cppcheck") {
+    pipeline_builder.stage("${container.key}: cppcheck") {
       def test_output = "cppcheck.txt"
       container.sh """
-        cd ${pipelineBuilder.project}
+        cd ${pipeline_builder.project}
         cppcheck --enable=all --inconclusive --template="{file},{line},{severity},{id},{message}" src/ 2> ${test_output}
       """
-      container.copyFrom("${pipelineBuilder.project}/${test_output}", '.')
+      container.copyFrom("${pipeline_builder.project}/${test_output}", '.')
       step([
         $class: 'WarningsPublisher',
         parserConfigurations: [[
