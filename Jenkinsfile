@@ -119,9 +119,14 @@ node {
   }
 
   //builders['macOS'] = get_macos_pipeline()
-  parallel builders
-  println pipeline_builder.failure_messages.size()
-  pipeline_builder.failure_messages.eachWithIndex{message, index -> println "${index}: ${message}"}
+  try {
+    parallel builders
+    } catch (e) {
+      println pipeline_builder.failure_messages.size()
+      pipeline_builder.failure_messages.eachWithIndex{message, index -> println "${index}: ${message}"}
+      println(e.toString());
+      throw e
+  }
 }
 
 def failure_function(exception_obj, failureMessage) {
