@@ -18,7 +18,7 @@ using std::chrono_literals::operator""ms;
 using std::chrono_literals::operator""s;
 
 struct QueryResult {
-  explicit QueryResult(aasio::ip::tcp::resolver::iterator &&Endpoints)
+  explicit QueryResult(asio::ip::tcp::resolver::iterator &&Endpoints)
       : EndpointIterator(std::move(Endpoints)) {
     while (EndpointIterator != asio::ip::tcp::resolver::iterator()) {
       auto CEndpoint = *EndpointIterator;
