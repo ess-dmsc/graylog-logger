@@ -26,8 +26,8 @@ container_build_nodes = [
 ]
 
 pipeline_builder = new PipelineBuilder(this, container_build_nodes)
-//pipeline_builder.activateEmailFailureNotifications()
-//pipeline_builder.activateSlackFailureNotifications()
+pipeline_builder.activateEmailFailureNotifications()
+pipeline_builder.activateSlackFailureNotifications()
 
 builders = pipeline_builder.createBuilders { container ->
   pipeline_builder.stage("${container.key}: checkout") {
@@ -122,9 +122,7 @@ node {
   try {
     parallel builders
     } catch (e) {
-      println pipeline_builder.failure_messages.size()
-      pipeline_builder.failure_messages.eachWithIndex{message, index -> println "${index}: ${message}"}
-      println(e.toString());
+      pipeline_builder.handleFailureMessages()
       throw e
   }
 }
