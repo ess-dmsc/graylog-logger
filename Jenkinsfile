@@ -22,7 +22,7 @@ test_os = "ubuntu1804"
 container_build_nodes = [
   'centos7': ContainerBuildNode.getDefaultContainerBuildNode('centos7'),
   //'ubuntu1804': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu1804'),
-  //'fedora25': new ContainerBuildNode('essdmscdm/fedora25-build-node:2.0.0', 'bash -e')
+  'fedora25': new ContainerBuildNode('essdmscdm/fedora25-build-node:2.0.0', 'bash -e')
 ]
 
 pipeline_builder = new PipelineBuilder(this, container_build_nodes)
@@ -121,7 +121,7 @@ node {
   //builders['macOS'] = get_macos_pipeline()
   parallel builders
   println pipeline_builder.failure_messages.size()
-  pipeline_builder.failure_messages.each{println "$it"}
+  pipeline_builder.failure_messages.eachWithIndex{message, index -> println "${index}: ${message}"}
 }
 
 def failure_function(exception_obj, failureMessage) {
