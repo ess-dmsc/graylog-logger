@@ -21,7 +21,7 @@ test_os = "ubuntu1804"
 
 container_build_nodes = [
   'centos7': ContainerBuildNode.getDefaultContainerBuildNode('centos7'),
-  //'ubuntu1804': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu1804'),
+  'ubuntu1804': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu1804'),
   'fedora25': new ContainerBuildNode('essdmscdm/fedora25-build-node:2.0.0', 'bash -e')
 ]
 
@@ -118,7 +118,7 @@ node {
     }
   }
 
-  //builders['macOS'] = get_macos_pipeline()
+  builders['macOS'] = get_macos_pipeline()
   try {
     parallel builders
     } catch (e) {
