@@ -121,6 +121,7 @@ node {
   //builders['macOS'] = get_macos_pipeline()
   parallel builders
   println pipeline_builder.failure_messages.size()
+  pipeline_builder.failure_messages.each{println "$it"}
 }
 
 def failure_function(exception_obj, failureMessage) {
