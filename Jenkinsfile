@@ -1,4 +1,4 @@
-@Library('ecdc-pipeline')
+@Library('ecdc-pipeline-test')
 import ecdcpipeline.ContainerBuildNode
 import ecdcpipeline.PipelineBuilder
 
@@ -21,13 +21,13 @@ test_os = "ubuntu1804"
 
 container_build_nodes = [
   'centos7': ContainerBuildNode.getDefaultContainerBuildNode('centos7'),
-  'ubuntu1804': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu1804'),
-  'fedora25': new ContainerBuildNode('essdmscdm/fedora25-build-node:2.0.0', 'bash -e')
+  //'ubuntu1804': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu1804'),
+  //'fedora25': new ContainerBuildNode('essdmscdm/fedora25-build-node:2.0.0', 'bash -e')
 ]
 
 pipeline_builder = new PipelineBuilder(this, container_build_nodes)
-pipeline_builder.activateEmailFailureNotifications()
-pipeline_builder.activateSlackFailureNotifications()
+//pipeline_builder.activateEmailFailureNotifications()
+//pipeline_builder.activateSlackFailureNotifications()
 
 builders = pipeline_builder.createBuilders { container ->
   pipeline_builder.stage("${container.key}: checkout") {
@@ -118,8 +118,9 @@ node {
     }
   }
 
-  builders['macOS'] = get_macos_pipeline()
+  //builders['macOS'] = get_macos_pipeline()
   parallel builders
+  println pipeline_builder.failure_messages.size()
 }
 
 def failure_function(exception_obj, failureMessage) {
