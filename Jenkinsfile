@@ -119,7 +119,12 @@ node {
   }
 
   builders['macOS'] = get_macos_pipeline()
-  parallel builders
+  try {
+    parallel builders
+    } catch (e) {
+      pipeline_builder.handleFailureMessages()
+      throw e
+  }
 }
 
 def failure_function(exception_obj, failureMessage) {
