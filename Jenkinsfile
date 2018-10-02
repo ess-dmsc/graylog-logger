@@ -59,7 +59,7 @@ builders = pipeline_builder.createBuilders { container ->
     container.sh """
       cd build
       . ./activate_run.sh
-      make VERBOSE=1 all | filter-make-output ${container.key}-build.log
+      make VERBOSE=1 all > ${container.key}-build.log
     """
     container.copyFrom("build/${container.key}-build.log", "${container.key}-build.log")
     archiveArtifacts "${container.key}-build.log"
