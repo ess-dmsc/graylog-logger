@@ -153,11 +153,7 @@ int main(int argc, char **argv) {
   }
 
   if (not address1.empty()) {
-    if ("localhost" == address1) {
-      Log::AddLogHandler(std::make_shared<GraylogInterface>(address1, port));
-    } else {
-      Log::AddLogHandler(std::make_shared<GraylogInterface>(address1, port));
-    }
+    Log::AddLogHandler(std::make_shared<GraylogInterface>(address1, port));
   }
   if (not extraKey.empty()) {
     Log::Msg(Severity(sevLevel), msg, {extraKey, extraField});
