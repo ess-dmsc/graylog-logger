@@ -16,13 +16,13 @@ properties([[
   ]
 ]]);
 
-clangformat_os = "fedora25"
+clangformat_os = "debian9"
 test_os = "ubuntu1804"
 
 container_build_nodes = [
   'centos7': ContainerBuildNode.getDefaultContainerBuildNode('centos7'),
-  'ubuntu1804': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu1804'),
-  'fedora25': new ContainerBuildNode('essdmscdm/fedora25-build-node:2.0.0', 'bash -e')
+  'debian9': ContainerBuildNode.getDefaultContainerBuildNode('debian9'),
+  'ubuntu1804': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu1804')
 ]
 
 pipeline_builder = new PipelineBuilder(this, container_build_nodes)
@@ -59,8 +59,10 @@ builders = pipeline_builder.createBuilders { container ->
     container.sh """
       cd build
       . ./activate_run.sh
-      make all
+      make VERBOSE=1 all > ${container.key}-build.log
     """
+    container.copyFrom("build/${container.key}-build.log", "${container.key}-build.log")
+    archiveArtifacts "${container.key}-build.log"
   }  // stage
 
   if (container.key == test_os) {
