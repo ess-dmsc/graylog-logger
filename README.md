@@ -100,6 +100,7 @@ The items in the following list is in no particular order. Suggestions and/or pa
 * The code now requires C++14 to compile.
 * Updated the documentation.
 * Modernized the code somewhat.
+* **This is the last version not using semantic versioning. The next release which has breaking changes in the API will have the version number 2.0.0.**
 
 ### Version 1.0.5
 * Improved the code based on clang-tidy static analysis results.
