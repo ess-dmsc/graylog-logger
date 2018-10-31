@@ -10,6 +10,8 @@
 #include <ciso646>
 #include <gtest/gtest.h>
 
+using namespace Log;
+
 const std::string consoleTestString("Some test string");
 
 std::string ConsoleTestStringCreator(const LogMessage &msg) {
@@ -19,10 +21,10 @@ std::string ConsoleTestStringCreator(const LogMessage &msg) {
 TEST(ConsoleInterface, ConsoleStringTest) {
   testing::internal::CaptureStdout();
   {
-    LogMessage msg;
+    LogMessage Message;
     ConsoleInterface cInter;
-    cInter.SetMessageStringCreatorFunction(ConsoleTestStringCreator);
-    cInter.AddMessage(msg);
+    cInter.setMessageStringCreatorFunction(ConsoleTestStringCreator);
+    cInter.addMessage(Message);
   }
   std::string output = testing::internal::GetCapturedStdout();
   ASSERT_EQ(output, consoleTestString + "\n");
@@ -31,11 +33,11 @@ TEST(ConsoleInterface, ConsoleStringTest) {
 TEST(ConsoleInterface, ConsoleStringFunctionTest) {
   testing::internal::CaptureStdout();
   {
-    LogMessage msg;
-    msg.severity = Severity::Alert;
-    msg.message = consoleTestString;
+    LogMessage Message;
+    Message.SeverityLevel = Severity::Alert;
+    Message.MessageString = consoleTestString;
     ConsoleInterface cInter;
-    cInter.AddMessage(msg);
+    cInter.addMessage(Message);
   }
   std::string output = testing::internal::GetCapturedStdout();
   ASSERT_EQ(std::string("ALERT: Some test string\n"), output);

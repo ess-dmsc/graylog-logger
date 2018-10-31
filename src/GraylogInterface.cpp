@@ -13,39 +13,44 @@
 #include <cstring>
 #include <nlohmann/json.hpp>
 
-GraylogInterface::GraylogInterface(const std::string &host, const int port,
-                                   const size_t maxQueueLength)
-    : BaseLogHandler(maxQueueLength), GraylogConnection(host, port) {}
+namespace Log {
 
-bool GraylogInterface::MessagesQueued() {
-  return GraylogConnection::LogMessages.size() > 0;
+GraylogInterface::GraylogInterface(const std::string &Host, const int Port,
+                                   const size_t MaxQueueLength)
+    : BaseLogHandler(MaxQueueLength), GraylogConnection(Host, Port) {}
+
+bool GraylogInterface::emptyQueue() {
+  return GraylogConnection::LogMessages.empty();
 }
 
-size_t GraylogInterface::QueueSize() {
+size_t GraylogInterface::queueSize() {
   return GraylogConnection::LogMessages.size();
 }
 
-void GraylogInterface::AddMessage(const LogMessage &msg) {
-  if (GraylogConnection::LogMessages.size() < BaseLogHandler::queueLength) {
-    SendMessage(LogMsgToJSON(msg));
+void GraylogInterface::addMessage(const LogMessage &Message) {
+  if (GraylogConnection::LogMessages.size() < BaseLogHandler::QueueLength) {
+    sendMessage(logMsgToJSON(Message));
   }
 }
 
-std::string GraylogInterface::LogMsgToJSON(const LogMessage &msg) {
+std::string GraylogInterface::logMsgToJSON(const LogMessage &Message) {
+  using std::chrono::duration_cast;
+  using std::chrono::milliseconds;
+
   nlohmann::json JsonObject;
-  JsonObject["short_message"] = msg.message;
+  JsonObject["short_message"] = Message.MessageString;
   JsonObject["version"] = "1.1";
-  JsonObject["level"] = int(msg.severity);
-  JsonObject["host"] = msg.host;
+  JsonObject["level"] = int(Message.SeverityLevel);
+  JsonObject["host"] = Message.Host;
   JsonObject["timestamp"] =
-      static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(
-                              msg.timestamp.time_since_epoch())
-                              .count()) /
+      static_cast<double>(
+          duration_cast<milliseconds>(Message.Timestamp.time_since_epoch())
+              .count()) /
       1000;
-  JsonObject["_process_id"] = msg.processId;
-  JsonObject["_process"] = msg.processName;
-  JsonObject["_thread_id"] = msg.threadId;
-  for (auto &field : msg.additionalFields) {
+  JsonObject["_process_id"] = Message.ProcessId;
+  JsonObject["_process"] = Message.ProcessName;
+  JsonObject["_thread_id"] = Message.ThreadId;
+  for (auto &field : Message.AdditionalFields) {
     if (AdditionalField::Type::typeStr == field.second.FieldType) {
       JsonObject["_" + field.first] = field.second.strVal;
     } else if (AdditionalField::Type::typeDbl == field.second.FieldType) {
@@ -56,3 +61,5 @@ std::string GraylogInterface::LogMsgToJSON(const LogMessage &msg) {
   }
   return JsonObject.dump();
 }
+
+} // namespace Log

@@ -26,6 +26,7 @@
 void PrintAlternatives();
 
 int main(int argc, char **argv) {
+  using namespace Log;
   std::string fileName("messages.log");
   std::string address1("localhost");
   std::string msg;
@@ -145,18 +146,14 @@ int main(int argc, char **argv) {
   Log::AddField("arguments", commandLineArguments);
   Log::SetMinimumSeverity(Severity::Debug);
   Log::RemoveAllHandlers();
-  Log::AddLogHandler(LogHandler_P(new ConsoleInterface()));
+  Log::AddLogHandler(std::make_shared<ConsoleInterface>());
 
   if (not fileName.empty()) {
-    Log::AddLogHandler(LogHandler_P(new FileInterface(fileName)));
+    Log::AddLogHandler(std::make_shared<FileInterface>(fileName));
   }
 
   if (not address1.empty()) {
-    if ("localhost" == address1) {
-      Log::AddLogHandler(LogHandler_P(new GraylogInterface(address1, port)));
-    } else {
-      Log::AddLogHandler(LogHandler_P(new GraylogInterface(address1, port)));
-    }
+    Log::AddLogHandler(std::make_shared<GraylogInterface>(address1, port));
   }
   if (not extraKey.empty()) {
     Log::Msg(Severity(sevLevel), msg, {extraKey, extraField});
@@ -181,7 +178,7 @@ int main(int argc, char **argv) {
       std::this_thread::sleep_for(sleepTime);
       continueLoop = false;
       for (auto &ptr : graylogInt) {
-        if (dynamic_cast<GraylogInterface *>(ptr.get())->MessagesQueued()) {
+        if (not dynamic_cast<GraylogInterface *>(ptr.get())->emptyQueue()) {
           continueLoop = true;
         }
       }

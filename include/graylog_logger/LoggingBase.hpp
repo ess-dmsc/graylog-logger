@@ -14,30 +14,34 @@
 #include <string>
 #include <vector>
 
+namespace Log {
+
 class LoggingBase {
 public:
   LoggingBase();
   virtual ~LoggingBase();
-  virtual void Log(const Severity sev, const std::string &message);
+  virtual void log(const Severity Level, const std::string &Message);
   virtual void
-  Log(const Severity sev, const std::string &message,
-      const std::vector<std::pair<std::string, AdditionalField>> &extraFields);
-  virtual void Log(const Severity sev, const std::string &message,
-                   const std::pair<std::string, AdditionalField> &extraField);
-  virtual void AddLogHandler(const LogHandler_P &handler);
+  log(const Severity Level, const std::string &Message,
+      const std::vector<std::pair<std::string, AdditionalField>> &ExtraFields);
+  virtual void log(const Severity Level, const std::string &Message,
+                   const std::pair<std::string, AdditionalField> &ExtraField);
+  virtual void addLogHandler(const LogHandler_P &Handler);
   template <typename valueType>
-  void AddField(std::string key, const valueType &value) {
-    std::lock_guard<std::mutex> guard(baseMsgMutex);
-    baseMsg.AddField(key, value);
+  void addField(std::string Key, const valueType &Value) {
+    std::lock_guard<std::mutex> Guard(BaseMsgMutex);
+    BaseMsg.addField(Key, Value);
   };
-  virtual void RemoveAllHandlers();
-  virtual void SetMinSeverity(Severity sev);
-  virtual std::vector<LogHandler_P> GetHandlers();
+  virtual void removeAllHandlers();
+  virtual void setMinSeverity(Severity Level);
+  virtual std::vector<LogHandler_P> getHandlers();
 
 protected:
-  Severity minSeverity;
-  std::mutex vectorMutex;
-  std::mutex baseMsgMutex;
-  std::vector<LogHandler_P> handlers;
-  LogMessage baseMsg;
+  Severity MinSeverity;
+  std::mutex VectorMutex;
+  std::mutex BaseMsgMutex;
+  std::vector<LogHandler_P> Handlers;
+  LogMessage BaseMsg;
 };
+
+} // namespace Log

@@ -22,7 +22,7 @@ LogTestServer::LogTestServer(short port)
 }
 
 void LogTestServer::WaitForNewConnection() {
-  sock_ptr cSock(new asio::ip::tcp::socket(service));
+  sock_ptr cSock(std::make_shared<asio::ip::tcp::socket>(service));
   acceptor.async_accept(*cSock.get(),
                         std::bind(&LogTestServer::OnConnectionAccept, this,
                                   std::placeholders::_1, cSock));

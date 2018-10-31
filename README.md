@@ -92,12 +92,14 @@ The items in the following list is in no particular order. Suggestions and/or pa
 * Completely removed the dependency on boost for unit testing.
 * Switched out the networking code for code using ASIO.
 * Updated to CMake code to use modern CMake features.
+* Moved towards using the LLVM coding standard. **This has changed the interface, you might have to update your code.** 
 * Switched to using the JSONForModernCPP library. This library is not included in the repository.
 * Added the `Info` severity level which is exactly the same as the `Informational` severity level.
 * Updated the CI-code (Jenkins) to build the library on more (modern) operating systems.
 * Messages are now passed to the graylog-server with millisecond resolution timestamps.
 * The code now requires C++14 to compile.
 * Updated the documentation.
+* Modernized the code somewhat.
 
 ### Version 1.0.5
 * Improved the code based on clang-tidy static analysis results.

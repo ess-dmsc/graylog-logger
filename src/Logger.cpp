@@ -13,30 +13,33 @@
 #include "graylog_logger/GraylogInterface.hpp"
 #include <ciso646>
 
+namespace Log {
+
 Logger &Logger::Inst() {
   static Logger inst;
   return inst;
 }
 
 Logger::Logger() {
-  LogHandler_P ptr1(new ConsoleInterface());
-  Logger::AddLogHandler(ptr1);
+  Logger::addLogHandler(std::make_shared<ConsoleInterface>());
 }
 
-void Logger::AddLogHandler(const LogHandler_P &handler) {
-  std::lock_guard<std::mutex> guard(vectorMutex);
-  if (dynamic_cast<ConsoleInterface *>(handler.get()) != nullptr) {
+void Logger::addLogHandler(const LogHandler_P &Handler) {
+  std::lock_guard<std::mutex> guard(VectorMutex);
+  if (dynamic_cast<ConsoleInterface *>(Handler.get()) != nullptr) {
     bool replaced = false;
-    for (auto ptr : handlers) {
+    for (auto ptr : Handlers) {
       if (dynamic_cast<ConsoleInterface *>(ptr.get()) != nullptr) {
-        ptr = handler;
+        ptr = Handler;
         replaced = true;
       }
     }
     if (not replaced) {
-      handlers.push_back(handler);
+      Handlers.push_back(Handler);
     }
   } else {
-    handlers.push_back(handler);
+    Handlers.push_back(Handler);
   }
 }
+
+} // namespace Log

@@ -12,38 +12,44 @@
 #include <ciso646>
 #include <iostream>
 
-std::string ConsoleStringCreator(const LogMessage &msg) {
+namespace Log {
+
+std::string ConsoleStringCreator(const LogMessage &Message) {
   std::array<std::string, 8> sevToStr = {{"EMERGENCY", "ALERT", "CRITICAL",
                                           "ERROR", "WARNING", "Notice", "Info",
                                           "Debug"}};
-  return sevToStr.at(int(msg.severity)) + std::string(": ") + msg.message;
+  return sevToStr.at(int(Message.SeverityLevel)) + std::string(": ") +
+         Message.MessageString;
 }
 
-ConsoleInterface::ConsoleInterface(size_t maxQueueLength)
-    : BaseLogHandler(maxQueueLength),
-      consoleThread(&ConsoleInterface::ThreadFunction, this) {
-  BaseLogHandler::SetMessageStringCreatorFunction(ConsoleStringCreator);
+ConsoleInterface::ConsoleInterface(size_t MaxQueueLength)
+    : BaseLogHandler(MaxQueueLength),
+      ConsoleThread(&ConsoleInterface::threadFunction, this) {
+  BaseLogHandler::setMessageStringCreatorFunction(ConsoleStringCreator);
 }
 
-ConsoleInterface::~ConsoleInterface() { ExitThread(); }
+ConsoleInterface::~ConsoleInterface() { exitThread(); }
 
-void ConsoleInterface::ExitThread() {
-  LogMessage exitMsg;
-  exitMsg.message = "exit";
-  exitMsg.processId = -1;
-  AddMessage(exitMsg);
-  if (consoleThread.joinable()) {
-    consoleThread.join();
+void ConsoleInterface::exitThread() {
+  LogMessage ExitMsg;
+  ExitMsg.MessageString = "exit";
+  ExitMsg.ProcessId = -1;
+  addMessage(ExitMsg);
+  if (ConsoleThread.joinable()) {
+    ConsoleThread.join();
   }
 }
 
-void ConsoleInterface::ThreadFunction() {
+void ConsoleInterface::threadFunction() {
   LogMessage tmpMsg;
   while (true) {
-    logMessages.wait_and_pop(tmpMsg);
-    if (std::string("exit") == tmpMsg.message and -1 == tmpMsg.processId) {
+    MessageQueue.wait_and_pop(tmpMsg);
+    if (std::string("exit") == tmpMsg.MessageString and
+        -1 == tmpMsg.ProcessId) {
       break;
     }
-    std::cout << MsgStringCreator(tmpMsg) << std::endl;
+    std::cout << messageToString(tmpMsg) << std::endl;
   }
 }
+
+} // namespace Log
