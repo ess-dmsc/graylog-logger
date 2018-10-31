@@ -46,7 +46,7 @@ target_include_directories(graylog_logger_static
 )
 
 set_target_properties(graylog_logger PROPERTIES VERSION ${PROJECT_VERSION})
-set_target_properties(graylog_logger_static PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(graylog_logger_static PROPERTIES VERSION ${PROJECT_VERSION} POSITION_INDEPENDENT_CODE ON)
 
 add_cppcheck_target(
     graylog_logger
