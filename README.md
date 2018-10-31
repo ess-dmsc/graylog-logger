@@ -88,6 +88,9 @@ The items in the following list is in no particular order. Suggestions and/or pa
 
 ## Changes
 
+### Version 1.1.1
+* Made the static version of the library compile with position independent code (`-fPIC`).
+
 ### Version 1.1.0
 * Completely removed the dependency on boost for unit testing.
 * Switched out the networking code for code using ASIO.
