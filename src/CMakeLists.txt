@@ -21,6 +21,7 @@ set(Graylog_INC
     ../include/graylog_logger/Logger.hpp
     ../include/graylog_logger/LoggingBase.hpp
     ../include/graylog_logger/LogUtil.hpp
+    ../include/graylog_logger/ThreadedExecutor.hpp
 )
 
 add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})

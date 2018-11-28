@@ -23,33 +23,12 @@ std::string ConsoleStringCreator(const LogMessage &Message) {
 }
 
 ConsoleInterface::ConsoleInterface(size_t MaxQueueLength)
-    : BaseLogHandler(MaxQueueLength),
-      ConsoleThread(&ConsoleInterface::threadFunction, this) {
+    : BaseLogHandler(MaxQueueLength) {
   BaseLogHandler::setMessageStringCreatorFunction(ConsoleStringCreator);
 }
-
-ConsoleInterface::~ConsoleInterface() { exitThread(); }
-
-void ConsoleInterface::exitThread() {
-  LogMessage ExitMsg;
-  ExitMsg.MessageString = "exit";
-  ExitMsg.ProcessId = -1;
-  addMessage(ExitMsg);
-  if (ConsoleThread.joinable()) {
-    ConsoleThread.join();
-  }
-}
-
-void ConsoleInterface::threadFunction() {
-  LogMessage tmpMsg;
-  while (true) {
-    MessageQueue.wait_and_pop(tmpMsg);
-    if (std::string("exit") == tmpMsg.MessageString and
-        -1 == tmpMsg.ProcessId) {
-      break;
-    }
-    std::cout << messageToString(tmpMsg) << std::endl;
-  }
+void ConsoleInterface::addMessage(const LogMessage &Message) {
+  Executor.SendWork(
+      [=]() { std::cout << BaseLogHandler::MessageParser(Message) << "\n"; });
 }
 
 } // namespace Log

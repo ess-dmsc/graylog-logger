@@ -10,21 +10,20 @@
 #pragma once
 
 #include "graylog_logger/LogUtil.hpp"
+#include "graylog_logger/ThreadedExecutor.hpp"
+#include <fstream>
 #include <string>
-#include <thread>
 
 namespace Log {
 
 class FileInterface : public BaseLogHandler {
 public:
   explicit FileInterface(std::string Name, const size_t MaxQueueLength = 100);
-  ~FileInterface();
+  void addMessage(const LogMessage &Message) override;
 
 protected:
-  void exitThread();
-  std::string FileName;
-  void threadFunction();
-  std::thread FileThread;
+  std::ofstream FileStream;
+  ThreadedExecutor Executor; // Must be last
 };
 
 } // namespace Log
