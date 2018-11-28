@@ -7,6 +7,7 @@
 //
 
 #include "graylog_logger/FileInterface.hpp"
+#include "graylog_logger/Log.hpp"
 #include <ciso646>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -43,8 +44,6 @@ class FileInterfaceStandIn : public FileInterface {
 public:
   FileInterfaceStandIn(const std::string &fileName) : FileInterface(fileName){};
   ~FileInterfaceStandIn(){};
-  using FileInterface::FileName;
-  using FileInterface::FileThread;
   using FileInterface::MessageQueue;
 };
 
@@ -76,11 +75,6 @@ TEST_F(FileInterfaceTest, LogFileCreationTest) {
   ASSERT_TRUE(fileExists(usedFileName));
 }
 
-TEST_F(FileInterfaceTest, FileNameSetVarTest) {
-  FileInterfaceStandIn flInt(usedFileName);
-  ASSERT_EQ(flInt.FileName, usedFileName);
-}
-
 TEST_F(FileInterfaceTest, FileWriteMsgTest) {
   {
     LogMessage msg;
@@ -92,4 +86,25 @@ TEST_F(FileInterfaceTest, FileWriteMsgTest) {
   std::string logLine;
   std::getline(inStream, logLine);
   ASSERT_EQ(logLine, fileTestString);
+}
+
+using std::chrono_literals::operator""ms;
+
+TEST_F(FileInterfaceTest, OpenFileMessages) {
+  Log::SetMinimumSeverity(Log::Severity::Info);
+  testing::internal::CaptureStdout();
+  { FileInterfaceStandIn flInt(usedFileName); }
+  std::this_thread::sleep_for(100ms);
+  auto StdOutputString = testing::internal::GetCapturedStdout();
+  EXPECT_NE(StdOutputString.find("Started logging to log file"),
+            std::string::npos);
+  EXPECT_EQ(StdOutputString.find("Unable to open log file"), std::string::npos);
+  testing::internal::CaptureStdout();
+  { FileInterfaceStandIn flInt(""); }
+  std::this_thread::sleep_for(100ms);
+  StdOutputString = testing::internal::GetCapturedStdout();
+  EXPECT_EQ(StdOutputString.find("Started logging to log file"),
+            std::string::npos);
+  EXPECT_NE(StdOutputString.find("Unable to open log file"), std::string::npos)
+      << "Actual std-output was: " << StdOutputString;
 }

@@ -10,19 +10,17 @@
 #pragma once
 
 #include "graylog_logger/LogUtil.hpp"
-#include <thread>
+#include "graylog_logger/ThreadedExecutor.hpp"
 
 namespace Log {
 
 class ConsoleInterface : public BaseLogHandler {
 public:
   explicit ConsoleInterface(size_t MaxQueueLength = 100);
-  ~ConsoleInterface();
+  void addMessage(const LogMessage &Message) override;
 
 protected:
-  void exitThread();
-  void threadFunction();
-  std::thread ConsoleThread;
+  ThreadedExecutor Executor; // Must be last
 };
 
 } // namespace Log

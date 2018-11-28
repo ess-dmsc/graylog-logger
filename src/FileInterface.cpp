@@ -8,40 +8,28 @@
 //===----------------------------------------------------------------------===//
 
 #include "graylog_logger/FileInterface.hpp"
+#include "graylog_logger/Log.hpp"
 #include <ciso646>
 #include <fstream>
 
 namespace Log {
 
 FileInterface::FileInterface(std::string Name, const size_t MaxQueueLength)
-    : BaseLogHandler(MaxQueueLength), FileName(std::move(Name)),
-      FileThread(&FileInterface::threadFunction, this) {}
-
-FileInterface::~FileInterface() { exitThread(); }
-
-void FileInterface::exitThread() {
-  LogMessage ExitMsg;
-  ExitMsg.MessageString = "exit";
-  ExitMsg.ProcessId = -1;
-  addMessage(ExitMsg);
-  if (FileThread.joinable()) {
-    FileThread.join();
+    : BaseLogHandler(MaxQueueLength), FileStream(Name, std::ios::app) {
+  if (FileStream.is_open() and FileStream.good()) {
+    Log::Msg(Severity::Info, "Started logging to log file: \"" + Name + "\"");
+  } else {
+    Log::Msg(Severity::Error,
+             "Unable to open log file for logging: \"" + Name + "\"");
   }
 }
 
-void FileInterface::threadFunction() {
-  std::ofstream outStream(FileName, std::ios_base::app);
-  LogMessage TmpMsg;
-  while (true) {
-    MessageQueue.wait_and_pop(TmpMsg);
-    if (std::string("exit") == TmpMsg.MessageString and
-        -1 == TmpMsg.ProcessId) {
-      break;
+void FileInterface::addMessage(const LogMessage &Message) {
+  Executor.SendWork([=]() {
+    if (FileStream.good() and FileStream.is_open()) {
+      FileStream << BaseLogHandler::messageToString(Message) << std::endl;
     }
-    if (outStream.good() and outStream.is_open()) {
-      outStream << messageToString(TmpMsg) << std::endl;
-    }
-  }
+  });
 }
 
 } // namespace Log
