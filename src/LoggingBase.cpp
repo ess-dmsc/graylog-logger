@@ -99,10 +99,10 @@ LoggingBase::LoggingBase() {
   const int stringBufferSize = 100;
   char stringBuffer[stringBufferSize];
   int res;
-  res = gethostname(static_cast<char*>(stringBuffer), stringBufferSize);
+  res = gethostname(static_cast<char *>(stringBuffer), stringBufferSize);
   std::lock_guard<std::mutex> guard2(BaseMsgMutex);
   if (0 == res) {
-    BaseMsg.Host = std::string(static_cast<char*>(stringBuffer));
+    BaseMsg.Host = std::string(static_cast<char *>(stringBuffer));
   }
   BaseMsg.ProcessId = getpid();
   BaseMsg.ProcessName = get_process_name();

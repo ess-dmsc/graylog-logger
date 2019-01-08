@@ -179,7 +179,7 @@ GraylogConnection::~GraylogConnection() {
   AsioThread.join();
   try {
     Socket.close();
-  } catch (asio::system_error&) {
+  } catch (asio::system_error &) {
     // Do nothing
   }
 }
