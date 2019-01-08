@@ -177,7 +177,11 @@ void GraylogConnection::doAddressQuery() {
 GraylogConnection::~GraylogConnection() {
   Service.stop();
   AsioThread.join();
-  Socket.close();
+  try {
+    Socket.close();
+  } catch (asio::system_error&) {
+    // Do nothing
+  }
 }
 
 GraylogConnection::Status GraylogConnection::getConnectionStatus() const {
