@@ -12,6 +12,8 @@ The repository is split into three parts:
 
 A sister project to this library is the Python logging handler [GraylogHandler](https://github.com/ess-dmsc/graylog-handler).
 
+- [Further documentation](documentation/README.md)
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
