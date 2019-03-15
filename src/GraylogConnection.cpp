@@ -96,7 +96,7 @@ void GraylogConnection::reconnect(ReconnectDelay Delay) {
   auto HandlerGlue = [this](auto &Err) { this->doAddressQuery(); };
   switch (Delay) {
   case ReconnectDelay::SHORT:
-    ReconnectTimeout.expires_after(50ms);
+    ReconnectTimeout.expires_after(500ms);
     break;
   case ReconnectDelay::LONG: // Fallthrough
   default:
