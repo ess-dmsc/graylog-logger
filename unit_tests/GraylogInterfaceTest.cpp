@@ -273,3 +273,20 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldDouble) {
   EXPECT_NO_THROW(tempVal = JsonObject["_" + key]);
   EXPECT_EQ(tempVal, value);
 }
+
+TEST(GraylogInterfaceCom, TestQueueSize) {
+  GraylogInterface con("localhost", testPort, 100);
+  LogMessage testMsg = GetPopulatedLogMsg();
+  con.addMessage(testMsg);
+  EXPECT_EQ(con.queueSize(), 1);
+}
+
+TEST(GraylogInterfaceCom, TestQueueSizeLimit) {
+  int MaxNrOfMessages = 100;
+  GraylogInterface con("localhost", testPort, MaxNrOfMessages);
+  LogMessage testMsg = GetPopulatedLogMsg();
+  for (int i = 0; i < MaxNrOfMessages + 10; ++i) {
+    con.addMessage(testMsg);
+  }
+  EXPECT_EQ(con.queueSize(), MaxNrOfMessages);
+}
