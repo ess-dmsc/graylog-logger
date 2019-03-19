@@ -154,6 +154,23 @@ TEST_F(GraylogConnectionCom, MessageTransmissionTest) {
   }
 }
 
+TEST_F(GraylogConnectionCom, LargeMessageTransmissionTest) {
+  {
+  std::string RepeatedString("This is a test string!");
+  std::string TargetString;
+  for (size_t i = 0; i < 30000; i++) {
+    TargetString += RepeatedString;
+  }
+  GraylogConnectionStandIn con("localhost", testPort);
+  con.sendMessage(TargetString);
+  std::this_thread::sleep_for(sleepTime);
+  ASSERT_TRUE(!logServer->GetLastSocketError());
+  ASSERT_EQ(TargetString.size() + 1, logServer->GetReceivedBytes());
+  ASSERT_EQ(TargetString, logServer->GetLatestMessage());
+  ASSERT_EQ(1, logServer->GetNrOfConnections());
+  }
+}
+
 TEST_F(GraylogConnectionCom, MultipleMessagesTest) {
   std::vector<std::string> lines = {"This is a test.", "!\"#€%&/()=?*^_-.,:;",
                                     "Another line bites the dust."};
