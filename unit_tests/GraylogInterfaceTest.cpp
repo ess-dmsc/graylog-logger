@@ -307,3 +307,19 @@ TEST(GraylogInterfaceCom, TestQueueSizeLimit) {
   }
   EXPECT_EQ(con.queueSize(), MaxNrOfMessages);
 }
+using std::chrono_literals::operator""ms;
+
+TEST_F(GraylogConnectionCom, MultipleCloseConnectionTest) {
+  {
+  GraylogConnectionStandIn con("localhost", testPort);
+  std::string SomeTestMessage("Hello, this is some test message.");
+  int NrOfMessages = 1000;
+  for (int i = 0; i < NrOfMessages; ++i) {
+    con.sendMessage(SomeTestMessage);
+    logServer->CloseAllConnections();
+    std::this_thread::sleep_for(20ms);
+  }
+  std::this_thread::sleep_for(2000ms);
+  EXPECT_EQ(logServer->GetNrOfMessages(), NrOfMessages);
+  }
+}

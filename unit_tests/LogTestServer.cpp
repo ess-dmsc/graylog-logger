@@ -95,6 +95,7 @@ void LogTestServer::HandleRead(std::error_code ec, std::size_t bytesReceived,
     if ('\0' == receiveBuffer[j]) {
       previousMessage = currentMessage;
       currentMessage = "";
+      ++nrOfMessagesReceived;
     } else {
       currentMessage += receiveBuffer[j];
     }
@@ -123,5 +124,7 @@ std::error_code LogTestServer::GetLastSocketError() {
 int LogTestServer::GetNrOfConnections() { return connections; }
 
 int LogTestServer::GetReceivedBytes() { return receivedBytes; }
+
+int LogTestServer::GetNrOfMessages() { return nrOfMessagesReceived;}
 
 void LogTestServer::ClearReceivedBytes() { receivedBytes = 0; }

@@ -29,6 +29,7 @@ public:
   void CloseAllConnections();
   int GetNrOfConnections();
   int GetReceivedBytes();
+  int GetNrOfMessages();
   void ClearReceivedBytes();
 
 private:
@@ -47,6 +48,7 @@ private:
 
   static const int bufferSize = 100;
   char receiveBuffer[bufferSize];
+  int nrOfMessagesReceived = 0;
 
   std::error_code socketError;
   std::atomic_int connections;
