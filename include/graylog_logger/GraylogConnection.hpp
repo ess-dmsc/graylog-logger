@@ -40,8 +40,6 @@ public:
 protected:
   enum class ReconnectDelay { LONG, SHORT };
 
-  bool IsMessagePolling{false};
-
   void threadFunction();
   void setState(Status NewState);
 
@@ -49,7 +47,7 @@ protected:
 
   std::atomic_bool closeThread{false};
 
-  std::string CurrentMessage;
+  std::vector<char> MessageBuffer;
 
   std::string HostAddress;
   std::string HostPort;
@@ -67,7 +65,7 @@ private:
   void trySendMessage();
   void waitForMessage();
   void doAddressQuery();
-  void reconnect(ReconnectDelay Delay);
+  void reConnect(ReconnectDelay Delay);
   void tryConnect(QueryResult AllEndpoints);
 
   typedef std::unique_ptr<asio::io_service::work> WorkPtr;

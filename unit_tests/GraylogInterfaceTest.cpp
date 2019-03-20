@@ -309,17 +309,17 @@ TEST(GraylogInterfaceCom, TestQueueSizeLimit) {
 }
 using std::chrono_literals::operator""ms;
 
-TEST_F(GraylogConnectionCom, MultipleCloseConnectionTest) {
+TEST_F(GraylogConnectionCom, DISABLED_MultipleCloseConnectionTest) {
   {
   GraylogConnectionStandIn con("localhost", testPort);
-  std::string SomeTestMessage("Hello, this is some test message.");
-  int NrOfMessages = 1000;
+  std::string SomeTestMessage("Hello, this is some test message with the number ");
+  int NrOfMessages = 100;
   for (int i = 0; i < NrOfMessages; ++i) {
-    con.sendMessage(SomeTestMessage);
+    con.sendMessage(SomeTestMessage + std::to_string(i));
     logServer->CloseAllConnections();
     std::this_thread::sleep_for(20ms);
   }
-  std::this_thread::sleep_for(2000ms);
+  std::this_thread::sleep_for(1000ms);
   EXPECT_EQ(logServer->GetNrOfMessages(), NrOfMessages);
   }
 }
