@@ -123,16 +123,23 @@ void GraylogConnection::trySendMessage() {
   if (not Socket.is_open()) {
     return;
   }
+  auto HandlerGlue = [this](auto &Err, auto Size) {
+    this->sentMessageHandler(Err, Size);
+  };
+  if (MessageBuffer.size() > MessageAdditionLimit) {
+    asio::async_write(Socket, asio::buffer(MessageBuffer), HandlerGlue);
+    return;
+  }
   std::string NewMessage;
   bool PopResult = LogMessages.try_pop(NewMessage);
   if (PopResult) {
-    auto HandlerGlue = [this](auto &Err, auto Size) {
-      this->sentMessageHandler(Err, Size);
-    };
     std::copy(NewMessage.begin(), NewMessage.end(),
               std::back_inserter(MessageBuffer));
     MessageBuffer.push_back('\0');
     asio::async_write(Socket, asio::buffer(MessageBuffer), HandlerGlue);
+  } else if (MessageBuffer.size() > 0) {
+    asio::async_write(Socket, asio::buffer(MessageBuffer), HandlerGlue);
+    return;
   } else {
     Service.post([this]() { this->waitForMessage(); });
   }

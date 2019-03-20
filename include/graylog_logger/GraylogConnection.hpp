@@ -56,6 +56,7 @@ protected:
   ConcurrentQueue<std::string> LogMessages;
 
 private:
+  const size_t MessageAdditionLimit{3000};
   void resolverHandler(const asio::error_code &Error,
                        asio::ip::tcp::resolver::iterator EndpointIter);
   void connectHandler(const asio::error_code &Error, QueryResult AllEndpoints);
