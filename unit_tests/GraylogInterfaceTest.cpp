@@ -156,18 +156,18 @@ TEST_F(GraylogConnectionCom, MessageTransmissionTest) {
 
 TEST_F(GraylogConnectionCom, LargeMessageTransmissionTest) {
   {
-  std::string RepeatedString("This is a test string!");
-  std::string TargetString;
-  for (size_t i = 0; i < 30000; i++) {
-    TargetString += RepeatedString;
-  }
-  GraylogConnectionStandIn con("localhost", testPort);
-  con.sendMessage(TargetString);
-  std::this_thread::sleep_for(sleepTime);
-  ASSERT_TRUE(!logServer->GetLastSocketError());
-  ASSERT_EQ(TargetString.size() + 1, logServer->GetReceivedBytes());
-  ASSERT_EQ(TargetString, logServer->GetLatestMessage());
-  ASSERT_EQ(1, logServer->GetNrOfConnections());
+    std::string RepeatedString("This is a test string!");
+    std::string TargetString;
+    for (size_t i = 0; i < 30000; i++) {
+      TargetString += RepeatedString;
+    }
+    GraylogConnectionStandIn con("localhost", testPort);
+    con.sendMessage(TargetString);
+    std::this_thread::sleep_for(sleepTime);
+    ASSERT_TRUE(!logServer->GetLastSocketError());
+    ASSERT_EQ(TargetString.size() + 1, logServer->GetReceivedBytes());
+    ASSERT_EQ(TargetString, logServer->GetLatestMessage());
+    ASSERT_EQ(1, logServer->GetNrOfConnections());
   }
 }
 
@@ -311,15 +311,16 @@ using std::chrono_literals::operator""ms;
 
 TEST_F(GraylogConnectionCom, DISABLED_MultipleCloseConnectionTest) {
   {
-  GraylogConnectionStandIn con("localhost", testPort);
-  std::string SomeTestMessage("Hello, this is some test message with the number ");
-  int NrOfMessages = 100;
-  for (int i = 0; i < NrOfMessages; ++i) {
-    con.sendMessage(SomeTestMessage + std::to_string(i));
-    logServer->CloseAllConnections();
-    std::this_thread::sleep_for(20ms);
-  }
-  std::this_thread::sleep_for(1000ms);
-  EXPECT_EQ(logServer->GetNrOfMessages(), NrOfMessages);
+    GraylogConnectionStandIn con("localhost", testPort);
+    std::string SomeTestMessage(
+        "Hello, this is some test message with the number ");
+    int NrOfMessages = 100;
+    for (int i = 0; i < NrOfMessages; ++i) {
+      con.sendMessage(SomeTestMessage + std::to_string(i));
+      logServer->CloseAllConnections();
+      std::this_thread::sleep_for(20ms);
+    }
+    std::this_thread::sleep_for(1000ms);
+    EXPECT_EQ(logServer->GetNrOfMessages(), NrOfMessages);
   }
 }

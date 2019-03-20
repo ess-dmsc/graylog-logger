@@ -129,11 +129,10 @@ void GraylogConnection::trySendMessage() {
     auto HandlerGlue = [this](auto &Err, auto Size) {
       this->sentMessageHandler(Err, Size);
     };
-    std::copy(NewMessage.begin(), NewMessage.end(), std::back_inserter(MessageBuffer));
+    std::copy(NewMessage.begin(), NewMessage.end(),
+              std::back_inserter(MessageBuffer));
     MessageBuffer.push_back('\0');
-    asio::async_write(
-        Socket, asio::buffer(MessageBuffer),
-        HandlerGlue);
+    asio::async_write(Socket, asio::buffer(MessageBuffer), HandlerGlue);
   } else {
     Service.post([this]() { this->waitForMessage(); });
   }
@@ -145,7 +144,8 @@ void GraylogConnection::sentMessageHandler(const asio::error_code &Error,
     MessageBuffer.clear();
   } else if (BytesSent > 0) {
     std::vector<char> TempVector;
-    std::copy(MessageBuffer.begin() + BytesSent, MessageBuffer.end(), std::back_inserter(TempVector));
+    std::copy(MessageBuffer.begin() + BytesSent, MessageBuffer.end(),
+              std::back_inserter(TempVector));
     MessageBuffer = TempVector;
   }
   if (Error) {

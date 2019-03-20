@@ -125,6 +125,6 @@ int LogTestServer::GetNrOfConnections() { return connections; }
 
 int LogTestServer::GetReceivedBytes() { return receivedBytes; }
 
-int LogTestServer::GetNrOfMessages() { return nrOfMessagesReceived;}
+int LogTestServer::GetNrOfMessages() { return nrOfMessagesReceived; }
 
 void LogTestServer::ClearReceivedBytes() { receivedBytes = 0; }
