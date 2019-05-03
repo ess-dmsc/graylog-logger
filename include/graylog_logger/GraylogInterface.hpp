@@ -16,12 +16,12 @@ namespace Log {
 
 class GraylogInterface : public BaseLogHandler, private GraylogConnection {
 public:
-  GraylogInterface(const std::string &Host, const int Port,
-                   const size_t MaxQueueLength = 100);
-  virtual ~GraylogInterface() = default;
-  virtual void addMessage(const LogMessage &Message) override;
-  virtual bool emptyQueue() override;
-  virtual size_t queueSize() override;
+  GraylogInterface(const std::string &Host, int Port,
+                   size_t MaxQueueLength = 100);
+  ~GraylogInterface() override = default;
+  void addMessage(const LogMessage &Message) override;
+  bool emptyQueue() override;
+  size_t queueSize() override;
   using GraylogConnection::Status;
   using GraylogConnection::getConnectionStatus;
 

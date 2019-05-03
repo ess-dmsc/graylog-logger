@@ -28,7 +28,7 @@ class GraylogConnection {
 public:
   GraylogConnection(std::string Host, int Port);
   virtual ~GraylogConnection();
-  virtual void sendMessage(std::string &msg) { LogMessages.push(msg); };
+  virtual void sendMessage(std::string msg) { LogMessages.push(msg); };
   enum class Status {
     ADDR_LOOKUP,
     ADDR_RETRY_WAIT,
