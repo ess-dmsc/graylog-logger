@@ -9,6 +9,7 @@
 #include "graylog_logger/FileInterface.hpp"
 #include "graylog_logger/Log.hpp"
 #include <ciso646>
+#include <cstdio>
 #include <fstream>
 #include <gtest/gtest.h>
 
@@ -19,7 +20,7 @@ const std::string usedFileName("testFileName.log");
 const std::string fileTestString("Some test string");
 
 void deleteFile(const std::string& Name) {
-  auto Error = _unlink(Name.c_str());
+  auto Error = std::remove(Name.c_str());
   if (Error) {
     throw std::runtime_error("Failed to delete file with error code: " +
                              std::to_string(Error));
