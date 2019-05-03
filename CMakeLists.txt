@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Conan - bring in dependencies with conan
-SET(CONAN_PROFILE "default" CACHE STRING "Name of conan profile to use, uses default by default")
-SET(CONAN "AUTO" CACHE STRING "conan options AUTO (conan must be in path), MANUAL (expects conanbuildinfo.cmake in build directory) or DISABLE")
+set(CONAN_PROFILE "default" CACHE STRING "Name of conan profile to use, uses default by default")
+set(CONAN "AUTO" CACHE STRING "conan options AUTO (conan must be in path), MANUAL (expects conanbuildinfo.cmake in build directory) or DISABLE")
 
 if(${CONAN} MATCHES "AUTO")
     include(${CMAKE_MODULE_PATH}/conan.cmake)
@@ -25,10 +25,10 @@ elseif(${CONAN} MATCHES "MANUAL")
         include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
         conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS TARGETS)
     else()
-        MESSAGE(FATAL_ERROR "CONAN set to MANUAL but no file named conanbuildinfo.cmake found in build directory")
+        message(FATAL_ERROR "CONAN set to MANUAL but no file named conanbuildinfo.cmake found in build directory")
     endif()
 else()
-    MESSAGE(FATAL_ERROR "Unrecognised option for CONAN, use AUTO or MANUAL")
+    message(FATAL_ERROR "Unrecognised option for CONAN, use AUTO or MANUAL")
 endif()
 
 if (NOT WIN32)
