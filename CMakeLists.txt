@@ -33,6 +33,9 @@ endif()
 
 if (NOT WIN32)
     include("CppCheck")
+else()
+    # Tell asio to target Windows 10
+    add_definitions(-D_WIN32_WINNT=0x0A00)
 endif(NOT WIN32)
 
 add_subdirectory(src)
