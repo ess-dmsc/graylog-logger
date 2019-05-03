@@ -60,7 +60,7 @@ private:
   void resolverHandler(const asio::error_code &Error,
                        asio::ip::tcp::resolver::iterator EndpointIter);
   void connectHandler(const asio::error_code &Error,
-                      const QueryResult& AllEndpoints);
+                      const QueryResult &AllEndpoints);
   void sentMessageHandler(const asio::error_code &Error, std::size_t BytesSent);
   void receiveHandler(const asio::error_code &Error, std::size_t BytesReceived);
   void trySendMessage();
