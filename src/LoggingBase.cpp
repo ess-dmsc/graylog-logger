@@ -16,11 +16,11 @@
 #include <thread>
 
 #ifdef _WIN32
-#include <Winsock2.h>
+#include <WinSock2.h>
 #include <codecvt>
 #include <locale>
 #include <process.h>
-#include <windows.h>
+#include <Windows.h>
 #define getpid _getpid
 #else
 #include <unistd.h>
@@ -42,7 +42,7 @@ std::string get_process_name() {
     buf.resize(buf.size() * 2);
   } while (buf.size() < 65536);
 
-  int lastSlash = buf.rfind(L"\"");
+  int lastSlash = buf.rfind(L'\"');
   if (std::string::npos != lastSlash) {
     buf = buf.substr(lastSlash + 1, buf.size() - 1);
   }

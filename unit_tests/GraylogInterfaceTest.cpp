@@ -217,7 +217,7 @@ TEST(GraylogInterfaceCom, MessageJSONTest) {
   con.addMessage(msg);
 }
 
-void TestJsonString(std::string jsonMsg) {
+void TestJsonString(const std::string& jsonMsg) {
   auto JsonObject = nlohmann::json::parse(jsonMsg);
   LogMessage compLog = GetPopulatedLogMsg();
   std::string tempStr;
