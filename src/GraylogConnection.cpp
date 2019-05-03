@@ -76,7 +76,7 @@ void GraylogConnection::resolverHandler(
 }
 
 void GraylogConnection::connectHandler(const asio::error_code &Error,
-                                       const QueryResult& AllEndpoints) {
+                                       const QueryResult &AllEndpoints) {
   if (!Error) {
     setState(Status::SEND_LOOP);
     auto HandlerGlue = [this](auto &Error, auto Size) {

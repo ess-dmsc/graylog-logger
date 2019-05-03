@@ -19,7 +19,7 @@ const std::string usedFileName("testFileName.log");
 
 const std::string fileTestString("Some test string");
 
-void deleteFile(const std::string& Name) {
+void deleteFile(const std::string &Name) {
   auto Error = std::remove(Name.c_str());
   if (Error) {
     throw std::runtime_error("Failed to delete file with error code: " +
@@ -27,10 +27,10 @@ void deleteFile(const std::string& Name) {
   }
 }
 
-bool fileExists(const std::string& Name) {
+bool fileExists(const std::string &Name) {
   struct stat FileStats;
   auto Error = stat(Name.c_str(), &FileStats);
-    return !(Error == -1 and errno == ENOENT);
+  return !(Error == -1 and errno == ENOENT);
 }
 
 std::string FileTestStringCreator(const LogMessage &msg) {
@@ -39,7 +39,8 @@ std::string FileTestStringCreator(const LogMessage &msg) {
 
 class FileInterfaceStandIn : public FileInterface {
 public:
-  explicit FileInterfaceStandIn(const std::string &fileName) : FileInterface(fileName){};
+  explicit FileInterfaceStandIn(const std::string &fileName)
+      : FileInterface(fileName){};
   ~FileInterfaceStandIn() override = default;
   using FileInterface::MessageQueue;
 };

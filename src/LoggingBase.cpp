@@ -20,7 +20,9 @@
 #include <codecvt>
 #include <locale>
 #include <process.h>
+// clang-format off
 #include <Windows.h>
+// clang-format on
 #define getpid _getpid
 #else
 #include <unistd.h>
