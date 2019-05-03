@@ -1,7 +1,3 @@
-if(MSVC)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-endif()
-
 include_directories("../src" "../tests")
 
 enable_testing()
@@ -9,15 +5,6 @@ enable_testing()
 if (NOT CMAKE_MODULE_PATH)
     set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake_modules)
 endif()
-
-find_package(ASIO REQUIRED)
-    
-find_package(GTest REQUIRED)
-find_library(GMOCK_MAIN_LIB gmock_main PATHS "${GTEST_ROOT}/lib")
-
-# Prevent GoogleTest from overriding our compiler/linker options
-# when building with Visual Studio
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 set(UnitTest_SRC
   BaseLogHandlerStandIn.hpp
@@ -40,7 +27,8 @@ set(UnitTest_INC
 
 add_executable(unit_tests ${UnitTest_SRC} ${UnitTest_INC})
 
-target_link_libraries(unit_tests GraylogLogger::graylog_logger ${GMOCK_MAIN_LIB} ${GTEST_LIBRARIES})
-target_include_directories(unit_tests PRIVATE ${ASIO_INCLUDE_DIR})
+target_link_libraries(unit_tests
+        GraylogLogger::graylog_logger
+        CONAN_PKG::gtest)
 
 add_test(TestAll unit_tests)

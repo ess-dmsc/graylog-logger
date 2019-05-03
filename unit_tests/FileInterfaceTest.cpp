@@ -11,7 +11,6 @@
 #include <ciso646>
 #include <fstream>
 #include <gtest/gtest.h>
-#include <unistd.h>
 
 using namespace Log;
 
@@ -19,21 +18,18 @@ const std::string usedFileName("testFileName.log");
 
 const std::string fileTestString("Some test string");
 
-void deleteFile(std::string Name) {
-  auto Error = unlink(Name.c_str());
+void deleteFile(const std::string& Name) {
+  auto Error = _unlink(Name.c_str());
   if (Error) {
     throw std::runtime_error("Failed to delete file with error code: " +
                              std::to_string(Error));
   }
 }
 
-bool fileExists(std::string Name) {
+bool fileExists(const std::string& Name) {
   struct stat FileStats;
   auto Error = stat(Name.c_str(), &FileStats);
-  if (Error == -1 and errno == ENOENT) {
-    return false;
-  }
-  return true;
+    return !(Error == -1 and errno == ENOENT);
 }
 
 std::string FileTestStringCreator(const LogMessage &msg) {
@@ -42,8 +38,8 @@ std::string FileTestStringCreator(const LogMessage &msg) {
 
 class FileInterfaceStandIn : public FileInterface {
 public:
-  FileInterfaceStandIn(const std::string &fileName) : FileInterface(fileName){};
-  ~FileInterfaceStandIn(){};
+  explicit FileInterfaceStandIn(const std::string &fileName) : FileInterface(fileName){};
+  ~FileInterfaceStandIn() override = default;
   using FileInterface::MessageQueue;
 };
 
@@ -57,13 +53,13 @@ public:
 
   };
 
-  virtual void SetUp() {
+  void SetUp() override {
     if (fileExists(usedFileName)) {
       deleteFile(usedFileName);
     }
   };
 
-  virtual void TearDown() {
+  void TearDown() override {
     if (fileExists(usedFileName)) {
       deleteFile(usedFileName);
     }

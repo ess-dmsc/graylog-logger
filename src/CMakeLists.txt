@@ -24,9 +24,14 @@ set(Graylog_INC
     ../include/graylog_logger/ThreadedExecutor.hpp
 )
 
+set(common_libs
+        Threads::Threads
+        CONAN_PKG::asio
+        CONAN_PKG::jsonformoderncpp)
+
 add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(GraylogLogger::graylog_logger ALIAS graylog_logger)
-target_link_libraries(graylog_logger ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(graylog_logger ${common_libs})
 target_include_directories(graylog_logger
   PUBLIC
     $<INSTALL_INTERFACE:include>
@@ -37,7 +42,7 @@ target_include_directories(graylog_logger
 
 add_library(graylog_logger_static STATIC ${Graylog_SRC} ${Graylog_INC} ${Graylog_private_INC})
 add_library(GraylogLogger::graylog_logger_static ALIAS graylog_logger_static)
-target_link_libraries(graylog_logger_static ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(graylog_logger_static ${common_libs})
 target_include_directories(graylog_logger_static
   PUBLIC
     $<INSTALL_INTERFACE:include>
@@ -49,10 +54,12 @@ target_include_directories(graylog_logger_static
 set_target_properties(graylog_logger PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(graylog_logger_static PROPERTIES VERSION ${PROJECT_VERSION} POSITION_INDEPENDENT_CODE ON)
 
-add_cppcheck_target(
-    graylog_logger
-    "../include/graylog_logger/ConcurrentQueue.hpp"
-)
+if (NOT WIN32)
+    add_cppcheck_target(
+        graylog_logger
+        "../include/graylog_logger/ConcurrentQueue.hpp"
+    )
+endif(NOT WIN32)
 
 
 include(GNUInstallDirs)
@@ -82,7 +89,7 @@ write_basic_package_version_file(
   COMPATIBILITY AnyNewerVersion
 )
 
-configure_package_config_file(${CMAKE_MODULE_PATH}/GraylogLoggerConfig.cmake.in
+configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/GraylogLoggerConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/GraylogLoggerConfig.cmake
     INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
 )

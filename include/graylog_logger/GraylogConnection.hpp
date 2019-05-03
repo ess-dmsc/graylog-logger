@@ -28,7 +28,7 @@ class GraylogConnection {
 public:
   GraylogConnection(std::string Host, int Port);
   virtual ~GraylogConnection();
-  virtual void sendMessage(std::string msg) { LogMessages.push(msg); };
+  virtual void sendMessage(std::string &msg) { LogMessages.push(msg); };
   enum class Status {
     ADDR_LOOKUP,
     ADDR_RETRY_WAIT,
@@ -59,10 +59,10 @@ private:
   const size_t MessageAdditionLimit{3000};
   void resolverHandler(const asio::error_code &Error,
                        asio::ip::tcp::resolver::iterator EndpointIter);
-  void connectHandler(const asio::error_code &Error, QueryResult AllEndpoints);
+  void connectHandler(const asio::error_code &Error, const QueryResult& AllEndpoints);
   void sentMessageHandler(const asio::error_code &Error, std::size_t BytesSent);
   void receiveHandler(const asio::error_code &Error,
-                      __attribute__((unused)) std::size_t BytesReceived);
+                      std::size_t BytesReceived);
   void trySendMessage();
   void waitForMessage();
   void doAddressQuery();
