@@ -207,8 +207,7 @@ def get_win10_pipeline() {
                     
                     stage("win10: Test") {
                            bat """cd _build
-                        .\\activate_run.bat
-                        .\\unit_tests\\Release\\unit_tests.exe
+                        activate_run.bat && unit_tests\\Release\\unit_tests.exe && deactivate_run.bat
                         """
                     }  // stage
                 }  // dir
