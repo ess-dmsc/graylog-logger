@@ -29,7 +29,7 @@ The logging library depends on several external libraries:
 
 You will also need CMake (version ≥ 3.9) to build the project. The project makes use of library and language features provided by C++14. It might be possible to link to the library using compilers that only supports C++11 though this has not been tested.
 
-Due to the use of ASIO, the library should compile on most \*nix systems with no issues though only limited testing has been done. The library should also compile and work on Windows though this has not been tested.
+Due to the use of ASIO, the library should compile on most \*nix systems and Windows 10 with no issues though only limited testing has been done.
 
 
 ### Installing
@@ -47,12 +47,10 @@ git clone https://github.com/ess-dmsc/graylog-logger.git
 cd graylog-logger
 mkdir build
 cd build
-conan install .. --build=missing
+conan install .. --build=outdated
 cmake ..
 make install
 ```
-
-If you do not want to use Conan for providing the dependencies; install them in the way you prefer and simply follow the instructions above but ignore the Conan-step.
 
 
 #### Documentation
