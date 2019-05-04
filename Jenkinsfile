@@ -200,8 +200,15 @@ def get_win10_pipeline() {
 
                     stage("win10: Build") {
                            bat """cd _build
-                        cmake .. -G \"Visual Studio 15 2017 Win64\" -DCMAKE_BUILD_TYPE=Release -DCONAN=MANUAL
+                        cmake .. -G \"Visual Studio 15 2017 Win64\" -DCMAKE_BUILD_TYPE=Release -DCONAN=MANUAL -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE
                         cmake --build . --config Release
+                        """
+                    }  // stage
+                    
+                    stage("win10: Test") {
+                           bat """cd _build
+                        .\\activate_run.bat
+                        .\\unit_tests\\Release\\unit_tests.exe
                         """
                     }  // stage
                 }  // dir

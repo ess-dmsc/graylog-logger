@@ -28,7 +28,7 @@ set(UnitTest_INC
 add_executable(unit_tests ${UnitTest_SRC} ${UnitTest_INC})
 
 target_link_libraries(unit_tests
-        GraylogLogger::graylog_logger
+        GraylogLogger::graylog_logger_static
         CONAN_PKG::gtest)
-
+        
 add_test(TestAll unit_tests)
