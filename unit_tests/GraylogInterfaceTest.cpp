@@ -154,7 +154,7 @@ TEST_F(GraylogConnectionCom, MessageTransmissionTest) {
   }
 }
 
-TEST_F(GraylogConnectionCom, LargeMessageTransmissionTest) {
+TEST_F(GraylogConnectionCom, DISABLED_LargeMessageTransmissionTest) {
   {
     std::string RepeatedString("This is a test string!");
     std::string TargetString;
@@ -171,7 +171,7 @@ TEST_F(GraylogConnectionCom, LargeMessageTransmissionTest) {
   }
 }
 
-TEST_F(GraylogConnectionCom, MultipleMessagesTest) {
+TEST_F(GraylogConnectionCom, DISABLED_MultipleMessagesTest) {
   std::vector<std::string> lines = {"This is a test.", "!\"#€%&/()=?*^_-.,:;",
                                     "Another line bites the dust."};
   {
