@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.7)
 project("graylog-logger"
   VERSION 1.2.0
   DESCRIPTION "A simple logging library."  
