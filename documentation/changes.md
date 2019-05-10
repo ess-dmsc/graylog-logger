@@ -1,5 +1,8 @@
 ## Changes
 
+### Version 1.2.0
+* Made the library compile with MSVC on Windows.
+
 ### Version 1.1.1
 * Made the static version of the library compile with position independent code (`-fPIC`).
 

@@ -13,6 +13,10 @@
 #include <ciso646>
 #include <utility>
 
+namespace {
+#define UNUSED_ARG(x) (void)x;
+}
+
 namespace Log {
 
 using std::chrono_literals::operator""ms;
@@ -72,7 +76,7 @@ void GraylogConnection::resolverHandler(
 }
 
 void GraylogConnection::connectHandler(const asio::error_code &Error,
-                                       QueryResult AllEndpoints) {
+                                       const QueryResult &AllEndpoints) {
   if (!Error) {
     setState(Status::SEND_LOOP);
     auto HandlerGlue = [this](auto &Error, auto Size) {
@@ -106,8 +110,8 @@ void GraylogConnection::reConnect(ReconnectDelay Delay) {
 }
 
 void GraylogConnection::receiveHandler(const asio::error_code &Error,
-                                       __attribute__((unused))
                                        std::size_t BytesReceived) {
+  UNUSED_ARG(BytesReceived);
   if (Error) {
     Socket.close();
     reConnect(ReconnectDelay::SHORT);
@@ -137,7 +141,7 @@ void GraylogConnection::trySendMessage() {
               std::back_inserter(MessageBuffer));
     MessageBuffer.push_back('\0');
     asio::async_write(Socket, asio::buffer(MessageBuffer), HandlerGlue);
-  } else if (MessageBuffer.size() > 0) {
+  } else if (!MessageBuffer.empty()) {
     asio::async_write(Socket, asio::buffer(MessageBuffer), HandlerGlue);
     return;
   } else {

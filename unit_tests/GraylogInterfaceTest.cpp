@@ -93,7 +93,11 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
   ASSERT_EQ(0, logServer->GetNrOfConnections());
   ASSERT_EQ(0, logServer->GetLatestMessage().size());
   auto SocketError = logServer->GetLastSocketError();
+#ifdef WIN32
+  ASSERT_TRUE(SocketError == asio::error::connection_reset);
+#else
   ASSERT_TRUE(SocketError == asio::error::misc_errors::eof);
+#endif
 }
 
 TEST_F(GraylogConnectionCom, IPv6ConnectionTest) {
@@ -113,7 +117,11 @@ TEST_F(GraylogConnectionCom, IPv6ConnectionTest) {
   ASSERT_EQ(0, logServer->GetNrOfConnections());
   ASSERT_EQ(0, logServer->GetLatestMessage().size());
   auto SocketError = logServer->GetLastSocketError();
+#ifdef WIN32
+  ASSERT_TRUE(SocketError == asio::error::connection_reset);
+#else
   ASSERT_TRUE(SocketError == asio::error::misc_errors::eof);
+#endif
 }
 
 TEST_F(GraylogConnectionCom, WrongPortTest) {
@@ -217,7 +225,7 @@ TEST(GraylogInterfaceCom, MessageJSONTest) {
   con.addMessage(msg);
 }
 
-void TestJsonString(std::string jsonMsg) {
+void TestJsonString(const std::string &jsonMsg) {
   auto JsonObject = nlohmann::json::parse(jsonMsg);
   LogMessage compLog = GetPopulatedLogMsg();
   std::string tempStr;
