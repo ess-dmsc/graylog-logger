@@ -404,7 +404,7 @@ function(conan_cmake_generate_conanfile)
     # specified as arguments
     # This will be considered as temporary file, generated in CMAKE_CURRENT_BINARY_DIR)
     parse_arguments(${ARGV})
-    set(_FN "${CMAKE_CURRENT_BINARY_DIR}/conanfile.txt")
+    set(_FN "${CMAKE_CURRENT_BINARY_DIR}/conanfile.py")
 
     file(WRITE ${_FN} "[generators]\ncmake\n\n[requires]\n")
     foreach(ARG ${ARGUMENTS_REQUIRES})

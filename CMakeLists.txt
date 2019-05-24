@@ -15,7 +15,7 @@ set(CONAN "AUTO" CACHE STRING "conan options AUTO (conan must be in path), MANUA
 
 if(${CONAN} MATCHES "AUTO")
     include(${CMAKE_MODULE_PATH}/conan.cmake)
-    conan_cmake_run(CONANFILE conanfile.txt
+    conan_cmake_run(CONANFILE conanfile.py
             PROFILE ${CONAN_PROFILE}
             BASIC_SETUP NO_OUTPUT_DIRS KEEP_RPATHS CMAKE_TARGETS
             BUILD_TYPE "None"

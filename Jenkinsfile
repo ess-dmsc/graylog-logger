@@ -193,7 +193,7 @@ def get_win10_pipeline() {
                     stage("win10: Install") {
                       bat """cd _build
                     conan.exe \
-                        install ..\\conanfile.txt  \
+                        install ..\\conanfile.py  \
                         --settings build_type=Release \
                         --build=outdated"""
                     }  // stage
