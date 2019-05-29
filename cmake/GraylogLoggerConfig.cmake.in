@@ -1,6 +1,10 @@
 get_filename_component(GraylogLogger_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 include(CMakeFindDependencyMacro)
 
+find_dependency(ASIO REQUIRED MODULE)
+find_dependency(Threads REQUIRED)
+find_dependency(nlohmann_json REQUIRED)
+
 if(NOT TARGET GraylogLogger::graylog_logger)
     include("${GraylogLogger_CMAKE_DIR}/GraylogLoggerTargets.cmake")
 endif()

@@ -1,4 +1,6 @@
 find_package(Threads REQUIRED)
+find_package(ASIO REQUIRED MODULE)
+find_package(nlohmann_json REQUIRED)
 
 set(Graylog_SRC
     ConsoleInterface.cpp
@@ -25,9 +27,11 @@ set(Graylog_INC
 )
 
 set(common_libs
+        PUBLIC
         Threads::Threads
-        CONAN_PKG::asio
-        CONAN_PKG::jsonformoderncpp)
+        ASIO::ASIO
+        PRIVATE
+        nlohmann_json::nlohmann_json)
 
 add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(GraylogLogger::graylog_logger ALIAS graylog_logger)

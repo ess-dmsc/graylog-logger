@@ -18,3 +18,14 @@ mark_as_advanced(
   ASIO_ROOT_DIR
   ASIO_INCLUDE_DIR
 )
+
+if(ASIO_FOUND)
+    set(ASIO_INCLUDE_DIRS ${ASIO_INCLUDE_DIR})
+endif()
+
+if(ASIO_FOUND AND NOT TARGET ASIO::ASIO)
+    add_library(ASIO::ASIO INTERFACE IMPORTED)
+    set_target_properties(ASIO::ASIO PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${ASIO_INCLUDE_DIR}"
+            )
+endif()
