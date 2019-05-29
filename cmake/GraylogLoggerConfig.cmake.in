@@ -1,4 +1,4 @@
-get_filename_component(GraylogLogger_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(GraylogLogger_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
 include(CMakeFindDependencyMacro)
 
 find_dependency(ASIO REQUIRED MODULE)
