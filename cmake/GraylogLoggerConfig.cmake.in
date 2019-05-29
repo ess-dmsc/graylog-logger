@@ -1,12 +1,7 @@
 get_filename_component(GraylogLogger_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
 include(CMakeFindDependencyMacro)
 
-install(FILES
-          FindASIO.cmake
-        DESTINATION
-          lib/cmake/GraylogLogger/cmake
-        )
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../cmake/")
 
 find_dependency(ASIO REQUIRED MODULE)
 find_dependency(Threads REQUIRED)
