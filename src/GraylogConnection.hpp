@@ -10,6 +10,8 @@
 #pragma once
 
 #include "graylog_logger/ConcurrentQueue.hpp"
+#include "graylog_logger/ConnectionStatus.hpp"
+#include "graylog_logger/GraylogInterface.hpp"
 #include <array>
 #include <asio.hpp>
 #include <atomic>
@@ -24,18 +26,15 @@ struct QueryResult;
 /// \todo Implement timeouts in the ASIO code in case we ever have problems with
 /// bad connections.
 
-class GraylogConnection {
+class GraylogConnection::Impl {
 public:
-  GraylogConnection(std::string Host, int Port);
-  virtual ~GraylogConnection();
-  virtual void sendMessage(std::string msg) { LogMessages.push(msg); };
-  enum class Status {
-    ADDR_LOOKUP,
-    ADDR_RETRY_WAIT,
-    CONNECT,
-    SEND_LOOP,
-  };
+  using Status = Log::Status;
+  Impl(std::string Host, int Port);
+  virtual ~Impl();
+  virtual void sendMessage(std::string Msg) { LogMessages.push(Msg); };
   Status getConnectionStatus() const;
+  bool messageQueueEmpty() { return LogMessages.empty(); }
+  size_t messageQueueSize() { return LogMessages.size(); }
 
 protected:
   enum class ReconnectDelay { LONG, SHORT };
