@@ -9,10 +9,10 @@
 #include "graylog_logger/ConsoleInterface.hpp"
 #include "graylog_logger/FileInterface.hpp"
 #include "graylog_logger/GraylogInterface.hpp"
+#include <atomic>
 #include <ciso646>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <atomic>
 
 using namespace Log;
 
