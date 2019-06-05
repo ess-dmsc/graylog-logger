@@ -17,14 +17,14 @@ set(Graylog_INC
     ../include/graylog_logger/ConcurrentQueue.hpp
     ../include/graylog_logger/ConsoleInterface.hpp
     ../include/graylog_logger/FileInterface.hpp
-    ../include/graylog_logger/GraylogConnection.hpp
+    GraylogConnection.hpp
     ../include/graylog_logger/GraylogInterface.hpp
     ../include/graylog_logger/Log.hpp
     ../include/graylog_logger/Logger.hpp
     ../include/graylog_logger/LoggingBase.hpp
     ../include/graylog_logger/LogUtil.hpp
     ../include/graylog_logger/ThreadedExecutor.hpp
-)
+    ../include/graylog_logger/ConnectionStatus.hpp)
 
 set(common_libs
         PUBLIC

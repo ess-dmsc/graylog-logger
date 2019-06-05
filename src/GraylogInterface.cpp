@@ -9,26 +9,44 @@
 //===----------------------------------------------------------------------===//
 
 #include "graylog_logger/GraylogInterface.hpp"
+#include "GraylogConnection.hpp"
 #include <ciso646>
 #include <cstring>
 #include <nlohmann/json.hpp>
 
 namespace Log {
 
+GraylogConnection::GraylogConnection(std::string Host, int Port)
+    : Pimpl(std::make_unique<GraylogConnection::Impl>(std::move(Host), Port)) {}
+
+void GraylogConnection::sendMessage(std::string Msg) {
+  Pimpl->sendMessage(Msg);
+}
+
+Status GraylogConnection::getConnectionStatus() const {
+  return Pimpl->getConnectionStatus();
+}
+
+bool GraylogConnection::messageQueueEmpty() {
+  return Pimpl->messageQueueEmpty();
+}
+
+size_t GraylogConnection::messageQueueSize() {
+  return Pimpl->messageQueueSize();
+}
+
+GraylogConnection::~GraylogConnection() {}
+
 GraylogInterface::GraylogInterface(const std::string &Host, const int Port,
                                    const size_t MaxQueueLength)
     : BaseLogHandler(MaxQueueLength), GraylogConnection(Host, Port) {}
 
-bool GraylogInterface::emptyQueue() {
-  return GraylogConnection::LogMessages.empty();
-}
+bool GraylogInterface::emptyQueue() { return messageQueueEmpty(); }
 
-size_t GraylogInterface::queueSize() {
-  return GraylogConnection::LogMessages.size();
-}
+size_t GraylogInterface::queueSize() { return messageQueueSize(); }
 
 void GraylogInterface::addMessage(const LogMessage &Message) {
-  if (GraylogConnection::LogMessages.size() < BaseLogHandler::QueueLength) {
+  if (messageQueueSize() < BaseLogHandler::QueueLength) {
     sendMessage(logMsgToJSON(Message));
   }
 }
