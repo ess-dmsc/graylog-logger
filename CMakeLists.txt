@@ -38,6 +38,8 @@ else()
     add_definitions(-D_WIN32_WINNT=0x0A00)
 endif(NOT WIN32)
 
+find_package(ASIO REQUIRED MODULE)
+
 add_subdirectory(src)
 
 option(BUILD_EVERYTHING "Build UnitTests & Console Logger" ON)
