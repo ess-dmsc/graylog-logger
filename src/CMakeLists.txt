@@ -24,13 +24,7 @@ set(Graylog_INC
     ../include/graylog_logger/LogUtil.hpp
     ../include/graylog_logger/ThreadedExecutor.hpp
     ../include/graylog_logger/ConnectionStatus.hpp)
-
-set(common_libs
-        PUBLIC
-        Threads::Threads
-        PRIVATE
-        ASIO::ASIO
-        nlohmann_json::nlohmann_json)
+    
 
 add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(GraylogLogger::graylog_logger ALIAS graylog_logger)
@@ -41,6 +35,7 @@ target_include_directories(graylog_logger
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
   PRIVATE
     "."
+    ${ASIO_INCLUDE_DIR}
 )
 
 add_library(graylog_logger_static STATIC ${Graylog_SRC} ${Graylog_INC} ${Graylog_private_INC})
@@ -52,6 +47,7 @@ target_include_directories(graylog_logger_static
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
   PRIVATE
     "."
+    ${ASIO_INCLUDE_DIR}
 )
 
 set_target_properties(graylog_logger PROPERTIES VERSION ${PROJECT_VERSION})
