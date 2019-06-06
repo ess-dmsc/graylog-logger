@@ -28,9 +28,9 @@ set(Graylog_INC
 set(common_libs
         PUBLIC
       Threads::Threads
-    PRIVATE
-    nlohmann_json::nlohmann_json
   )
+
+get_target_property(JSON_INCLUDE_DIR nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
 
 add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(GraylogLogger::graylog_logger ALIAS graylog_logger)
@@ -42,6 +42,7 @@ target_include_directories(graylog_logger
   PRIVATE
     "."
     ${ASIO_INCLUDE_DIR}
+    ${JSON_INCLUDE_DIR}
 )
 
 add_library(graylog_logger_static STATIC ${Graylog_SRC} ${Graylog_INC} ${Graylog_private_INC})
@@ -54,6 +55,7 @@ target_include_directories(graylog_logger_static
   PRIVATE
     "."
     ${ASIO_INCLUDE_DIR}
+    ${JSON_INCLUDE_DIR}
 )
 
 set_target_properties(graylog_logger PROPERTIES VERSION ${PROJECT_VERSION})
