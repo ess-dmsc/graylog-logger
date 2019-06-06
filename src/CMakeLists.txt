@@ -25,6 +25,12 @@ set(Graylog_INC
     ../include/graylog_logger/ThreadedExecutor.hpp
     ../include/graylog_logger/ConnectionStatus.hpp)
     
+set(common_libs
+        PUBLIC
+      Threads::Threads
+    PRIVATE
+    nlohmann_json::nlohmann_json
+  )
 
 add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(GraylogLogger::graylog_logger ALIAS graylog_logger)
