@@ -8,14 +8,14 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "graylog_logger/GraylogConnection.hpp"
+#include "GraylogConnection.hpp"
 #include <chrono>
 #include <ciso646>
 #include <utility>
 
 namespace {
 #define UNUSED_ARG(x) (void)x;
-}
+} // namespace
 
 namespace Log {
 
@@ -46,7 +46,7 @@ struct QueryResult {
   int NextEndpoint{0};
 };
 
-void GraylogConnection::tryConnect(QueryResult AllEndpoints) {
+void GraylogConnection::Impl::tryConnect(QueryResult AllEndpoints) {
   asio::ip::tcp::endpoint CurrentEndpoint = AllEndpoints.getNextEndpoint();
   auto HandlerGlue = [this, AllEndpoints](auto &Err) {
     this->connectHandler(Err, AllEndpoints);
@@ -55,15 +55,15 @@ void GraylogConnection::tryConnect(QueryResult AllEndpoints) {
   setState(Status::CONNECT);
 }
 
-GraylogConnection::GraylogConnection(std::string Host, int Port)
+GraylogConnection::Impl::Impl(std::string Host, int Port)
     : HostAddress(std::move(Host)), HostPort(std::to_string(Port)), Service(),
       Work(std::make_unique<asio::io_service::work>(Service)), Socket(Service),
       Resolver(Service), ReconnectTimeout(Service, 10s) {
   doAddressQuery();
-  AsioThread = std::thread(&GraylogConnection::threadFunction, this);
+  AsioThread = std::thread(&GraylogConnection::Impl::threadFunction, this);
 }
 
-void GraylogConnection::resolverHandler(
+void GraylogConnection::Impl::resolverHandler(
     const asio::error_code &Error,
     asio::ip::tcp::resolver::iterator EndpointIter) {
   if (Error) {
@@ -75,8 +75,8 @@ void GraylogConnection::resolverHandler(
   tryConnect(AllEndpoints);
 }
 
-void GraylogConnection::connectHandler(const asio::error_code &Error,
-                                       const QueryResult &AllEndpoints) {
+void GraylogConnection::Impl::connectHandler(const asio::error_code &Error,
+                                             const QueryResult &AllEndpoints) {
   if (!Error) {
     setState(Status::SEND_LOOP);
     auto HandlerGlue = [this](auto &Error, auto Size) {
@@ -94,7 +94,7 @@ void GraylogConnection::connectHandler(const asio::error_code &Error,
   tryConnect(AllEndpoints);
 }
 
-void GraylogConnection::reConnect(ReconnectDelay Delay) {
+void GraylogConnection::Impl::reConnect(ReconnectDelay Delay) {
   auto HandlerGlue = [this](auto &Err) { this->doAddressQuery(); };
   switch (Delay) {
   case ReconnectDelay::SHORT:
@@ -109,8 +109,8 @@ void GraylogConnection::reConnect(ReconnectDelay Delay) {
   setState(Status::ADDR_RETRY_WAIT);
 }
 
-void GraylogConnection::receiveHandler(const asio::error_code &Error,
-                                       std::size_t BytesReceived) {
+void GraylogConnection::Impl::receiveHandler(const asio::error_code &Error,
+                                             std::size_t BytesReceived) {
   UNUSED_ARG(BytesReceived);
   if (Error) {
     Socket.close();
@@ -123,7 +123,7 @@ void GraylogConnection::receiveHandler(const asio::error_code &Error,
   Socket.async_receive(asio::buffer(InputBuffer), HandlerGlue);
 }
 
-void GraylogConnection::trySendMessage() {
+void GraylogConnection::Impl::trySendMessage() {
   if (not Socket.is_open()) {
     return;
   }
@@ -149,8 +149,8 @@ void GraylogConnection::trySendMessage() {
   }
 }
 
-void GraylogConnection::sentMessageHandler(const asio::error_code &Error,
-                                           std::size_t BytesSent) {
+void GraylogConnection::Impl::sentMessageHandler(const asio::error_code &Error,
+                                                 std::size_t BytesSent) {
   if (BytesSent == MessageBuffer.size()) {
     MessageBuffer.clear();
   } else if (BytesSent > 0) {
@@ -166,7 +166,7 @@ void GraylogConnection::sentMessageHandler(const asio::error_code &Error,
   trySendMessage();
 }
 
-void GraylogConnection::waitForMessage() {
+void GraylogConnection::Impl::waitForMessage() {
   if (not Socket.is_open()) {
     return;
   }
@@ -179,7 +179,7 @@ void GraylogConnection::waitForMessage() {
   Service.post([this]() { this->waitForMessage(); });
 }
 
-void GraylogConnection::doAddressQuery() {
+void GraylogConnection::Impl::doAddressQuery() {
   setState(Status::ADDR_LOOKUP);
   asio::ip::tcp::resolver::query Query(HostAddress, HostPort);
   auto HandlerGlue = [this](auto &Error, auto EndpointIter) {
@@ -188,7 +188,7 @@ void GraylogConnection::doAddressQuery() {
   Resolver.async_resolve(Query, HandlerGlue);
 }
 
-GraylogConnection::~GraylogConnection() {
+GraylogConnection::Impl::~Impl() {
   Service.stop();
   AsioThread.join();
   try {
@@ -198,13 +198,15 @@ GraylogConnection::~GraylogConnection() {
   }
 }
 
-GraylogConnection::Status GraylogConnection::getConnectionStatus() const {
+GraylogConnection::Impl::Status
+GraylogConnection::Impl::getConnectionStatus() const {
   return ConnectionState;
 }
 
-void GraylogConnection::threadFunction() { Service.run(); }
+void GraylogConnection::Impl::threadFunction() { Service.run(); }
 
-void GraylogConnection::setState(GraylogConnection::Status NewState) {
+void GraylogConnection::Impl::setState(
+    GraylogConnection::Impl::Status NewState) {
   ConnectionState = NewState;
 }
 

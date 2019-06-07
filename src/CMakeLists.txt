@@ -1,4 +1,5 @@
 find_package(Threads REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 set(Graylog_SRC
     ConsoleInterface.cpp
@@ -15,19 +16,21 @@ set(Graylog_INC
     ../include/graylog_logger/ConcurrentQueue.hpp
     ../include/graylog_logger/ConsoleInterface.hpp
     ../include/graylog_logger/FileInterface.hpp
-    ../include/graylog_logger/GraylogConnection.hpp
+    GraylogConnection.hpp
     ../include/graylog_logger/GraylogInterface.hpp
     ../include/graylog_logger/Log.hpp
     ../include/graylog_logger/Logger.hpp
     ../include/graylog_logger/LoggingBase.hpp
     ../include/graylog_logger/LogUtil.hpp
     ../include/graylog_logger/ThreadedExecutor.hpp
-)
-
+    ../include/graylog_logger/ConnectionStatus.hpp)
+    
 set(common_libs
-        Threads::Threads
-        CONAN_PKG::asio
-        CONAN_PKG::jsonformoderncpp)
+        PUBLIC
+      Threads::Threads
+  )
+
+get_target_property(JSON_INCLUDE_DIR nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
 
 add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(GraylogLogger::graylog_logger ALIAS graylog_logger)
@@ -38,6 +41,8 @@ target_include_directories(graylog_logger
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
   PRIVATE
     "."
+    ${ASIO_INCLUDE_DIR}
+    ${JSON_INCLUDE_DIR}
 )
 
 add_library(graylog_logger_static STATIC ${Graylog_SRC} ${Graylog_INC} ${Graylog_private_INC})
@@ -49,6 +54,8 @@ target_include_directories(graylog_logger_static
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
   PRIVATE
     "."
+    ${ASIO_INCLUDE_DIR}
+    ${JSON_INCLUDE_DIR}
 )
 
 set_target_properties(graylog_logger PROPERTIES VERSION ${PROJECT_VERSION})

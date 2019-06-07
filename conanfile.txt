@@ -4,7 +4,7 @@ asio/1.13.0@bincrafters/stable
 jsonformoderncpp/3.6.1@vthiery/stable
 
 [options]
-gtest:shared=True
+gtest:shared=False
 
 [generators]
 cmake
