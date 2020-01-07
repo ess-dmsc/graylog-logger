@@ -18,7 +18,7 @@
 
 namespace Log {
 
-typedef std::chrono::time_point<std::chrono::system_clock> system_time;
+using system_time = std::chrono::time_point<std::chrono::system_clock>;
 
 /// \brief Severity levels known by the system.
 ///
@@ -147,6 +147,6 @@ protected:
   std::string messageToString(const LogMessage &Message);
 };
 
-typedef std::shared_ptr<BaseLogHandler> LogHandler_P;
+using LogHandler_P = std::shared_ptr<BaseLogHandler>;
 
 } // namespace Log
