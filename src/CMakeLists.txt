@@ -1,4 +1,5 @@
 find_package(Threads REQUIRED)
+find_package(ConcurrentQueue REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
 set(Graylog_SRC
@@ -10,6 +11,7 @@ set(Graylog_SRC
     Logger.cpp
     LoggingBase.cpp
     LogUtil.cpp
+    ThreadedExecutor.cpp
 )
 
 set(Graylog_INC
@@ -28,6 +30,7 @@ set(Graylog_INC
 set(common_libs
         PUBLIC
       Threads::Threads
+      ConcurrentQueue::ConcurrentQueue
   )
 
 get_target_property(JSON_INCLUDE_DIR nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)

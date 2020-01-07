@@ -42,7 +42,7 @@ find_package(ASIO REQUIRED MODULE)
 
 add_subdirectory(src)
 
-option(BUILD_EVERYTHING "Build UnitTests & Console Logger" ON)
+option(BUILD_EVERYTHING "Build UnitTests, Console Logger and Benchmarks" ON)
 
 IF(BUILD_EVERYTHING)
   add_subdirectory(unit_tests)

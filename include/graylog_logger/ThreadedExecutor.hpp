@@ -13,6 +13,7 @@
 #include "graylog_logger/ConcurrentQueue.hpp"
 #include <functional>
 #include <thread>
+#include <concurrentqueue/concurrentqueue.h>
 
 namespace Log {
 class ThreadedExecutor {
@@ -24,18 +25,22 @@ public:
     SendWork([=]() { RunThread = false; });
     WorkerThread.join();
   }
-  void SendWork(WorkMessage Message) { MessageQueue.push(Message); }
+  void SendWork(WorkMessage Message) { MessageQueue.enqueue(Message); }
 
 private:
   bool RunThread{true};
   std::function<void()> ThreadFunction{[=]() {
     while (RunThread) {
       WorkMessage CurrentMessage;
-      MessageQueue.wait_and_pop(CurrentMessage);
-      CurrentMessage();
+      if (MessageQueue.try_dequeue(CurrentMessage)) {
+        CurrentMessage();
+      } else {
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(5ms);
+      }
     }
   }};
-  ConcurrentQueue<WorkMessage> MessageQueue;
+  moodycamel::ConcurrentQueue<WorkMessage> MessageQueue;
   std::thread WorkerThread;
 };
 

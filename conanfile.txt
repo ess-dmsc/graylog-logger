@@ -3,6 +3,7 @@ gtest/1.8.1@bincrafters/stable
 asio/1.13.0@bincrafters/stable
 jsonformoderncpp/3.6.1@vthiery/stable
 google-benchmark/1.4.1-dm3@ess-dmsc/testing
+concurrentqueue/8f7e861@ess-dmsc/stable
 fmt/6.0.0@bincrafters/stable
 
 [options]
