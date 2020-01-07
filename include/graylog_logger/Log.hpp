@@ -105,6 +105,15 @@ void Msg(
     const int Level, const std::string &Message,
     const std::vector<std::pair<std::string, AdditionalField>> &ExtraFields);
 
+/// \brief Flush log messages in the queues of the log handlers.
+///
+/// \note Requires that the relevant log handlers implements flushing
+/// functionality.
+/// \param[in] Timeout The amount of time to wait for the queued messages to
+/// be flushed.
+/// \return Returns true if messages were flushed, false otherwise.
+bool Flush(std::chrono::system_clock::duration Timeout);
+
 /// \brief Add a default field of meta-data to every message.
 ///
 /// It is possible to override the value of the default message by passing

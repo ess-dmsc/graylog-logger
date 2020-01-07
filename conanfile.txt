@@ -2,6 +2,7 @@
 gtest/1.8.1@bincrafters/stable
 asio/1.13.0@bincrafters/stable
 jsonformoderncpp/3.6.1@vthiery/stable
+google-benchmark/1.4.1-dm2@ess-dmsc/testing
 
 [options]
 gtest:shared=False
