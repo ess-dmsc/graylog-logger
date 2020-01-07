@@ -43,7 +43,7 @@ void Msg(
 }
 
 bool Flush(std::chrono::system_clock::duration Timeout){
-
+  return false;
 }
 
 void AddField(const std::string &Key, const AdditionalField &Value) {
