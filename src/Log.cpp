@@ -42,8 +42,8 @@ void Msg(
   Logger::Inst().log(Severity(Level), Message, ExtraFields);
 }
 
-bool Flush(std::chrono::system_clock::duration Timeout){
-  return false;
+bool Flush(std::chrono::system_clock::duration TimeOut) {
+  return Logger::Inst().flush(TimeOut);
 }
 
 void AddField(const std::string &Key, const AdditionalField &Value) {

@@ -117,6 +117,23 @@ public:
   /// \param[in] Message The log message.
   virtual void addMessage(const LogMessage &Message) = 0;
 
+  /// \brief Empty the queue of messages. Might do nothing. See documentation
+  /// of derived classes for details.
+  /// \param[in] TimeOut Amount of time to wait queue to empty.
+  /// \return Returns true if queue was emptied before time out occurred.
+  virtual bool flush(std::chrono::system_clock::duration TimeOut) = 0;
+
+  /// \brief Are there messages in the queue?
+  /// \note See derived classes for implementation details.
+  /// \return true if there are no messages in the queue, otherwise
+  /// false.
+  virtual bool emptyQueue() = 0;
+
+  /// \brief The number of messages in the queue.
+  /// \note See derived class for implementation details.
+  /// \return The number of messages in the queue.
+  virtual size_t queueSize() = 0;
+
   /// \brief Used to set a custom log message to std::string formatting
   /// function.
   ///
@@ -126,6 +143,8 @@ public:
   /// \param[in] ParserFunction The new custom message parsing function.
   void setMessageStringCreatorFunction(
       std::function<std::string(const LogMessage &)> ParserFunction);
+
+
 
 protected:
   /// \brief Can be used to create strings from messages if set.

@@ -13,6 +13,8 @@
 #include <functional>
 #include <thread>
 #include <concurrentqueue/concurrentqueue.h>
+#include <future>
+#include <memory>
 
 namespace Log {
 class ThreadedExecutor {
@@ -25,6 +27,14 @@ public:
     WorkerThread.join();
   }
   void SendWork(WorkMessage Message) { MessageQueue.enqueue(Message); }
+  bool WaitForWorkSemaphore(std::chrono::system_clock::duration WaitTime) {
+    auto WorkDone = std::make_shared<std::promise<bool>>();
+    auto WorkDoneFuture = WorkDone->get_future();
+    SendWork([WorkDone = std::move(WorkDone)](){
+      WorkDone->set_value(true);
+    });
+    return std::future_status::ready == WorkDoneFuture.wait_for(WaitTime);
+  }
 
 private:
   bool RunThread{true};

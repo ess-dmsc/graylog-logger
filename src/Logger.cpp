@@ -24,7 +24,7 @@ Logger::Logger() {
   Logger::addLogHandler(std::make_shared<ConsoleInterface>());
 }
 
-void Logger::addLogHandler(const LogHandler_P Handler) {
+void Logger::addLogHandler(const LogHandler_P& Handler) {
   Executor.SendWork([=]() {
     if (dynamic_cast<ConsoleInterface *>(Handler.get()) != nullptr) {
       bool replaced = false;

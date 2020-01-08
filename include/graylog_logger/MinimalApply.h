@@ -1,3 +1,13 @@
+/* Copyright (C) 2020 European Spallation Source, ERIC. See LICENSE file */
+//===----------------------------------------------------------------------===//
+///
+/// \file
+///
+/// \brief Some functions from C++17 for using std::tuple with variadic
+/// functions.
+///
+//===----------------------------------------------------------------------===//
+
 #include <tuple>
 
 namespace minimal {

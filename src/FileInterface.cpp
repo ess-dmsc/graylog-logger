@@ -33,4 +33,14 @@ void FileInterface::addMessage(const LogMessage &Message) {
   });
 }
 
+bool FileInterface::flush(std::chrono::system_clock::duration TimeOut) {
+  auto WorkDone = std::make_shared<std::promise<void>>();
+  auto WorkDoneFuture = WorkDone->get_future();
+  Executor.SendWork([=, WorkDone{std::move(WorkDone)}](){
+    FileStream.flush();
+    WorkDone->set_value();
+  });
+  return std::future_status::ready == WorkDoneFuture.wait_for(TimeOut);
+}
+
 } // namespace Log

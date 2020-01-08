@@ -113,7 +113,7 @@ LoggingBase::~LoggingBase() {
   // Flushing here?
 }
 
-void LoggingBase::addLogHandler(const LogHandler_P Handler) {
+void LoggingBase::addLogHandler(const LogHandler_P& Handler) { //Is this correct? (Use after return?)
   Executor.SendWork([=]() {
     Handlers.push_back(Handler);
   });

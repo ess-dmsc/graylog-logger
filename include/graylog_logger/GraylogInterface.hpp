@@ -33,8 +33,23 @@ public:
                    size_t MaxQueueLength = 100);
   ~GraylogInterface() override = default;
   void addMessage(const LogMessage &Message) override;
-//  bool emptyQueue() override;
-//  size_t queueSize() override;
+  /// \brief Waits for all messages created before the call to flush to be
+  /// transmitted.
+  /// \param[in] TimeOut Amount of time to wait for messages to be transmitted.
+  /// \return Returns true if messages were transmitted before the time out.
+  /// Returns false otherwise.
+  bool flush(std::chrono::system_clock::duration TimeOut) override;
+
+  /// \brief Are there any more queued messages?
+  /// \note The message queue will show as empty before the last message in
+  /// the queue has been transmitted.
+  /// \return Returns true if message queue is empty.
+  bool emptyQueue() override;
+
+  /// \brief Number of queued messages.
+  /// \return Due to multiple threads accessing this queue, shows approximate
+  /// number of messages in the queue.
+  size_t queueSize() override;
 
 protected:
   std::string logMsgToJSON(const LogMessage &Message);

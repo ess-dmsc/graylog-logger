@@ -17,6 +17,8 @@
 #include <fmt/format.h>
 #include <tuple>
 #include "graylog_logger/MinimalApply.h"
+#include <future>
+#include <thread>
 
 namespace Log {
 
@@ -82,7 +84,7 @@ public:
     });
   }
 
-  virtual void addLogHandler(const LogHandler_P Handler);
+  virtual void addLogHandler(const LogHandler_P& Handler);
 
   template <typename valueType>
   void addField(std::string Key, const valueType &Value) {
@@ -93,6 +95,30 @@ public:
   virtual void removeAllHandlers();
   virtual void setMinSeverity(Severity Level);
   virtual std::vector<LogHandler_P> getHandlers();
+
+  virtual bool flush(std::chrono::system_clock::duration TimeOut) {
+    auto FlushCompleted = std::make_shared<std::promise<bool>>();
+    auto FlushCompletedValue = FlushCompleted->get_future();
+    Executor.SendWork([=,FlushCompleted{std::move(FlushCompleted)}](){
+      std::vector<std::future<bool>> FlushResults;
+      for (auto& CHandler : Handlers) {
+        FlushResults.push_back(std::async(std::launch::async, [=](){
+          return CHandler->flush(TimeOut);}
+        ));
+      }
+      bool ReturnValue{true};
+      for (auto& CFlushResult: FlushResults) {
+        CFlushResult.wait();
+        if (not CFlushResult.get()) {
+          ReturnValue = false;
+        }
+      }
+      FlushCompleted->set_value(ReturnValue);
+    });
+    std::vector<std::future<bool>> FlushResult;
+    FlushCompletedValue.wait();
+    return FlushCompletedValue.get();
+  }
 
 protected:
   Severity MinSeverity{Severity::Notice};
