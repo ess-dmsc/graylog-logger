@@ -135,8 +135,8 @@ void GraylogConnection::Impl::trySendMessage() {
     return;
   }
   std::string NewMessage;
-  bool PopResult = LogMessages.try_pop(NewMessage);
-  if (PopResult) {
+  using namespace std::chrono_literals;
+  if (LogMessages.wait_dequeue_timed(NewMessage, 10ms)) {
     std::copy(NewMessage.begin(), NewMessage.end(),
               std::back_inserter(MessageBuffer));
     MessageBuffer.push_back('\0');
@@ -164,19 +164,6 @@ void GraylogConnection::Impl::sentMessageHandler(const asio::error_code &Error,
     return;
   }
   trySendMessage();
-}
-
-void GraylogConnection::Impl::waitForMessage() {
-  if (not Socket.is_open()) {
-    return;
-  }
-  const int WaitTimeMS = 20;
-  std::string ThrowAwayMessage;
-  if (LogMessages.time_out_peek(ThrowAwayMessage, WaitTimeMS)) {
-    trySendMessage();
-    return;
-  }
-  Service.post([this]() { this->waitForMessage(); });
 }
 
 void GraylogConnection::Impl::doAddressQuery() {

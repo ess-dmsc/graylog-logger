@@ -23,7 +23,7 @@ std::string ConsoleStringCreator(const LogMessage &Message) {
 }
 
 ConsoleInterface::ConsoleInterface(size_t MaxQueueLength)
-    : BaseLogHandler(MaxQueueLength) {
+    : BaseLogHandler() {
   BaseLogHandler::setMessageStringCreatorFunction(ConsoleStringCreator);
 }
 void ConsoleInterface::addMessage(const LogMessage &Message) {

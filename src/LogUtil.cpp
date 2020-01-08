@@ -15,23 +15,10 @@
 
 namespace Log {
 
-BaseLogHandler::BaseLogHandler(const size_t MaxQueueLength)
-    : QueueLength(MaxQueueLength) {}
-
 void BaseLogHandler::setMessageStringCreatorFunction(
     std::function<std::string(const LogMessage &)> ParserFunction) {
   BaseLogHandler::MessageParser = std::move(ParserFunction);
 }
-
-void BaseLogHandler::addMessage(const LogMessage &Message) {
-  if (MessageQueue.size() < QueueLength) {
-    MessageQueue.push(Message);
-  }
-}
-
-bool BaseLogHandler::emptyQueue() { return MessageQueue.empty(); }
-
-size_t BaseLogHandler::queueSize() { return MessageQueue.size(); }
 
 std::string BaseLogHandler::messageToString(const LogMessage &Message) {
   if (nullptr != MessageParser) {

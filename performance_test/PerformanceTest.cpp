@@ -29,10 +29,22 @@ static void BM_LogMessageGenerationWithFmtFormatting(benchmark::State& state) {
   auto Handler = std::make_shared<DummyLogHandler>();
   Logger.addLogHandler(std::dynamic_pointer_cast<Log::BaseLogHandler>(Handler));
   for (auto _ : state) {
-    Logger.log(Log::Severity::Error, fmt::format("Some format example: {} : {}.", 3.14, 2.72));
+    Logger.log(Log::Severity::Error, fmt::format("Some format example: {} : {} : {}.", 3.14, 2.72, "some_string"));
   }
   state.SetItemsProcessed(state.iterations());
 }
 BENCHMARK(BM_LogMessageGenerationWithFmtFormatting);
+
+static void BM_LogMessageGenerationWithDeferredFmtFormatting(benchmark::State& state) {
+  Log::LoggingBase Logger;
+  auto Handler = std::make_shared<DummyLogHandler>();
+  Logger.addLogHandler(std::dynamic_pointer_cast<Log::BaseLogHandler>(Handler));
+  for (auto _ : state) {
+    Logger.fmt_log(Log::Severity::Error, "Some format example: {} : {} : {}.", 3.14, 2.72, "some_string");
+    
+  }
+  state.SetItemsProcessed(state.iterations());
+}
+BENCHMARK(BM_LogMessageGenerationWithDeferredFmtFormatting);
 
 BENCHMARK_MAIN();

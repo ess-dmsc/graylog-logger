@@ -33,8 +33,8 @@ public:
                    size_t MaxQueueLength = 100);
   ~GraylogInterface() override = default;
   void addMessage(const LogMessage &Message) override;
-  bool emptyQueue() override;
-  size_t queueSize() override;
+//  bool emptyQueue() override;
+//  size_t queueSize() override;
 
 protected:
   std::string logMsgToJSON(const LogMessage &Message);

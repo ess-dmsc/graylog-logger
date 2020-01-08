@@ -14,6 +14,9 @@
 #include <vector>
 #include "graylog_logger/ThreadedExecutor.hpp"
 #include <sstream>
+#include <fmt/format.h>
+#include <tuple>
+#include "graylog_logger/MinimalApply.h"
 
 namespace Log {
 
@@ -53,6 +56,32 @@ public:
         ExtraField,
     });
   }
+
+  template <typename... Args>
+  void fmt_log(const Severity Level, std::string Format, Args... args) {
+    auto ThreadId = std::this_thread::get_id();
+    auto UsedArguments = std::make_tuple(args...);
+    Executor.SendWork([=](){
+      if (int(Level) > int(MinSeverity)) {
+        return;
+      }
+      LogMessage cMsg(BaseMsg);
+      cMsg.Timestamp = std::chrono::system_clock::now();
+      auto format_message = [=](const auto&... args) {
+        return fmt::format(Format, args...);
+      };
+
+      cMsg.MessageString = minimal::apply(format_message, UsedArguments);
+      cMsg.SeverityLevel = Level;
+      std::ostringstream ss;
+      ss << ThreadId;
+      cMsg.ThreadId = ss.str();
+      for (auto &ptr : Handlers) {
+        ptr->addMessage(cMsg);
+      }
+    });
+  }
+
   virtual void addLogHandler(const LogHandler_P Handler);
 
   template <typename valueType>

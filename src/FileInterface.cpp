@@ -16,7 +16,7 @@ namespace Log {
 
 FileInterface::FileInterface(std::string const &Name,
                              const size_t MaxQueueLength)
-    : BaseLogHandler(MaxQueueLength), FileStream(Name, std::ios::app) {
+    : BaseLogHandler(), FileStream(Name, std::ios::app) {
   if (FileStream.is_open() and FileStream.good()) {
     Log::Msg(Severity::Info, "Started logging to log file: \"" + Name + "\"");
   } else {

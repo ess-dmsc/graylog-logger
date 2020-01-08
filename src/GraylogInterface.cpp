@@ -27,28 +27,14 @@ Status GraylogConnection::getConnectionStatus() const {
   return Pimpl->getConnectionStatus();
 }
 
-bool GraylogConnection::messageQueueEmpty() {
-  return Pimpl->messageQueueEmpty();
-}
-
-size_t GraylogConnection::messageQueueSize() {
-  return Pimpl->messageQueueSize();
-}
-
 GraylogConnection::~GraylogConnection() {}
 
 GraylogInterface::GraylogInterface(const std::string &Host, const int Port,
                                    const size_t MaxQueueLength)
-    : BaseLogHandler(MaxQueueLength), GraylogConnection(Host, Port) {}
-
-bool GraylogInterface::emptyQueue() { return messageQueueEmpty(); }
-
-size_t GraylogInterface::queueSize() { return messageQueueSize(); }
+    : BaseLogHandler(), GraylogConnection(Host, Port) {}
 
 void GraylogInterface::addMessage(const LogMessage &Message) {
-  if (messageQueueSize() < BaseLogHandler::QueueLength) {
-    sendMessage(logMsgToJSON(Message));
-  }
+  sendMessage(logMsgToJSON(Message));
 }
 
 std::string GraylogInterface::logMsgToJSON(const LogMessage &Message) {

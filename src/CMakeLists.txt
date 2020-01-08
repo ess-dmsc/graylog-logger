@@ -1,6 +1,7 @@
 find_package(Threads REQUIRED)
 find_package(ConcurrentQueue REQUIRED)
 find_package(nlohmann_json REQUIRED)
+find_package(fmt REQUIRED)
 
 set(Graylog_SRC
     ConsoleInterface.cpp
@@ -15,7 +16,6 @@ set(Graylog_SRC
 )
 
 set(Graylog_INC
-    ../include/graylog_logger/ConcurrentQueue.hpp
     ../include/graylog_logger/ConsoleInterface.hpp
     ../include/graylog_logger/FileInterface.hpp
     GraylogConnection.hpp
@@ -25,12 +25,13 @@ set(Graylog_INC
     ../include/graylog_logger/LoggingBase.hpp
     ../include/graylog_logger/LogUtil.hpp
     ../include/graylog_logger/ThreadedExecutor.hpp
-    ../include/graylog_logger/ConnectionStatus.hpp)
+    ../include/graylog_logger/ConnectionStatus.hpp ../include/graylog_logger/MinimalApply.h)
     
 set(common_libs
         PUBLIC
       Threads::Threads
       ConcurrentQueue::ConcurrentQueue
+      fmt::fmt
   )
 
 get_target_property(JSON_INCLUDE_DIR nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
@@ -65,10 +66,7 @@ set_target_properties(graylog_logger PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(graylog_logger_static PROPERTIES VERSION ${PROJECT_VERSION} POSITION_INDEPENDENT_CODE ON)
 
 if (NOT WIN32)
-    add_cppcheck_target(
-        graylog_logger
-        "../include/graylog_logger/ConcurrentQueue.hpp"
-    )
+    add_cppcheck_target(graylog_logger)
 endif(NOT WIN32)
 
 

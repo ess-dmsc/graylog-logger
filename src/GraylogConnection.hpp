@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include "graylog_logger/ConcurrentQueue.hpp"
 #include "graylog_logger/ConnectionStatus.hpp"
 #include "graylog_logger/GraylogInterface.hpp"
+#include <concurrentqueue/blockingconcurrentqueue.h>
 #include <array>
 #include <asio.hpp>
 #include <atomic>
@@ -31,10 +31,8 @@ public:
   using Status = Log::Status;
   Impl(std::string Host, int Port);
   virtual ~Impl();
-  virtual void sendMessage(std::string Msg) { LogMessages.push(Msg); };
+  virtual void sendMessage(std::string Msg) { LogMessages.enqueue(Msg); };
   Status getConnectionStatus() const;
-  bool messageQueueEmpty() { return LogMessages.empty(); }
-  size_t messageQueueSize() { return LogMessages.size(); }
 
 protected:
   enum class ReconnectDelay { LONG, SHORT };
@@ -52,7 +50,7 @@ protected:
   std::string HostPort;
 
   std::thread AsioThread;
-  ConcurrentQueue<std::string> LogMessages;
+  moodycamel::BlockingConcurrentQueue<std::string> LogMessages;
 
 private:
   const size_t MessageAdditionLimit{3000};

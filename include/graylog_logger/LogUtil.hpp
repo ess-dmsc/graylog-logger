@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include "graylog_logger/ConcurrentQueue.hpp"
 #include <chrono>
 #include <functional>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace Log {
 
@@ -108,24 +108,15 @@ class BaseLogHandler {
 public:
   /// \brief Does minimal set-up of the this class.
   /// \param[in] MaxQueueLength The maximum number of log messages stored.
-  explicit BaseLogHandler(const size_t MaxQueueLength = 100);
+  BaseLogHandler() = default;
   virtual ~BaseLogHandler() = default;
+
   /// \brief Called by the logging library when a new log message is created.
-  /// \note If the queue of messages is full, any new messages are discarded
-  /// without any indication that this has been done.
+  ///
+  /// Must be implement by any derived classes.
   /// \param[in] Message The log message.
-  virtual void addMessage(const LogMessage &Message);
-  /// \brief Are there messages in the queue?
-  /// \note As messages can be added and removed by several different threads,
-  /// expect that the return value will change between two calls.
-  /// \return true if there are no messages in the queue, otherwise
-  /// false.
-  virtual bool emptyQueue();
-  /// \brief The number of messages in the queue.
-  /// \note As messages can be added and removed by several different threads,
-  /// expect that the return value will change between two calls.
-  /// \return The number of messages in the queue.
-  virtual size_t queueSize();
+  virtual void addMessage(const LogMessage &Message) = 0;
+
   /// \brief Used to set a custom log message to std::string formatting
   /// function.
   ///
@@ -137,10 +128,6 @@ public:
       std::function<std::string(const LogMessage &)> ParserFunction);
 
 protected:
-  size_t QueueLength;
-  /// \brief Pop messages from this queue if implementing a log message
-  /// consumer (handler).
-  ConcurrentQueue<LogMessage> MessageQueue;
   /// \brief Can be used to create strings from messages if set.
   std::function<std::string(const LogMessage &)> MessageParser{nullptr};
   /// \brief The default log message to std::string function.

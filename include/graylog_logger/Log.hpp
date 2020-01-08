@@ -109,6 +109,10 @@ void Msg(
 ///
 /// \note Requires that the relevant log handlers implements flushing
 /// functionality.
+/// \note For the built in log handlers, flush only guarantees that log
+/// messages created before the call to Flush() have been handled. Log messages
+/// created after the call to Flush() can not be guaranteed to have been
+/// handled.
 /// \param[in] Timeout The amount of time to wait for the queued messages to
 /// be flushed.
 /// \return Returns true if messages were flushed, false otherwise.

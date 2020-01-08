@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "graylog_logger/ConcurrentQueue.hpp"
 #include <functional>
 #include <thread>
 #include <concurrentqueue/concurrentqueue.h>
