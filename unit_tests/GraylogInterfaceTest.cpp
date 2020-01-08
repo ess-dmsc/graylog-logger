@@ -6,8 +6,8 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-#include "LogTestServer.hpp"
 #include "graylog_logger/GraylogInterface.hpp"
+#include "LogTestServer.hpp"
 #include <ciso646>
 #include <cmath>
 #include <gmock/gmock.h>

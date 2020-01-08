@@ -176,7 +176,7 @@ void AddLogHandler(const BaseLogHandler *Handler);
 /// \brief Remove all log message handlers.
 ///
 /// Clears the vector of handlers. If no other shared pointer for a handler
-/// existst, the handler is de-allocated.
+/// exists, the handler is de-allocated.
 void RemoveAllHandlers();
 
 /// \brief Get a copy of the vector containing the handlers.

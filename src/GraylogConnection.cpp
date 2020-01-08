@@ -58,7 +58,8 @@ void GraylogConnection::Impl::tryConnect(QueryResult AllEndpoints) {
 GraylogConnection::Impl::Impl(std::string Host, int Port, size_t MaxQueueLength)
     : HostAddress(std::move(Host)), HostPort(std::to_string(Port)), Service(),
       Work(std::make_unique<asio::io_service::work>(Service)), Socket(Service),
-      Resolver(Service), ReconnectTimeout(Service, 10s), LogMessages(MaxQueueLength) {
+      Resolver(Service), ReconnectTimeout(Service, 10s),
+      LogMessages(MaxQueueLength) {
   doAddressQuery();
   AsioThread = std::thread(&GraylogConnection::Impl::threadFunction, this);
 }
@@ -205,7 +206,8 @@ void GraylogConnection::Impl::setState(
   ConnectionState = NewState;
 }
 
-bool GraylogConnection::Impl::flush(std::chrono::system_clock::duration TimeOut) {
+bool GraylogConnection::Impl::flush(
+    std::chrono::system_clock::duration TimeOut) {
   auto WorkDone = std::make_shared<std::promise<void>>();
   auto WorkDoneFuture = WorkDone->get_future();
   LogMessages.try_enqueue([WorkDone = std::move(WorkDone)]() -> std::string {

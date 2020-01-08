@@ -94,7 +94,7 @@ std::string get_process_name() {
 #endif
 
 LoggingBase::LoggingBase() {
-  Executor.SendWork([=](){
+  Executor.SendWork([=]() {
     const int stringBufferSize = 100;
     char stringBuffer[stringBufferSize];
     int res;
@@ -113,27 +113,19 @@ LoggingBase::~LoggingBase() {
   // Flushing here?
 }
 
-void LoggingBase::addLogHandler(const LogHandler_P& Handler) {
+void LoggingBase::addLogHandler(const LogHandler_P &Handler) {
   LogHandler_P TempHandler{Handler};
-  Executor.SendWork([=]() {
-    Handlers.push_back(TempHandler);
-  });
+  Executor.SendWork([=]() { Handlers.push_back(TempHandler); });
 }
 
 void LoggingBase::removeAllHandlers() {
-  Executor.SendWork([=]() {
-    Handlers.clear();
-  });
+  Executor.SendWork([=]() { Handlers.clear(); });
 }
 
-std::vector<LogHandler_P> LoggingBase::getHandlers() {
-  return Handlers;
-}
+std::vector<LogHandler_P> LoggingBase::getHandlers() { return Handlers; }
 
 void LoggingBase::setMinSeverity(Severity Level) {
-  Executor.SendWork([=]() {
-    MinSeverity = Level;
-  });
+  Executor.SendWork([=]() { MinSeverity = Level; });
 }
 
 } // namespace Log

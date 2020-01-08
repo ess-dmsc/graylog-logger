@@ -16,8 +16,10 @@
 
 namespace Log {
 
-GraylogConnection::GraylogConnection(std::string Host, int Port, size_t MaxQueueSize)
-    : Pimpl(std::make_unique<GraylogConnection::Impl>(std::move(Host), Port, MaxQueueSize)) {}
+GraylogConnection::GraylogConnection(std::string Host, int Port,
+                                     size_t MaxQueueSize)
+    : Pimpl(std::make_unique<GraylogConnection::Impl>(std::move(Host), Port,
+                                                      MaxQueueSize)) {}
 
 void GraylogConnection::sendMessage(std::string Msg) {
   Pimpl->sendMessage(Msg);
@@ -31,13 +33,9 @@ Status GraylogConnection::getConnectionStatus() const {
   return Pimpl->getConnectionStatus();
 }
 
-bool GraylogConnection::messageQueueEmpty() {
-  return Pimpl->queueSize() == 0;
-}
+bool GraylogConnection::messageQueueEmpty() { return Pimpl->queueSize() == 0; }
 
-size_t GraylogConnection::messageQueueSize() {
-  return Pimpl->queueSize();
-}
+size_t GraylogConnection::messageQueueSize() { return Pimpl->queueSize(); }
 
 GraylogConnection::~GraylogConnection() {}
 
@@ -82,12 +80,8 @@ bool GraylogInterface::flush(std::chrono::system_clock::duration TimeOut) {
   return GraylogConnection::flush(TimeOut);
 }
 
-bool GraylogInterface::emptyQueue() {
-  return messageQueueEmpty();
-}
+bool GraylogInterface::emptyQueue() { return messageQueueEmpty(); }
 
-size_t GraylogInterface::queueSize() {
-  return messageQueueSize();
-}
+size_t GraylogInterface::queueSize() { return messageQueueSize(); }
 
 } // namespace Log
