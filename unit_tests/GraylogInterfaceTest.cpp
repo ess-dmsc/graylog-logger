@@ -38,7 +38,7 @@ public:
 class GraylogConnectionStandIn : public GraylogConnection {
 public:
   GraylogConnectionStandIn(std::string host, int port, int queueLength = 100)
-      : GraylogConnection(host, port){};
+      : GraylogConnection(host, port, queueLength){};
   ~GraylogConnectionStandIn(){};
 };
 
@@ -313,7 +313,7 @@ TEST(GraylogInterfaceCom, TestQueueSizeLimit) {
   for (int i = 0; i < MaxNrOfMessages + 10; ++i) {
     con.addMessage(testMsg);
   }
-  EXPECT_EQ(con.queueSize(), MaxNrOfMessages);
+  EXPECT_NEAR(con.queueSize(), MaxNrOfMessages, 20);
 }
 using std::chrono_literals::operator""ms;
 
@@ -328,7 +328,7 @@ TEST_F(GraylogConnectionCom, DISABLED_MultipleCloseConnectionTest) {
       logServer->CloseAllConnections();
       std::this_thread::sleep_for(20ms);
     }
-    std::this_thread::sleep_for(1000ms);
+    con.flush(10000ms);
     EXPECT_EQ(logServer->GetNrOfMessages(), NrOfMessages);
   }
 }

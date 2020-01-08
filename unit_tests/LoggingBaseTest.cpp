@@ -20,6 +20,8 @@ public:
   using LoggingBase::BaseMsg;
 };
 
+using namespace std::chrono_literals;
+
 TEST(LoggingBase, InitTest) {
   LoggingBase log;
   ASSERT_EQ(log.getHandlers().size(), 0);
@@ -29,6 +31,7 @@ TEST(LoggingBase, AddHandlerTest) {
   LoggingBase log;
   auto standIn = std::make_shared<BaseLogHandlerStandIn>();
   log.addLogHandler(standIn);
+  log.flush(10s);
   ASSERT_EQ(log.getHandlers().size(), 1);
   auto handlers = log.getHandlers();
   ASSERT_EQ(handlers[0].get(), standIn.get());
@@ -38,8 +41,10 @@ TEST(LoggingBase, ClearHandlersTest) {
   LoggingBase log;
   auto standIn = std::make_shared<BaseLogHandlerStandIn>();
   log.addLogHandler(standIn);
+  log.flush(10s);
   ASSERT_EQ(log.getHandlers().size(), 1);
   log.removeAllHandlers();
+  log.flush(10s);
   ASSERT_EQ(log.getHandlers().size(), 0);
 }
 
@@ -48,12 +53,14 @@ TEST(LoggingBase, LogSeveritiesTest) {
   log.setMinSeverity(Severity::Debug);
   auto standIn = std::make_shared<BaseLogHandlerStandIn>();
   log.addLogHandler(standIn);
+  log.flush(10s);
   std::vector<Severity> testSeverities = {
       Severity::Alert,     Severity::Critical, Severity::Debug,
       Severity::Emergency, Severity::Error,    Severity::Informational,
       Severity::Notice,    Severity::Warning};
   for (auto sev : testSeverities) {
     log.log(sev, "");
+    log.flush(10s);
     ASSERT_EQ(standIn->CurrentMessage.SeverityLevel, sev);
   }
 }
@@ -69,11 +76,13 @@ TEST(LoggingBase, LogIntSeveritiesTest) {
       Severity::Notice,    Severity::Warning};
   for (auto sev : testSeverities) {
     log.log(Severity(int(sev)), "");
+    log.flush(10s);
     ASSERT_EQ(standIn->CurrentMessage.SeverityLevel, sev);
   }
   int testIntSev = -7;
   auto testSev = Severity(testIntSev);
   log.log(testSev, "");
+  log.flush(10s);
   ASSERT_EQ(standIn->CurrentMessage.SeverityLevel, Severity(testIntSev));
 }
 
@@ -86,6 +95,7 @@ TEST(LoggingBase, LogMessageTest) {
   for (int i = 0; i < 100; i++) {
     tmpStr += baseStr;
     log.log(Severity::Critical, tmpStr);
+    log.flush(10s);
     ASSERT_EQ(tmpStr, standIn->CurrentMessage.MessageString);
   }
 }
@@ -95,6 +105,7 @@ TEST(LoggingBase, SetExtraField) {
   std::string someKey = "yet_another_key";
   double someValue = -13.543462;
   log.addField(someKey, someValue);
+  log.flush(10s);
   ASSERT_EQ(log.BaseMsg.AdditionalFields.size(), 1);
   ASSERT_EQ(log.BaseMsg.AdditionalFields[0].first, someKey);
   ASSERT_EQ(log.BaseMsg.AdditionalFields[0].second.FieldType,
@@ -107,6 +118,7 @@ TEST(LoggingBase, LogMsgWithoutStaticExtraField) {
   auto standIn = std::make_shared<BaseLogHandlerStandIn>();
   log.addLogHandler(standIn);
   log.log(Severity::Alert, "Some message");
+  log.flush(10s);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields.size(), 0);
 }
 
@@ -118,6 +130,7 @@ TEST(LoggingBase, LogMsgWithStaticExtraField) {
   std::int64_t someStaticExtraValue = -42344093;
   log.addField(someStaticExtraField, someStaticExtraValue);
   log.log(Severity::Alert, "Some message");
+  log.flush(10s);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields.size(), 1);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields[0].first,
             someStaticExtraField);
@@ -135,6 +148,7 @@ TEST(LoggingBase, LogMsgWithDynamicExtraField) {
   std::int64_t someStaticExtraValue = -42344093;
   log.log(Severity::Alert, "Some message",
           {someStaticExtraField, someStaticExtraValue});
+  log.flush(10s);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields.size(), 1);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields[0].first,
             someStaticExtraField);
@@ -153,6 +167,7 @@ TEST(LoggingBase, LogMsgWithTwoDynamicExtraFields) {
   std::int64_t v1 = -4234324123;
   std::string v2 = "value2";
   log.log(Severity::Alert, "Some message", {{f1, v1}, {f2, v2}});
+  log.flush(10s);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields.size(), 2);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields[0].first, f1);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields[0].second.FieldType,
@@ -173,6 +188,7 @@ TEST(LoggingBase, LogMsgWithTwoDynamicOverlappingExtraFields) {
   std::int64_t v1 = -4234324123;
   std::string v2 = "value2";
   log.log(Severity::Alert, "Some message", {{f1, v1}, {f1, v2}});
+  log.flush(10s);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields.size(), 1);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields[0].first, f1);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields[0].second.FieldType,
@@ -189,6 +205,7 @@ TEST(LoggingBase, LogMsgWithOverlappingStatDynExtraFields) {
   std::string v2 = "value2";
   log.addField(f1, v2);
   log.log(Severity::Alert, "Some message", {f1, v1});
+  log.flush(10s);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields.size(), 1);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields[0].first, f1);
   ASSERT_EQ(standIn->CurrentMessage.AdditionalFields[0].second.FieldType,
@@ -201,6 +218,7 @@ TEST(LoggingBase, MachineInfoTest) {
   auto standIn = std::make_shared<BaseLogHandlerStandIn>();
   log.addLogHandler(standIn);
   log.log(Severity::Critical, "No message");
+  log.flush(10s);
   LogMessage msg = standIn->CurrentMessage;
   ASSERT_EQ(msg.Host, asio::ip::host_name()) << "Incorrect host name.";
   std::ostringstream ss;
@@ -214,6 +232,7 @@ TEST(LoggingBase, TimestampTest) {
   auto standIn = std::make_shared<BaseLogHandlerStandIn>();
   log.addLogHandler(standIn);
   log.log(Severity::Critical, "No message");
+  log.flush(10s);
   LogMessage msg = standIn->CurrentMessage;
   std::chrono::duration<double> time_diff =
       std::chrono::system_clock::now() - msg.Timestamp;

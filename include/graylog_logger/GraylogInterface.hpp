@@ -16,7 +16,7 @@ namespace Log {
 class GraylogConnection {
 public:
   using Status = Log::Status;
-  GraylogConnection(std::string Host, int Port);
+  GraylogConnection(std::string Host, int Port, size_t MaxQueueSize);
   virtual ~GraylogConnection();
   virtual void sendMessage(std::string Msg);
   virtual Status getConnectionStatus() const;
@@ -31,7 +31,7 @@ private:
 class GraylogInterface : public BaseLogHandler, public GraylogConnection {
 public:
   GraylogInterface(const std::string &Host, int Port,
-                   size_t MaxQueueLength = 100);
+                   size_t MaxQueueLength = 1000);
   ~GraylogInterface() override = default;
   void addMessage(const LogMessage &Message) override;
   /// \brief Waits for all messages created before the call to flush to be

@@ -16,8 +16,8 @@
 
 namespace Log {
 
-GraylogConnection::GraylogConnection(std::string Host, int Port)
-    : Pimpl(std::make_unique<GraylogConnection::Impl>(std::move(Host), Port)) {}
+GraylogConnection::GraylogConnection(std::string Host, int Port, size_t MaxQueueSize)
+    : Pimpl(std::make_unique<GraylogConnection::Impl>(std::move(Host), Port, MaxQueueSize)) {}
 
 void GraylogConnection::sendMessage(std::string Msg) {
   Pimpl->sendMessage(Msg);
@@ -43,7 +43,7 @@ GraylogConnection::~GraylogConnection() {}
 
 GraylogInterface::GraylogInterface(const std::string &Host, const int Port,
                                    const size_t MaxQueueLength)
-    : BaseLogHandler(), GraylogConnection(Host, Port) {}
+    : BaseLogHandler(), GraylogConnection(Host, Port, MaxQueueLength) {}
 
 void GraylogInterface::addMessage(const LogMessage &Message) {
   sendMessage(logMsgToJSON(Message));

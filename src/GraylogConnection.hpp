@@ -30,12 +30,12 @@ struct QueryResult;
 class GraylogConnection::Impl {
 public:
   using Status = Log::Status;
-  Impl(std::string Host, int Port);
+  Impl(std::string Host, int Port, size_t MaxQueueLength);
   virtual ~Impl();
   virtual void sendMessage(std::string Msg) {
     auto MsgFunc = [=](){
       return Msg;};
-    LogMessages.enqueue(MsgFunc);};
+    LogMessages.try_enqueue(MsgFunc);};
   Status getConnectionStatus() const;
   virtual bool flush(std::chrono::system_clock::duration TimeOut);
   virtual size_t queueSize() {
