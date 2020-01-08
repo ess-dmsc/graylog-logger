@@ -23,8 +23,20 @@ void GraylogConnection::sendMessage(std::string Msg) {
   Pimpl->sendMessage(Msg);
 }
 
+bool GraylogConnection::flush(std::chrono::system_clock::duration TimeOut) {
+  return Pimpl->flush(TimeOut);
+}
+
 Status GraylogConnection::getConnectionStatus() const {
   return Pimpl->getConnectionStatus();
+}
+
+bool GraylogConnection::messageQueueEmpty() {
+  return Pimpl->queueSize() == 0;
+}
+
+size_t GraylogConnection::messageQueueSize() {
+  return Pimpl->queueSize();
 }
 
 GraylogConnection::~GraylogConnection() {}
@@ -64,6 +76,18 @@ std::string GraylogInterface::logMsgToJSON(const LogMessage &Message) {
     }
   }
   return JsonObject.dump();
+}
+
+bool GraylogInterface::flush(std::chrono::system_clock::duration TimeOut) {
+  return GraylogConnection::flush(TimeOut);
+}
+
+bool GraylogInterface::emptyQueue() {
+  return messageQueueEmpty();
+}
+
+size_t GraylogInterface::queueSize() {
+  return messageQueueSize();
 }
 
 } // namespace Log

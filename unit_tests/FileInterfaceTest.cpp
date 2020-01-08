@@ -42,7 +42,6 @@ public:
   explicit FileInterfaceStandIn(const std::string &fileName)
       : FileInterface(fileName){};
   ~FileInterfaceStandIn() override = default;
-  using FileInterface::MessageQueue;
 };
 
 class FileInterfaceTest : public ::testing::Test {

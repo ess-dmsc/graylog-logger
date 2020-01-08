@@ -41,4 +41,12 @@ bool ConsoleInterface::flush(std::chrono::system_clock::duration TimeOut) {
   return std::future_status::ready == WorkDoneFuture.wait_for(TimeOut);
 }
 
+bool ConsoleInterface::emptyQueue() {
+  return Executor.size_approx() == 0;
+}
+
+size_t ConsoleInterface::queueSize() {
+  return Executor.size_approx();
+}
+
 } // namespace Log

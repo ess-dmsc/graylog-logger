@@ -18,6 +18,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <functional>
 
 namespace Log {
 
@@ -31,8 +32,15 @@ public:
   using Status = Log::Status;
   Impl(std::string Host, int Port);
   virtual ~Impl();
-  virtual void sendMessage(std::string Msg) { LogMessages.enqueue(Msg); };
+  virtual void sendMessage(std::string Msg) {
+    auto MsgFunc = [=](){
+      return Msg;};
+    LogMessages.enqueue(MsgFunc);};
   Status getConnectionStatus() const;
+  virtual bool flush(std::chrono::system_clock::duration TimeOut);
+  virtual size_t queueSize() {
+    return LogMessages.size_approx();
+  }
 
 protected:
   enum class ReconnectDelay { LONG, SHORT };
@@ -50,7 +58,7 @@ protected:
   std::string HostPort;
 
   std::thread AsioThread;
-  moodycamel::BlockingConcurrentQueue<std::string> LogMessages;
+  moodycamel::BlockingConcurrentQueue<std::function<std::string(void)>> LogMessages;
 
 private:
   const size_t MessageAdditionLimit{3000};

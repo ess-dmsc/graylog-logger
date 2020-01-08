@@ -43,4 +43,12 @@ bool FileInterface::flush(std::chrono::system_clock::duration TimeOut) {
   return std::future_status::ready == WorkDoneFuture.wait_for(TimeOut);
 }
 
+bool FileInterface::emptyQueue() {
+  return Executor.size_approx() == 0;
+}
+
+size_t FileInterface::queueSize() {
+  return Executor.size_approx();
+}
+
 } // namespace Log

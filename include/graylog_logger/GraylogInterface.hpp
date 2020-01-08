@@ -22,6 +22,7 @@ public:
   virtual Status getConnectionStatus() const;
   virtual bool messageQueueEmpty();
   virtual size_t messageQueueSize();
+  virtual bool flush(std::chrono::system_clock::duration TimeOut);
 
 private:
   class Impl;
@@ -38,6 +39,8 @@ public:
   /// \param[in] TimeOut Amount of time to wait for messages to be transmitted.
   /// \return Returns true if messages were transmitted before the time out.
   /// Returns false otherwise.
+  /// \note It is possible (though unlikely) that not all log messages have
+  /// been transmitted even if flush() returns true.
   bool flush(std::chrono::system_clock::duration TimeOut) override;
 
   /// \brief Are there any more queued messages?
