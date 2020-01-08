@@ -307,10 +307,10 @@ TEST(GraylogInterfaceCom, TestQueueSize) {
 }
 
 TEST(GraylogInterfaceCom, TestQueueSizeLimit) {
-  int MaxNrOfMessages = 100;
+  int MaxNrOfMessages = 64;
   GraylogInterface con("localhost", testPort, MaxNrOfMessages);
   LogMessage testMsg = GetPopulatedLogMsg();
-  for (int i = 0; i < MaxNrOfMessages + 10; ++i) {
+  for (int i = 0; i < MaxNrOfMessages * 4; ++i) {
     con.addMessage(testMsg);
   }
   EXPECT_NEAR(con.queueSize(), MaxNrOfMessages, 20);
