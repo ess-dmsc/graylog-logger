@@ -58,7 +58,7 @@ builders = pipeline_builder.createBuilders { container ->
     container.sh """
       cd build
       . ./activate_run.sh
-      make VERBOSE=1 all > ${container.key}-build.log
+      make all unit_tests > ${container.key}-build.log
     """
     container.copyFrom("build/${container.key}-build.log", "${container.key}-build.log")
     archiveArtifacts "${container.key}-build.log"
@@ -160,7 +160,7 @@ def get_macos_pipeline()
                     }
 
                     try {
-                        sh "source activate_run.sh && make all"
+                        sh "source activate_run.sh && make all unit_tests"
                         sh "source activate_run.sh && ./unit_tests/unit_tests"
                     } catch (e) {
                         failure_function(e, 'MacOSX / build+test failed')
@@ -201,7 +201,7 @@ def get_win10_pipeline() {
                     stage("win10: Build") {
                            bat """cd _build
                         cmake .. -G \"Visual Studio 15 2017 Win64\" -DCMAKE_BUILD_TYPE=Release -DCONAN=MANUAL -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE
-                        cmake --build . --config Release
+                        cmake --build . -t all unit_tests --config Release
                         """
                     }  // stage
                     

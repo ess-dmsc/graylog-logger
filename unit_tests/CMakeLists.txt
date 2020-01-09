@@ -25,7 +25,7 @@ set(UnitTest_INC
   LogTestServer.hpp
 )
 
-add_executable(unit_tests ${UnitTest_SRC} ${UnitTest_INC})
+add_executable(unit_tests EXCLUDE_FROM_ALL ${UnitTest_SRC} ${UnitTest_INC})
 
 target_link_libraries(unit_tests
     GraylogLogger::graylog_logger_static
