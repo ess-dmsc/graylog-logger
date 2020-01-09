@@ -77,15 +77,15 @@ builders = pipeline_builder.createBuilders { container ->
     }  // stage
   }  // if
 
-/*  if (container.key == clangformat_os) {
-    pipeline_builder.stage("${container.key}: check formatting") {
+  if (container.key == clangformat_os) {
+/*    pipeline_builder.stage("${container.key}: check formatting") {
       container.sh """
         clang-format -version
         cd ${pipeline_builder.project}
         find . \\\\( -name '*.cpp' -or -name '*.cxx' -or -name '*.h' -or -name '*.hpp' \\\\) \\
           -exec clangformatdiff.sh {} +
       """
-    }*/// stage
+    }*/  // stage
 
     pipeline_builder.stage("${container.key}: cppcheck") {
       def test_output = "cppcheck.txt"
