@@ -1,21 +1,14 @@
-find_path(ConcurrentQueue_ROOT_DIR
-  NAMES include/concurrentqueue/concurrentqueue.h
-  PATHS /usr/local /opt/local/
-)
-
 find_path(ConcurrentQueue_INCLUDE_DIR
   NAMES concurrentqueue/concurrentqueue.h
-  HINTS ${ConcurrentQueue_ROOT_DIR}/include
+  PATHS /usr/local/include/ /opt/local/include/
 )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(ConcurrentQueue FOUND_VAR ConcurrentQueue_FOUND REQUIRED_VARS
-  ConcurrentQueue_ROOT_DIR
   ConcurrentQueue_INCLUDE_DIR
 )
 
 mark_as_advanced(
-  ConcurrentQueue_ROOT_DIR
   ConcurrentQueue_INCLUDE_DIR
 )
 

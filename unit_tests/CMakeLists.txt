@@ -28,9 +28,11 @@ set(UnitTest_INC
 add_executable(unit_tests ${UnitTest_SRC} ${UnitTest_INC})
 
 target_link_libraries(unit_tests
-        GraylogLogger::graylog_logger_static
-        CONAN_PKG::jsonformoderncpp
-        CONAN_PKG::gtest
-        ASIO::ASIO)
+    GraylogLogger::graylog_logger_static
+    nlohmann_json::nlohmann_json
+    GTest::GTest
+    ${GMOCK_BOTH_LIBRARIES}
+    ASIO::ASIO
+    )
         
 add_test(TestAll unit_tests)

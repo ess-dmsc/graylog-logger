@@ -1,7 +1,16 @@
-find_package(Threads REQUIRED)
-find_package(ConcurrentQueue REQUIRED)
-find_package(nlohmann_json REQUIRED)
-find_package(fmt REQUIRED)
+set(common_libs PUBLIC
+    Threads::Threads
+    ConcurrentQueue::ConcurrentQueue
+    ASIO::ASIO
+    nlohmann_json::nlohmann_json
+    )
+
+if(fmt_FOUND)
+    message(STATUS "Found fmtlib, adding support for threaded formatting.")
+    list(APPEND common_libs fmt::fmt)
+else()
+    message(STATUS "Unable to find fmtlib. There will be no support for threaded formatting.")
+endif()
 
 set(Graylog_SRC
     ConsoleInterface.cpp
@@ -12,7 +21,6 @@ set(Graylog_SRC
     Logger.cpp
     LoggingBase.cpp
     LogUtil.cpp
-    ThreadedExecutor.cpp
 )
 
 set(Graylog_INC
@@ -26,13 +34,6 @@ set(Graylog_INC
     ../include/graylog_logger/LogUtil.hpp
     ../include/graylog_logger/ThreadedExecutor.hpp
     ../include/graylog_logger/ConnectionStatus.hpp ../include/graylog_logger/MinimalApply.h)
-    
-set(common_libs
-        PUBLIC
-      Threads::Threads
-      ConcurrentQueue::ConcurrentQueue
-      fmt::fmt
-  )
 
 get_target_property(JSON_INCLUDE_DIR nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
 
@@ -45,8 +46,6 @@ target_include_directories(graylog_logger
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
   PRIVATE
     "."
-    ${ASIO_INCLUDE_DIR}
-    ${JSON_INCLUDE_DIR}
 )
 
 add_library(graylog_logger_static STATIC ${Graylog_SRC} ${Graylog_INC} ${Graylog_private_INC})
@@ -58,8 +57,6 @@ target_include_directories(graylog_logger_static
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
   PRIVATE
     "."
-    ${ASIO_INCLUDE_DIR}
-    ${JSON_INCLUDE_DIR}
 )
 
 set_target_properties(graylog_logger PROPERTIES VERSION ${PROJECT_VERSION})
