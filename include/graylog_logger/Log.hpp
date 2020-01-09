@@ -12,6 +12,30 @@
 
 #include "graylog_logger/LogUtil.hpp"
 #include <vector>
+#include "graylog_logger/LibConfig.hpp"
+
+#ifdef WITH_FMT
+#include "graylog_logger/Logger.hpp"
+namespace Log {
+template<typename... Args>
+/// \brief Submit a formatted message to the logging library.
+///
+/// The following fields will be added to the message by the function:
+///   - Timestamp
+///   - Process name
+///   - Process id
+///   - Thread id
+///   - Host name
+///
+/// \param[in] Level The severity level of the message.
+/// \param[in] Format The (fmtlib) format of the text message.
+/// \param[in] args The variables to be inserted into the format string.
+void FmtMsg(const Severity Level, const std::string Format, Args... args) {
+  Logger::Inst().fmt_log(Level, Format, args...);
+}
+}
+#endif
+
 
 namespace Log {
 /// \brief Submit a log message to the logging library.

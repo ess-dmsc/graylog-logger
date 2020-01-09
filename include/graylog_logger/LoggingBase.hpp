@@ -22,6 +22,7 @@
 #include "graylog_logger/MinimalApply.h"
 #include <future>
 #include <thread>
+#include <ciso646>
 
 namespace Log {
 
@@ -127,7 +128,6 @@ public:
 
 protected:
   Severity MinSeverity{Severity::Notice};
-  std::mutex BaseMsgMutex;
   std::vector<LogHandler_P> Handlers;
   LogMessage BaseMsg;
   ThreadedExecutor Executor;

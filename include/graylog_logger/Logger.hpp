@@ -25,6 +25,7 @@ public:
   using LoggingBase::removeAllHandlers;
   using LoggingBase::setMinSeverity;
   using LoggingBase::flush;
+  using LoggingBase::fmt_log;
 
 private:
   Logger();
