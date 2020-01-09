@@ -53,6 +53,12 @@ find_package(GoogleBenchmark)
 add_subdirectory(src)
 add_subdirectory(console_logger)
 
+if(fmt_FOUND)
+    set(WITH_FMT 1)
+endif()
+
+configure_file(include/graylog_logger/LibConfig.hpp.in include/graylog_logger/LibConfig.hpp)
+
 if(GTest_FOUND AND GMock_FOUND)
   message(STATUS "GTest and GMock found, adding unit tests.")
   add_subdirectory(unit_tests)

@@ -12,6 +12,8 @@ else()
     message(STATUS "Unable to find fmtlib. There will be no support for threaded formatting.")
 endif()
 
+
+
 set(Graylog_SRC
     ConsoleInterface.cpp
     FileInterface.cpp
@@ -33,7 +35,10 @@ set(Graylog_INC
     ../include/graylog_logger/LoggingBase.hpp
     ../include/graylog_logger/LogUtil.hpp
     ../include/graylog_logger/ThreadedExecutor.hpp
-    ../include/graylog_logger/ConnectionStatus.hpp ../include/graylog_logger/MinimalApply.h)
+    ../include/graylog_logger/ConnectionStatus.hpp
+    ../include/graylog_logger/MinimalApply.h
+    ${CMAKE_BINARY_DIR}/include/graylog_logger/LibConfig.hpp
+)
 
 get_target_property(JSON_INCLUDE_DIR nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
 
@@ -44,6 +49,7 @@ target_include_directories(graylog_logger
   PUBLIC
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
   PRIVATE
     "."
 )
@@ -55,6 +61,7 @@ target_include_directories(graylog_logger_static
   PUBLIC
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
   PRIVATE
     "."
 )
@@ -71,12 +78,13 @@ include(GNUInstallDirs)
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/GraylogLogger)
 
 install(TARGETS graylog_logger graylog_logger_static
-  EXPORT graylog_logger-targets
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    EXPORT graylog_logger-targets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
 install(DIRECTORY ../include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES ${CMAKE_BINARY_DIR}/include/graylog_logger/LibConfig.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/graylog_logger/LibConfig.hpp)
 
 install(EXPORT graylog_logger-targets
   FILE

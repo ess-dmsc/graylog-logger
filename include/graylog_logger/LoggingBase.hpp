@@ -10,12 +10,15 @@
 #pragma once
 
 #include "graylog_logger/LogUtil.hpp"
+#include "graylog_logger/LibConfig.hpp"
 #include <string>
 #include <vector>
 #include "graylog_logger/ThreadedExecutor.hpp"
 #include <sstream>
+#ifdef WITH_FMT
 #include <fmt/format.h>
 #include <tuple>
+#endif
 #include "graylog_logger/MinimalApply.h"
 #include <future>
 #include <thread>
@@ -59,6 +62,7 @@ public:
     });
   }
 
+#ifdef WITH_FMT
   template <typename... Args>
   void fmt_log(const Severity Level, std::string Format, Args... args) {
     auto ThreadId = std::this_thread::get_id();
@@ -83,6 +87,7 @@ public:
       }
     });
   }
+#endif
 
   virtual void addLogHandler(const LogHandler_P& Handler);
 
