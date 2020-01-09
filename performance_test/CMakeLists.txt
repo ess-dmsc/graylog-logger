@@ -1,4 +1,4 @@
-add_executable(performance_test PerformanceTest.cpp DummyLogHandler.cpp DummyLogHandler.h)
+add_executable(performance_test PerformanceTest.cpp DummyLogHandler.h DummyLogHandler.cpp)
 
 target_link_libraries(performance_test GraylogLogger::graylog_logger_static fmt::fmt ${GoogleBenchmark_LIB})
 

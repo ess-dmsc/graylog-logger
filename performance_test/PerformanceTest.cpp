@@ -1,7 +1,6 @@
 #include "DummyLogHandler.h"
 #include <benchmark/benchmark.h>
 #include <fmt/format.h>
-#include <graylog_logger/LogUtil.hpp>
 #include <graylog_logger/LoggingBase.hpp>
 
 static void BM_LogMessageGenerationOnly(benchmark::State &state) {
