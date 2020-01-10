@@ -1,5 +1,5 @@
 # graylog-logger example code
-Instructions on how to install the C++ library *graylog-logger* can be found on the [repository page](https://github.com/ess-dmsc/graylog-logger). The intent of this document is to give you examples on how the library can be used and extended. There is currently no code documentation except for the examples given here. For more information on implementation and interfaces see the header and implementation files. Most of the relevant interface information can be found in the header files `graylog_logger/Log.hpp` and `graylog_logger/LogUtil.hpp`.
+Instructions on how to install the C++ library *graylog-logger* can be found on the [repository page](https://github.com/ess-dmsc/graylog-logger). The intent of this document is to give you examples on how the library can be used and extended. There is also some code documentation in the header files in the  */include/graylog_logger* directory. Of those, *Log.hpp* has the most information.
 
 ## Basic example
 By default, the library will log messages to console.
@@ -14,7 +14,7 @@ int main() {
     return 0;
 }
 ```
-The compiled application will (should) print the following to console:
+The compiled application should print the following to console:
 
 ```
 WARNING: Some message.
@@ -24,8 +24,6 @@ WARNING: Some message.
 In order to set-up the library to write messages to file, a file writer has to be added.
 
 ```c++
-#include <thread>
-#include <chrono>
 #include <graylog_logger/Log.hpp>
 #include <graylog_logger/FileInterface.hpp>
 
@@ -34,12 +32,12 @@ using namespace Log;
 int main() {
     Log::AddLogHandler(std::make_shared<FileInterface>("new_log_file.log"));
     Log::Msg(Severity::Error, "This is an error.");
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    Log::Flush();
     return 0;
 }
 ```
 
-The `sleep_for()` function is added in order to give the file writing thread time to actually write the message before the application exits. The resulting file output should be similar to the following:
+The call to `Log::Flush()` will ensure that the message is written to file before the application exits. The resulting file output should be similar to the following:
 
 ```
 2017-01-02 18:29:20 (CI0011840) ERROR: This is an error.
@@ -49,15 +47,13 @@ The `sleep_for()` function is added in order to give the file writing thread tim
 To use the library for its original purpose, a Graylog server interface has to be added. This can be done as follows:
 
 ```c++
-#include <thread>
-#include <chrono>
 #include <graylog_logger/Log.hpp>
 #include <graylog_logger/GraylogInterface.hpp>
 
 int main() {
     Log::AddLogHandler(new Log::GraylogInterface("somehost.com", 12201));
     Log::Msg(Log::Severity::Error, "This message will be sent to a Graylog server.");
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    Log::Flush();
     return 0;
 }
 ```
@@ -68,8 +64,6 @@ As the default file handler has not been removed this will send a message to con
 In order to prevent the logger from writing messages to (e.g.) console but still write to file (or Graylog server), existing log handlers must be removed using the `Log::RemoveAllHandlers()` function before adding the log handlers you do want to use.
 
 ```c++
-#include <thread>
-#include <chrono>
 #include <graylog_logger/Log.hpp>
 #include <graylog_logger/FileInterface.hpp>
 #include <graylog_logger/GraylogInterface.hpp>
@@ -81,7 +75,7 @@ int main() {
     AddLogHandler(new FileInterface("new_log_file.log"));
     AddLogHandler(new GraylogInterface("somehost.com", 12201));
     Msg(Severity::Error, "This is an error.");
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    Log::Flush();
     return 0;
 }
 ```
@@ -200,7 +194,6 @@ int main() {
     Log::AddField("some_key", "some_value");
     Log::AddLogHandler(new Log::GraylogInterface("somehost.com", 12201));
     Log::Msg(Log::Severity::Error, "This message will be sent to a Graylog servers.");
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return 0;
 }
 ```
@@ -214,7 +207,7 @@ Adding fields on a per message basis is done when calling the `Log::Msg()`-funct
 int main() {
     Log::AddLogHandler(new Log::GraylogInterface("somehost.com", 12201));
     Log::Msg(Log::Severity::Error, "A message.", {"another_key", 3.14});
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    Log::Flush();
     return 0;
 }
 ```
@@ -226,7 +219,7 @@ int main() {
     using Log::GraylogInterface;
     Log::AddLogHandler(new GraylogInterface("somehost.com", 12201));
     Log::Msg(Severity::Error, "A message.", {{"another_key", 3.14}, {"a_third_key", "some_other_value"}});
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    Log::Flush();
     return 0;
 }
 ```
@@ -239,9 +232,29 @@ int main() {
     Log::AddField("some_key", "some_value");
     Log::AddLogHandler(new Log::GraylogInterface("somehost.com", 12201));
     Log::Msg(Severity::Error, "Yet another message", {"some_key", 42});
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    Log::Flush();
     return 0;
 }
 ```
 
 This last piece of code will send a log message to the Graylog server containing only a single extra field with the key `some_key` and the integer value `42`.
+
+## Creating formatted log messages using *fmtlib*
+
+If [fmtlib](https://fmt.dev/latest/index.html) is available (minimum requried version is 6.0), graylog-logger will compile with built in support for formatting text strings using this library. The fmtlib formatting syntax can [be found here](https://fmt.dev/latest/syntax.html).
+
+Use the formatting functionality as follows:
+
+```c++
+int main() {
+    Log::FmtMsg(Severity::Info, "A formatted string containing an int ({}), a float ({}) and the string \"{}\".", 42, 3.14, "hello");
+    Log::Flush();
+    return 0;
+}
+```
+
+```
+Info: A formatted string containing an int (42), a float (3.14) and the string "hello".
+```
+
+This will output the following message:

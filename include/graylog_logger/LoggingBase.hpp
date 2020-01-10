@@ -73,13 +73,17 @@ public:
         return;
       }
       LogMessage cMsg(BaseMsg);
-      cMsg.Timestamp = std::chrono::system_clock::now();
-      auto format_message = [=](const auto&... args) {
-        return fmt::format(Format, args...);
-      };
-
-      cMsg.MessageString = minimal::apply(format_message, UsedArguments);
       cMsg.SeverityLevel = Level;
+      cMsg.Timestamp = std::chrono::system_clock::now();
+      auto format_message = [=,&cMsg](const auto&... args) {
+        try {
+          return fmt::format(Format, args...);
+        } catch (fmt::format_error &e) {
+          cMsg.SeverityLevel = Log::Severity::Error;
+          return fmt::format("graylog-logger internal error. Unable to format the string \"{}\". The error was: \"{}\".", Format, e.what());
+        }
+      };
+      cMsg.MessageString = minimal::apply(format_message, UsedArguments);
       std::ostringstream ss;
       ss << ThreadId;
       cMsg.ThreadId = ss.str();

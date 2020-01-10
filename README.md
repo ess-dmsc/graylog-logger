@@ -111,7 +111,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## Authors
 
 * **Jonas Nilsson** - *Initial work* - [SkyToGround](https://github.com/SkyToGround)
-* **Afonos Mukai** - Provided much assistance in setting up the continous integration system.
+* **Afonso Mukai** - Provided much assistance in setting up the continous integration system.
 * **Matthew Jones** - Improved the CMake code and suggested improvements to the interface. 
 
 See also the list of [contributors](https://github.com/ess-dmsc/graylog-logger/graphs/contributors) to this project.
