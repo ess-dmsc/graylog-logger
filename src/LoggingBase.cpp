@@ -95,12 +95,12 @@ std::string get_process_name() {
 
 LoggingBase::LoggingBase() {
   Executor.SendWork([=]() {
-    const int stringBufferSize = 100;
-    char stringBuffer[stringBufferSize];
+    const int StringBufferSize = 100;
+    std::array<char, StringBufferSize> StringBuffer{};
     int res;
-    res = gethostname(static_cast<char *>(stringBuffer), stringBufferSize);
+    res = gethostname(static_cast<char *>(StringBuffer.data()), StringBufferSize);
     if (0 == res) {
-      BaseMsg.Host = std::string(static_cast<char *>(stringBuffer));
+      BaseMsg.Host = std::string(static_cast<char *>(StringBuffer.data()));
     }
     BaseMsg.ProcessId = getpid();
     BaseMsg.ProcessName = get_process_name();
@@ -109,13 +109,11 @@ LoggingBase::LoggingBase() {
 }
 
 LoggingBase::~LoggingBase() {
-  removeAllHandlers();
-  // Flushing here?
+  LoggingBase::removeAllHandlers();
 }
 
 void LoggingBase::addLogHandler(const LogHandler_P &Handler) {
-  LogHandler_P TempHandler{Handler};
-  Executor.SendWork([=]() { Handlers.push_back(TempHandler); });
+  Executor.SendWork([=]() { Handlers.push_back(Handler); });
 }
 
 void LoggingBase::removeAllHandlers() {

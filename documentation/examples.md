@@ -253,8 +253,9 @@ int main() {
 }
 ```
 
+This will output the following message:
+
 ```
 Info: A formatted string containing an int (42), a float (3.14) and the string "hello".
 ```
-
-This will output the following message:
+There is currently no support for using extra fields together with fmt-formatted strings.

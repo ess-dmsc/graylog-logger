@@ -266,7 +266,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldString) {
   std::string key = "yet_another_key";
   std::string value = "yet another value";
   testMsg.addField(key, value);
-  std::string jsonStr = con.logMsgToJSON(testMsg);
+  std::string jsonStr = GraylogInterfaceStandIn::logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   std::string tempStr;
   EXPECT_NO_THROW(tempStr = JsonObject["_" + key]);
@@ -279,7 +279,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldInt) {
   std::string key = "yet_another_key";
   std::int64_t value = -12431454;
   testMsg.addField(key, value);
-  std::string jsonStr = con.logMsgToJSON(testMsg);
+  std::string jsonStr = GraylogInterfaceStandIn::logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   std::int64_t tempVal = 0;
   EXPECT_NO_THROW(tempVal = JsonObject["_" + key]);
@@ -292,7 +292,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldDouble) {
   std::string key = "yet_another_key";
   double value = 3.1415926535897932384626433832795028841;
   testMsg.addField(key, value);
-  std::string jsonStr = con.logMsgToJSON(testMsg);
+  std::string jsonStr = GraylogInterfaceStandIn::logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   double tempVal;
   EXPECT_NO_THROW(tempVal = JsonObject["_" + key]);

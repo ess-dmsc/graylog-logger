@@ -55,7 +55,7 @@ public:
   size_t queueSize() override;
 
 protected:
-  std::string logMsgToJSON(const LogMessage &Message);
+  static std::string logMsgToJSON(const LogMessage &Message);
 };
 
 } // namespace Log

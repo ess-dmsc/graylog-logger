@@ -22,7 +22,7 @@ GraylogConnection::GraylogConnection(std::string Host, int Port,
                                                       MaxQueueSize)) {}
 
 void GraylogConnection::sendMessage(std::string Msg) {
-  Pimpl->sendMessage(Msg);
+  Pimpl->sendMessage(std::move(Msg));
 }
 
 bool GraylogConnection::flush(std::chrono::system_clock::duration TimeOut) {
@@ -37,11 +37,11 @@ bool GraylogConnection::messageQueueEmpty() { return Pimpl->queueSize() == 0; }
 
 size_t GraylogConnection::messageQueueSize() { return Pimpl->queueSize(); }
 
-GraylogConnection::~GraylogConnection() {}
+GraylogConnection::~GraylogConnection() = default;
 
 GraylogInterface::GraylogInterface(const std::string &Host, const int Port,
                                    const size_t MaxQueueLength)
-    : BaseLogHandler(), GraylogConnection(Host, Port, MaxQueueLength) {}
+    : GraylogConnection(Host, Port, MaxQueueLength) {}
 
 void GraylogInterface::addMessage(const LogMessage &Message) {
   sendMessage(logMsgToJSON(Message));

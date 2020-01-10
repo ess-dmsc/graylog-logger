@@ -14,7 +14,7 @@ using namespace Log;
 
 class BaseLogHandlerStandIn : public BaseLogHandler {
 public:
-  BaseLogHandlerStandIn() : BaseLogHandler(){};
+  BaseLogHandlerStandIn() {};
   void addMessage(const LogMessage &Message) override {
     CurrentMessage = Message;
   };

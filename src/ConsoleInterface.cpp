@@ -22,7 +22,7 @@ std::string ConsoleStringCreator(const LogMessage &Message) {
          Message.MessageString;
 }
 
-ConsoleInterface::ConsoleInterface() : BaseLogHandler() {
+ConsoleInterface::ConsoleInterface() {
   BaseLogHandler::setMessageStringCreatorFunction(ConsoleStringCreator);
 }
 void ConsoleInterface::addMessage(const LogMessage &Message) {
