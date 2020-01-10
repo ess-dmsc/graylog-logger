@@ -13,7 +13,7 @@ The repository is split into four parts:
 
 A sister project to this library is the Python logging handler [GraylogHandler](https://github.com/ess-dmsc/graylog-handler).
 
-- [Further documentation](documentation/README.md)
+- Further documentation can be [found here.](documentation/README.md)
 
 ## Getting Started
 
@@ -99,7 +99,8 @@ Examples illustrating how the library can be used can be found in the [examples.
 * [Conan](https://conan.io/) - Package manager for C++
 
 ## Contributing
-TBD
+
+Get in contact by [creating an issue](https://github.com/ess-dmsc/graylog-logger/issues). I will be happy to assist you making the changes that you want.
 
 ## Versioning
 
@@ -110,8 +111,10 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## Authors
 
 * **Jonas Nilsson** - *Initial work* - [SkyToGround](https://github.com/SkyToGround)
+* **Afonos Mukai** - Provided much assistance in setting up the continous integration system.
+* **Matthew Jones** - Improved the CMake code and suggested improvements to the interface. 
 
-See also the list of [contributors](https://github.com/ess-dmsc/graylog-logger/graphs/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/ess-dmsc/graylog-logger/graphs/contributors) to this project.
 
 ## License
 

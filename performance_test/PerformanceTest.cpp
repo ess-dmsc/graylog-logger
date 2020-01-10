@@ -1,3 +1,13 @@
+/* Copyright (C) 2020 European Spallation Source, ERIC. See LICENSE file */
+//===----------------------------------------------------------------------===//
+///
+/// \file
+///
+/// \brief Code for running performance-tests on the library.
+///
+//===----------------------------------------------------------------------===//
+
+
 #include "DummyLogHandler.h"
 #include <benchmark/benchmark.h>
 #include <fmt/format.h>

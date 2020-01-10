@@ -36,7 +36,7 @@ set(Graylog_INC
     ../include/graylog_logger/LogUtil.hpp
     ../include/graylog_logger/ThreadedExecutor.hpp
     ../include/graylog_logger/ConnectionStatus.hpp
-    ../include/graylog_logger/MinimalApply.h
+    ../include/graylog_logger/MinimalApply.hpp
     ${CMAKE_BINARY_DIR}/include/graylog_logger/LibConfig.hpp
 )
 

@@ -1,3 +1,13 @@
+/* Copyright (C) 2020 European Spallation Source, ERIC. See LICENSE file */
+//===----------------------------------------------------------------------===//
+///
+/// \file
+///
+/// \brief A simple dummy log handler.
+///
+//===----------------------------------------------------------------------===//
+
+
 #pragma once
 
 #include <graylog_logger/LogUtil.hpp>

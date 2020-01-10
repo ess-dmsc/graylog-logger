@@ -19,7 +19,7 @@
 #include <fmt/format.h>
 #include <tuple>
 #endif
-#include "graylog_logger/MinimalApply.h"
+#include "graylog_logger/MinimalApply.hpp"
 #include <future>
 #include <thread>
 #include <ciso646>
