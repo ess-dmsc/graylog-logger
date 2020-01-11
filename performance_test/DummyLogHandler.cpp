@@ -7,7 +7,6 @@
 ///
 //===----------------------------------------------------------------------===//
 
-
 #include "DummyLogHandler.h"
 
 // This code is here instead of in the header file to prevent the compiler

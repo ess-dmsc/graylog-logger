@@ -160,12 +160,17 @@ int main(int argc, char **argv) {
   } else {
     Log::Msg(Severity(sevLevel), msg);
   }
-  
-  Log::FmtMsg(Severity::Info, "A formatted string containing an int ({:s}), a float ({}) and the string \"{}\".", 42, 3.14, "hello");
 
-  if (not Log::Flush(std::chrono::milliseconds(static_cast<int>(timeout * 1000)))) {
-    std::cout << "Reached timeout when trying to send message to Graylog-server."
-              << std::endl;
+  Log::FmtMsg(Severity::Info,
+              "A formatted string containing an int ({:s}), a float ({}) and "
+              "the string \"{}\".",
+              42, 3.14, "hello");
+
+  if (not Log::Flush(
+          std::chrono::milliseconds(static_cast<int>(timeout * 1000)))) {
+    std::cout
+        << "Reached timeout when trying to send message to Graylog-server."
+        << std::endl;
   }
 
   return 0;

@@ -92,7 +92,7 @@ void GraylogConnection::Impl::connectHandler(const asio::error_code &Error,
 }
 
 void GraylogConnection::Impl::reConnect(ReconnectDelay Delay) {
-  auto HandlerGlue = [this](auto &/* Err */) { this->doAddressQuery(); };
+  auto HandlerGlue = [this](auto & /* Err */) { this->doAddressQuery(); };
   switch (Delay) {
   case ReconnectDelay::SHORT:
     ReconnectTimeout.expires_after(100ms);

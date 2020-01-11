@@ -27,8 +27,9 @@ std::string BaseLogHandler::messageToString(const LogMessage &Message) {
   std::time_t cTime = std::chrono::system_clock::to_time_t(Message.Timestamp);
   const size_t TimeBufferSize{50};
   std::array<char, TimeBufferSize> TimeBuffer{};
-  size_t BytesWritten = std::strftime(static_cast<char *>(TimeBuffer.data()), TimeBufferSize, "%F %T",
-                                      std::localtime(&cTime));
+  size_t BytesWritten =
+      std::strftime(static_cast<char *>(TimeBuffer.data()), TimeBufferSize,
+                    "%F %T", std::localtime(&cTime));
   std::array<std::string, 8> sevToStr = {{"EMERGENCY", "ALERT", "CRITICAL",
                                           "ERROR", "WARNING", "Notice", "Info",
                                           "Debug"}};

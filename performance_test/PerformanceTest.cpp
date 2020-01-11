@@ -7,7 +7,6 @@
 ///
 //===----------------------------------------------------------------------===//
 
-
 #include "DummyLogHandler.h"
 #include <benchmark/benchmark.h>
 #include <fmt/format.h>

@@ -10,9 +10,9 @@
 
 #pragma once
 
+#include "graylog_logger/LibConfig.hpp"
 #include "graylog_logger/LogUtil.hpp"
 #include <vector>
-#include "graylog_logger/LibConfig.hpp"
 
 #ifdef WITH_FMT
 #include "graylog_logger/Logger.hpp"
@@ -26,21 +26,20 @@ namespace Log {
 ///   - Process id
 ///   - Thread id
 ///   - Host name
-/// 
+///
 /// \note If an exception is encountered when generating the formatted text
-/// string, a log message showing the `Format` string as well as the error 
+/// string, a log message showing the `Format` string as well as the error
 /// message will be generated in its place.
 ///
 /// \param[in] Level The severity level of the message.
 /// \param[in] Format The (fmtlib) format of the text message.
 /// \param[in] args The variables to be inserted into the format string.
-template<typename... Args>
+template <typename... Args>
 void FmtMsg(const Severity Level, const std::string Format, Args... args) {
   Logger::Inst().fmt_log(Level, Format, args...);
 }
-}
+} // namespace Log
 #endif
-
 
 namespace Log {
 /// \brief Submit a log message to the logging library.
@@ -145,7 +144,8 @@ void Msg(
 /// \param[in] TimeOut The amount of time to wait for the queued messages to
 /// be flushed. Defaults to 500ms.
 /// \return Returns true if messages were flushed, false otherwise.
-bool Flush(std::chrono::system_clock::duration TimeOut = std::chrono::milliseconds(500));
+bool Flush(std::chrono::system_clock::duration TimeOut =
+               std::chrono::milliseconds(500));
 
 /// \brief Add a default field of meta-data to every message.
 ///

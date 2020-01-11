@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include <functional>
-#include <thread>
 #include <concurrentqueue/concurrentqueue.h>
+#include <functional>
 #include <future>
 #include <memory>
+#include <thread>
 
 namespace Log {
 class ThreadedExecutor {
@@ -27,9 +27,7 @@ public:
     WorkerThread.join();
   }
   void SendWork(WorkMessage Message) { MessageQueue.enqueue(Message); }
-  size_t size_approx() {
-    return MessageQueue.size_approx();
-  }
+  size_t size_approx() { return MessageQueue.size_approx(); }
 
 private:
   bool RunThread{true};

@@ -144,8 +144,6 @@ public:
   void setMessageStringCreatorFunction(
       std::function<std::string(const LogMessage &)> ParserFunction);
 
-
-
 protected:
   /// \brief Can be used to create strings from messages if set.
   std::function<std::string(const LogMessage &)> MessageParser{nullptr};

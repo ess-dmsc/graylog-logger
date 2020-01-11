@@ -8,6 +8,7 @@
 
 #include "graylog_logger/LoggingBase.hpp"
 #include "BaseLogHandlerStandIn.hpp"
+#include "graylog_logger/LibConfig.hpp"
 #include "graylog_logger/LogUtil.hpp"
 #include <asio.hpp>
 #include <chrono>
@@ -238,3 +239,28 @@ TEST(LoggingBase, TimestampTest) {
       std::chrono::system_clock::now() - msg.Timestamp;
   ASSERT_NEAR(time_diff.count(), 0.0, 0.1) << "Time stamp is incorrect.";
 }
+
+#ifdef WITH_FMT
+
+TEST(LoggingBase, FmtLogMessage) {
+  LoggingBase log;
+  auto standIn = std::make_shared<BaseLogHandlerStandIn>();
+  log.addLogHandler(standIn);
+  log.fmt_log(Severity::Critical, "A test message {} - {}", 42, "hello");
+  log.flush(10s);
+  LogMessage msg = standIn->CurrentMessage;
+  ASSERT_EQ(msg.MessageString, "A test message 42 - hello");
+}
+
+TEST(LoggingBase, FmtLogMessageException) {
+  LoggingBase log;
+  auto standIn = std::make_shared<BaseLogHandlerStandIn>();
+  log.addLogHandler(standIn);
+  std::string FormatStr{"A test message {:s} - {}"};
+  log.fmt_log(Severity::Critical, FormatStr, 42, "hello");
+  log.flush(10s);
+  LogMessage msg = standIn->CurrentMessage;
+  ASSERT_TRUE(msg.MessageString.find(FormatStr) != std::string::npos);
+}
+
+#endif

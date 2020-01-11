@@ -11,14 +11,14 @@
 
 #include "graylog_logger/ConnectionStatus.hpp"
 #include "graylog_logger/GraylogInterface.hpp"
-#include <concurrentqueue/blockingconcurrentqueue.h>
 #include <array>
 #include <asio.hpp>
 #include <atomic>
+#include <concurrentqueue/blockingconcurrentqueue.h>
+#include <functional>
 #include <memory>
 #include <string>
 #include <thread>
-#include <functional>
 
 namespace Log {
 
@@ -33,14 +33,12 @@ public:
   Impl(std::string Host, int Port, size_t MaxQueueLength);
   virtual ~Impl();
   virtual void sendMessage(std::string Msg) {
-    auto MsgFunc = [=](){
-      return Msg;};
-    LogMessages.try_enqueue(MsgFunc);};
+    auto MsgFunc = [=]() { return Msg; };
+    LogMessages.try_enqueue(MsgFunc);
+  };
   Status getConnectionStatus() const;
   virtual bool flush(std::chrono::system_clock::duration TimeOut);
-  virtual size_t queueSize() {
-    return LogMessages.size_approx();
-  }
+  virtual size_t queueSize() { return LogMessages.size_approx(); }
 
 protected:
   enum class ReconnectDelay { LONG, SHORT };
@@ -58,7 +56,8 @@ protected:
   std::string HostPort;
 
   std::thread AsioThread;
-  moodycamel::BlockingConcurrentQueue<std::function<std::string(void)>> LogMessages;
+  moodycamel::BlockingConcurrentQueue<std::function<std::string(void)>>
+      LogMessages;
 
 private:
   const size_t MessageAdditionLimit{3000};

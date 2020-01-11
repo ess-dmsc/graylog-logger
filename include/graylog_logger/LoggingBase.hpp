@@ -9,20 +9,20 @@
 
 #pragma once
 
-#include "graylog_logger/LogUtil.hpp"
 #include "graylog_logger/LibConfig.hpp"
-#include <string>
-#include <vector>
+#include "graylog_logger/LogUtil.hpp"
 #include "graylog_logger/ThreadedExecutor.hpp"
 #include <sstream>
+#include <string>
+#include <vector>
 #ifdef WITH_FMT
 #include <fmt/format.h>
 #include <tuple>
 #endif
 #include "graylog_logger/MinimalApply.hpp"
+#include <ciso646>
 #include <future>
 #include <thread>
-#include <ciso646>
 
 namespace Log {
 
@@ -37,7 +37,7 @@ public:
   log(const Severity Level, const std::string &Message,
       const std::vector<std::pair<std::string, AdditionalField>> &ExtraFields) {
     auto ThreadId = std::this_thread::get_id();
-    Executor.SendWork([=](){
+    Executor.SendWork([=]() {
       if (int(Level) > int(MinSeverity)) {
         return;
       }
@@ -58,9 +58,10 @@ public:
   }
   virtual void log(const Severity Level, const std::string &Message,
                    const std::pair<std::string, AdditionalField> &ExtraField) {
-    log(Level, Message, std::vector<std::pair<std::string, AdditionalField>>{
-        ExtraField,
-    });
+    log(Level, Message,
+        std::vector<std::pair<std::string, AdditionalField>>{
+            ExtraField,
+        });
   }
 
 #ifdef WITH_FMT
@@ -68,19 +69,21 @@ public:
   void fmt_log(const Severity Level, std::string Format, Args... args) {
     auto ThreadId = std::this_thread::get_id();
     auto UsedArguments = std::make_tuple(args...);
-    Executor.SendWork([=](){
+    Executor.SendWork([=]() {
       if (int(Level) > int(MinSeverity)) {
         return;
       }
       LogMessage cMsg(BaseMsg);
       cMsg.SeverityLevel = Level;
       cMsg.Timestamp = std::chrono::system_clock::now();
-      auto format_message = [=,&cMsg](const auto&... args) {
+      auto format_message = [=, &cMsg](const auto &... args) {
         try {
           return fmt::format(Format, args...);
         } catch (fmt::format_error &e) {
           cMsg.SeverityLevel = Log::Severity::Error;
-          return fmt::format("graylog-logger internal error. Unable to format the string \"{}\". The error was: \"{}\".", Format, e.what());
+          return fmt::format("graylog-logger internal error. Unable to format "
+                             "the string \"{}\". The error was: \"{}\".",
+                             Format, e.what());
         }
       };
       cMsg.MessageString = minimal::apply(format_message, UsedArguments);
@@ -94,13 +97,11 @@ public:
   }
 #endif
 
-  virtual void addLogHandler(const LogHandler_P& Handler);
+  virtual void addLogHandler(const LogHandler_P &Handler);
 
   template <typename valueType>
   void addField(std::string Key, const valueType &Value) {
-    Executor.SendWork([=](){
-      BaseMsg.addField(Key, Value);
-    });
+    Executor.SendWork([=]() { BaseMsg.addField(Key, Value); });
   };
   virtual void removeAllHandlers();
   virtual void setMinSeverity(Severity Level);
@@ -109,15 +110,14 @@ public:
   virtual bool flush(std::chrono::system_clock::duration TimeOut) {
     auto FlushCompleted = std::make_shared<std::promise<bool>>();
     auto FlushCompletedValue = FlushCompleted->get_future();
-    Executor.SendWork([=,FlushCompleted{std::move(FlushCompleted)}](){
+    Executor.SendWork([ =, FlushCompleted{std::move(FlushCompleted)} ]() {
       std::vector<std::future<bool>> FlushResults;
-      for (auto& CHandler : Handlers) {
-        FlushResults.push_back(std::async(std::launch::async, [=](){
-          return CHandler->flush(TimeOut);}
-        ));
+      for (auto &CHandler : Handlers) {
+        FlushResults.push_back(std::async(
+            std::launch::async, [=]() { return CHandler->flush(TimeOut); }));
       }
       bool ReturnValue{true};
-      for (auto& CFlushResult: FlushResults) {
+      for (auto &CFlushResult : FlushResults) {
         CFlushResult.wait();
         if (not CFlushResult.get()) {
           ReturnValue = false;

@@ -14,14 +14,14 @@ using namespace Log;
 
 class BaseLogHandlerStandIn : public BaseLogHandler {
 public:
-  BaseLogHandlerStandIn() {};
+  BaseLogHandlerStandIn(){};
   void addMessage(const LogMessage &Message) override {
     CurrentMessage = Message;
   };
   LogMessage CurrentMessage;
   using BaseLogHandler::MessageParser;
   using BaseLogHandler::messageToString;
-  bool flush(std::chrono::system_clock::duration) override {return true;}
-  bool emptyQueue() override {return true;}
-  size_t queueSize() override  {return 0;}
+  bool flush(std::chrono::system_clock::duration) override { return true; }
+  bool emptyQueue() override { return true; }
+  size_t queueSize() override { return 0; }
 };

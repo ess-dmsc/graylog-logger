@@ -98,7 +98,8 @@ LoggingBase::LoggingBase() {
     const int StringBufferSize = 100;
     std::array<char, StringBufferSize> StringBuffer{};
     int res;
-    res = gethostname(static_cast<char *>(StringBuffer.data()), StringBufferSize);
+    res =
+        gethostname(static_cast<char *>(StringBuffer.data()), StringBufferSize);
     if (0 == res) {
       BaseMsg.Host = std::string(static_cast<char *>(StringBuffer.data()));
     }
@@ -108,9 +109,7 @@ LoggingBase::LoggingBase() {
   });
 }
 
-LoggingBase::~LoggingBase() {
-  LoggingBase::removeAllHandlers();
-}
+LoggingBase::~LoggingBase() { LoggingBase::removeAllHandlers(); }
 
 void LoggingBase::addLogHandler(const LogHandler_P &Handler) {
   Executor.SendWork([=]() { Handlers.push_back(Handler); });
