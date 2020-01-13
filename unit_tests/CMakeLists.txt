@@ -23,7 +23,7 @@ set(UnitTest_SRC
 set(UnitTest_INC
   BaseLogHandlerStandIn.hpp
   LogTestServer.hpp
-)
+    Semaphore.hpp)
 
 add_executable(unit_tests EXCLUDE_FROM_ALL ${UnitTest_SRC} ${UnitTest_INC})
 

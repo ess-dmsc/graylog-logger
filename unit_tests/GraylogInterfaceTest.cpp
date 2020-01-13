@@ -8,6 +8,7 @@
 
 #include "graylog_logger/GraylogInterface.hpp"
 #include "LogTestServer.hpp"
+#include "Semaphore.hpp"
 #include <ciso646>
 #include <cmath>
 #include <gmock/gmock.h>
@@ -33,6 +34,7 @@ public:
       : GraylogInterface(host, port, queueLength){};
   MOCK_METHOD1(sendMessage, void(std::string));
   using GraylogInterface::logMsgToJSON;
+  void sendMessageBase(std::string Msg) {GraylogInterface::sendMessage(Msg);}
 };
 
 class GraylogConnectionStandIn : public GraylogConnection {
@@ -331,4 +333,33 @@ TEST_F(GraylogConnectionCom, DISABLED_MultipleCloseConnectionTest) {
     con.flush(10000ms);
     EXPECT_EQ(logServer->GetNrOfMessages(), NrOfMessages);
   }
+}
+
+TEST(GraylogInterface, QueueSizeEmpty) {
+  GraylogInterfaceStandIn cInter("localhost", testPort, 10);
+  ASSERT_EQ(cInter.queueSize(), 0);
+  ASSERT_TRUE(cInter.emptyQueue());
+}
+
+TEST(GraylogInterface, QueueSizeOne) {
+  GraylogInterfaceStandIn cInter("localhost", testPort, 10);
+  cInter.sendMessageBase("tst_msg");
+  cInter.sendMessageBase("tst_msg");
+  EXPECT_GE(cInter.queueSize(), 1);
+  EXPECT_LE(cInter.queueSize(), 2);
+  EXPECT_FALSE(cInter.emptyQueue());
+}
+
+using namespace std::chrono_literals;
+
+TEST(GraylogInterface, FlushSuccess) {
+  auto LogServer = std::make_unique<LogTestServer>(testPort);
+  GraylogInterfaceStandIn cInter("localhost", testPort, 10);
+  EXPECT_TRUE(cInter.flush(50ms));
+}
+
+TEST(GraylogInterface, FlushFail) {
+  GraylogInterfaceStandIn cInter("localhost", testPort, 10);
+  cInter.sendMessageBase("tst_msg");
+  EXPECT_FALSE(cInter.flush(50ms));
 }

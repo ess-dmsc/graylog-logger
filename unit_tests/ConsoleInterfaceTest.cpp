@@ -9,6 +9,7 @@
 #include "graylog_logger/ConsoleInterface.hpp"
 #include <ciso646>
 #include <gtest/gtest.h>
+#include "Semaphore.hpp"
 
 using namespace Log;
 
@@ -42,3 +43,51 @@ TEST(ConsoleInterface, ConsoleStringFunctionTest) {
   std::string output = testing::internal::GetCapturedStdout();
   ASSERT_EQ(std::string("ALERT: Some test string\n"), output);
 }
+
+TEST(ConsoleInterface, QueueSizeEmpty) {
+  ConsoleInterface cInter;
+  ASSERT_EQ(cInter.queueSize(), 0);
+  ASSERT_TRUE(cInter.emptyQueue());
+}
+
+class ConsoleInterfaceStandIn : public ConsoleInterface {
+public:
+  using ConsoleInterface::Executor;
+};
+
+TEST(ConsoleInterface, QueueSizeOne) {
+  ConsoleInterfaceStandIn cInter;
+  Semaphore Signal1, Signal2;
+  Semaphore Signal3;
+  cInter.Executor.SendWork([&](){
+    Signal1.notify();
+    Signal2.wait();
+    Signal3.notify();
+  });
+  cInter.Executor.SendWork([](){});
+  Signal1.wait();
+  EXPECT_EQ(cInter.queueSize(), 1);
+  EXPECT_FALSE(cInter.emptyQueue());
+  Signal2.notify();
+  Signal3.wait();
+}
+
+using namespace std::chrono_literals;
+
+TEST(ConsoleInterface, FlushSuccess) {
+  ConsoleInterfaceStandIn cInter;
+  EXPECT_TRUE(cInter.flush(50ms));
+}
+
+TEST(ConsoleInterface, FlushFail) {
+  ConsoleInterfaceStandIn cInter;
+  Semaphore Signal1, Signal2;
+  cInter.Executor.SendWork([&](){
+    Signal1.wait();
+    Signal2.notify();
+  });
+  EXPECT_FALSE(cInter.flush(50ms));
+  Signal1.notify();
+  Signal2.wait();
+}
+

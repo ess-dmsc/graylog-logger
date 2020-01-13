@@ -8,6 +8,7 @@
 
 #include "graylog_logger/FileInterface.hpp"
 #include "graylog_logger/Log.hpp"
+#include "Semaphore.hpp"
 #include <ciso646>
 #include <cstdio>
 #include <fstream>
@@ -42,6 +43,7 @@ public:
   explicit FileInterfaceStandIn(const std::string &fileName)
       : FileInterface(fileName){};
   ~FileInterfaceStandIn() override = default;
+  using FileInterface::Executor;
 };
 
 class FileInterfaceTest : public ::testing::Test {
@@ -104,4 +106,46 @@ TEST_F(FileInterfaceTest, OpenFileMessages) {
             std::string::npos);
   EXPECT_NE(StdOutputString.find("Unable to open log file"), std::string::npos)
       << "Actual std-output was: " << StdOutputString;
+}
+
+TEST_F(FileInterfaceTest, QueueSizeEmpty) {
+  FileInterfaceStandIn cInter(usedFileName);
+  ASSERT_EQ(cInter.queueSize(), 0);
+  ASSERT_TRUE(cInter.emptyQueue());
+}
+
+TEST_F(FileInterfaceTest, QueueSizeOne) {
+  FileInterfaceStandIn cInter(usedFileName);
+  Semaphore Signal1, Signal2;
+  Semaphore Signal3;
+  cInter.Executor.SendWork([&](){
+    Signal1.notify();
+    Signal2.wait();
+    Signal3.notify();
+  });
+  cInter.Executor.SendWork([](){});
+  Signal1.wait();
+  EXPECT_EQ(cInter.queueSize(), 1);
+  EXPECT_FALSE(cInter.emptyQueue());
+  Signal2.notify();
+  Signal3.wait();
+}
+
+using namespace std::chrono_literals;
+
+TEST_F(FileInterfaceTest, FlushSuccess) {
+  FileInterfaceStandIn cInter(usedFileName);
+  EXPECT_TRUE(cInter.flush(50ms));
+}
+
+TEST_F(FileInterfaceTest, FlushFail) {
+  FileInterfaceStandIn cInter(usedFileName);
+  Semaphore Signal1, Signal2;
+  cInter.Executor.SendWork([&](){
+    Signal1.wait();
+    Signal2.notify();
+  });
+  EXPECT_FALSE(cInter.flush(50ms));
+  Signal1.notify();
+  Signal2.wait();
 }
