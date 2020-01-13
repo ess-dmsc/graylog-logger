@@ -44,7 +44,7 @@ TEST(ConsoleInterface, ConsoleStringFunctionTest) {
   ASSERT_EQ(std::string("ALERT: Some test string\n"), output);
 }
 
-TEST(ConsoleInterface, QueueSizeEmpty) {
+TEST(ConsoleInterface, OnInitialisationQueueEmpty) {
   ConsoleInterface cInter;
   ASSERT_EQ(cInter.queueSize(), 0);
   ASSERT_TRUE(cInter.emptyQueue());
@@ -55,7 +55,7 @@ public:
   using ConsoleInterface::Executor;
 };
 
-TEST(ConsoleInterface, QueueSizeOne) {
+TEST(ConsoleInterface, QueueSizeOneIsNotEmpty) {
   ConsoleInterfaceStandIn cInter;
   Semaphore Signal1, Signal2;
   Semaphore Signal3;

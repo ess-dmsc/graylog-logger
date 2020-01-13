@@ -335,13 +335,13 @@ TEST_F(GraylogConnectionCom, DISABLED_MultipleCloseConnectionTest) {
   }
 }
 
-TEST(GraylogInterface, QueueSizeEmpty) {
+TEST(GraylogInterface, OnInitialisationQueueEmpty) {
   GraylogInterfaceStandIn cInter("localhost", testPort, 10);
   ASSERT_EQ(cInter.queueSize(), 0);
   ASSERT_TRUE(cInter.emptyQueue());
 }
 
-TEST(GraylogInterface, QueueSizeOne) {
+TEST(GraylogInterface, QueueSizeOneIsNotEmpty) {
   GraylogInterfaceStandIn cInter("localhost", testPort, 10);
   cInter.sendMessageBase("tst_msg");
   cInter.sendMessageBase("tst_msg");

@@ -108,13 +108,13 @@ TEST_F(FileInterfaceTest, OpenFileMessages) {
       << "Actual std-output was: " << StdOutputString;
 }
 
-TEST_F(FileInterfaceTest, QueueSizeEmpty) {
+TEST_F(FileInterfaceTest, OnInitialisationQueueEmpty) {
   FileInterfaceStandIn cInter(usedFileName);
   ASSERT_EQ(cInter.queueSize(), 0);
   ASSERT_TRUE(cInter.emptyQueue());
 }
 
-TEST_F(FileInterfaceTest, QueueSizeOne) {
+TEST_F(FileInterfaceTest, QueueSizeOneIsNotEmpty) {
   FileInterfaceStandIn cInter(usedFileName);
   Semaphore Signal1, Signal2;
   Semaphore Signal3;

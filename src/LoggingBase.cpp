@@ -97,15 +97,14 @@ LoggingBase::LoggingBase() {
   Executor.SendWork([=]() {
     const int StringBufferSize = 100;
     std::array<char, StringBufferSize> StringBuffer{};
-    int res;
-    res =
+    const int res =
         gethostname(static_cast<char *>(StringBuffer.data()), StringBufferSize);
     if (0 == res) {
       BaseMsg.Host = std::string(static_cast<char *>(StringBuffer.data()));
     }
     BaseMsg.ProcessId = getpid();
     BaseMsg.ProcessName = get_process_name();
-    // We want to wait for this to finnish, make it so
+    // We want to wait for this to finish, make it so
   });
 }
 
