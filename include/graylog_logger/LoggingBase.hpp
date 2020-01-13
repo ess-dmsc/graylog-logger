@@ -58,10 +58,9 @@ public:
   }
   virtual void log(const Severity Level, const std::string &Message,
                    const std::pair<std::string, AdditionalField> &ExtraField) {
-    log(Level, Message,
-        std::vector<std::pair<std::string, AdditionalField>>{
-            ExtraField,
-        });
+    log(Level, Message, std::vector<std::pair<std::string, AdditionalField>>{
+                            ExtraField,
+                        });
   }
 
 #ifdef WITH_FMT
