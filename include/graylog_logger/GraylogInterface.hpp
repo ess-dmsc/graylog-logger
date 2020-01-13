@@ -43,7 +43,7 @@ public:
   /// been transmitted even if flush() returns true.
   bool flush(std::chrono::system_clock::duration TimeOut) override;
 
-  /// \brief Are there any more queued messages?
+  /// \brief Are there any queued messages?
   /// \note The message queue will show as empty before the last message in
   /// the queue has been transmitted.
   /// \return Returns true if message queue is empty.
