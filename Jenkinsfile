@@ -78,14 +78,51 @@ builders = pipeline_builder.createBuilders { container ->
   }  // if
 
   if (container.key == clangformat_os) {
-    pipeline_builder.stage("${container.key}: check formatting") {
-      container.sh """
-        clang-format -version
-        cd ${pipeline_builder.project}
-        find . \\\\( -name '*.cpp' -or -name '*.cxx' -or -name '*.h' -or -name '*.hpp' \\\\) \\
-          -exec clangformatdiff.sh {} +
-      """
-    }  // stage
+    pipeline_builder.stage("${container.key}: Formatting") {
+          if (!env.CHANGE_ID) {
+            // Ignore non-PRs
+            return
+          }
+          try {
+            // Do clang-format of C++ files
+            container.sh """
+              clang-format -version
+              cd ${project}
+              find . \\\\( -name '*.cpp' -or -name '*.cxx' -or -name '*.h' -or -name '*.hpp' \\\\) \\
+              -exec clang-format -i {} +
+              git config user.email 'dm-jenkins-integration@esss.se'
+              git config user.name 'cow-bot'
+              git status -s
+              git add -u
+              git commit -m 'GO FORMAT YOURSELF (clang-format)'
+            """
+          } catch (e) {
+           // Okay to fail as there could be no badly formatted files to commit
+          } finally {
+            // Clean up
+          }
+
+          // Push any changes resulting from formatting
+          try {
+            withCredentials([
+              usernamePassword(
+              credentialsId: 'cow-bot-username',
+              usernameVariable: 'USERNAME',
+              passwordVariable: 'PASSWORD'
+              )
+            ]) {
+              container.sh """
+                cd ${project}
+                git push https://${USERNAME}:${PASSWORD}@github.com/ess-dmsc/${pipeline_builder.project}.git HEAD:${CHANGE_BRANCH}
+              """
+            } // withCredentials
+          } catch (e) {
+            // Okay to fail; there may be nothing to push
+          } finally {
+            // Clean up
+          }
+        }  // stage
+
 
     pipeline_builder.stage("${container.key}: cppcheck") {
       def test_output = "cppcheck.txt"
