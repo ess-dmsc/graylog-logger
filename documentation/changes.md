@@ -11,7 +11,6 @@
 * Added and fixed examples.
 * Fixed the non-working `emptyQueue()` and `queueSize()` implementations.
 * Fixed/improved code documentation.
-* De-activated the use of clang-format in our continuous integration system. It will be re-activated when we have updated clang-format on our build nodes to a newer version.
 * Removed the message queue size parameter from log message handlers as it was deemed unnecessary.
 * Fixed and added unit tests.
 
