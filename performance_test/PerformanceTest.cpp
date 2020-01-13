@@ -11,6 +11,7 @@
 #include <benchmark/benchmark.h>
 #include <fmt/format.h>
 #include <graylog_logger/LoggingBase.hpp>
+#include <random>
 
 static void BM_LogMessageGenerationOnly(benchmark::State &state) {
   Log::LoggingBase Logger;
@@ -57,5 +58,21 @@ BM_LogMessageGenerationWithDeferredFmtFormatting(benchmark::State &state) {
   state.SetItemsProcessed(state.iterations());
 }
 BENCHMARK(BM_LogMessageGenerationWithDeferredFmtFormatting);
+
+static void
+BM_RandomSeverityLevel(benchmark::State &state) {
+  Log::LoggingBase Logger;
+  Logger.setMinSeverity(Log::Severity::Alert);
+  auto Handler = std::make_shared<DummyLogHandler>();
+  Logger.addLogHandler(std::dynamic_pointer_cast<Log::BaseLogHandler>(Handler));
+  std::random_device Device;
+  std::mt19937 Generator(Device());
+  std::uniform_int_distribution<> Distribution(0, 7);
+  for (auto _ : state) {
+    Logger.log(Log::Severity(Distribution(Generator)), "Some format example");
+  }
+  state.SetItemsProcessed(state.iterations());
+}
+BENCHMARK(BM_RandomSeverityLevel);
 
 BENCHMARK_MAIN();
