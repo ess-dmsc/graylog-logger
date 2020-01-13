@@ -7,9 +7,9 @@
 //
 
 #include "graylog_logger/ConsoleInterface.hpp"
+#include "Semaphore.hpp"
 #include <ciso646>
 #include <gtest/gtest.h>
-#include "Semaphore.hpp"
 
 using namespace Log;
 
@@ -59,12 +59,12 @@ TEST(ConsoleInterface, QueueSizeOne) {
   ConsoleInterfaceStandIn cInter;
   Semaphore Signal1, Signal2;
   Semaphore Signal3;
-  cInter.Executor.SendWork([&](){
+  cInter.Executor.SendWork([&]() {
     Signal1.notify();
     Signal2.wait();
     Signal3.notify();
   });
-  cInter.Executor.SendWork([](){});
+  cInter.Executor.SendWork([]() {});
   Signal1.wait();
   EXPECT_EQ(cInter.queueSize(), 1);
   EXPECT_FALSE(cInter.emptyQueue());
@@ -82,7 +82,7 @@ TEST(ConsoleInterface, FlushSuccess) {
 TEST(ConsoleInterface, FlushFail) {
   ConsoleInterfaceStandIn cInter;
   Semaphore Signal1, Signal2;
-  cInter.Executor.SendWork([&](){
+  cInter.Executor.SendWork([&]() {
     Signal1.wait();
     Signal2.notify();
   });
@@ -90,4 +90,3 @@ TEST(ConsoleInterface, FlushFail) {
   Signal1.notify();
   Signal2.wait();
 }
-

@@ -34,7 +34,7 @@ public:
       : GraylogInterface(host, port, queueLength){};
   MOCK_METHOD1(sendMessage, void(std::string));
   using GraylogInterface::logMsgToJSON;
-  void sendMessageBase(std::string Msg) {GraylogInterface::sendMessage(Msg);}
+  void sendMessageBase(std::string Msg) { GraylogInterface::sendMessage(Msg); }
 };
 
 class GraylogConnectionStandIn : public GraylogConnection {
