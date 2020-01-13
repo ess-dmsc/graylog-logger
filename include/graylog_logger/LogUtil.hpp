@@ -113,7 +113,6 @@ public:
 
   /// \brief Called by the logging library when a new log message is created.
   ///
-  /// Must be implement by any derived classes.
   /// \param[in] Message The log message.
   virtual void addMessage(const LogMessage &Message) = 0;
 
