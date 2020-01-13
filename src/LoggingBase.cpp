@@ -122,9 +122,8 @@ std::vector<LogHandler_P> LoggingBase::getHandlers() { return Handlers; }
 void LoggingBase::setMinSeverity(Severity Level) {
   auto WorkDone = std::make_shared<std::promise<void>>();
   auto WorkDoneFuture = WorkDone->get_future();
-  Executor.SendWork([ =, WorkDone{std::move(WorkDone)} ]() {
-    MinSeverity = Level;
-  });
+  Executor.SendWork(
+      [ =, WorkDone{std::move(WorkDone)} ]() { MinSeverity = Level; });
   WorkDoneFuture.wait();
 }
 

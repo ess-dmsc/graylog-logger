@@ -59,8 +59,7 @@ BM_LogMessageGenerationWithDeferredFmtFormatting(benchmark::State &state) {
 }
 BENCHMARK(BM_LogMessageGenerationWithDeferredFmtFormatting);
 
-static void
-BM_RandomSeverityLevel(benchmark::State &state) {
+static void BM_RandomSeverityLevel(benchmark::State &state) {
   Log::LoggingBase Logger;
   Logger.setMinSeverity(Log::Severity::Alert);
   auto Handler = std::make_shared<DummyLogHandler>();
