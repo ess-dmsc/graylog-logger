@@ -75,7 +75,7 @@ public:
       LogMessage cMsg(BaseMsg);
       cMsg.SeverityLevel = Level;
       cMsg.Timestamp = std::chrono::system_clock::now();
-      auto format_message = [=, &cMsg](const auto &... args) {
+      auto format_message = [&Format, &cMsg](const auto &... args) {
         try {
           return fmt::format(Format, args...);
         } catch (fmt::format_error &e) {
