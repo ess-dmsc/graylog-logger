@@ -109,7 +109,7 @@ public:
   virtual bool flush(std::chrono::system_clock::duration TimeOut) {
     auto FlushCompleted = std::make_shared<std::promise<bool>>();
     auto FlushCompletedValue = FlushCompleted->get_future();
-    Executor.SendWork([=, FlushCompleted{std::move(FlushCompleted)} ]() {
+    Executor.SendWork([ =, FlushCompleted{std::move(FlushCompleted)} ]() {
       std::vector<std::future<bool>> FlushResults;
       for (auto &CHandler : Handlers) {
         FlushResults.push_back(std::async(
