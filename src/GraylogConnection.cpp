@@ -205,7 +205,7 @@ bool GraylogConnection::Impl::flush(
     std::chrono::system_clock::duration TimeOut) {
   auto WorkDone = std::make_shared<std::promise<void>>();
   auto WorkDoneFuture = WorkDone->get_future();
-  LogMessages.try_enqueue([WorkDone = std::move(WorkDone)]()->std::string {
+  LogMessages.try_enqueue([WorkDone = std::move(WorkDone)]() -> std::string {
     WorkDone->set_value();
     return {};
   });

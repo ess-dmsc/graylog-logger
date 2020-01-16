@@ -58,9 +58,10 @@ public:
   }
   virtual void log(const Severity Level, const std::string &Message,
                    const std::pair<std::string, AdditionalField> &ExtraField) {
-    log(Level, Message, std::vector<std::pair<std::string, AdditionalField>>{
-                            ExtraField,
-                        });
+    log(Level, Message,
+        std::vector<std::pair<std::string, AdditionalField>>{
+            ExtraField,
+        });
   }
 
 #ifdef WITH_FMT
@@ -109,7 +110,7 @@ public:
   virtual bool flush(std::chrono::system_clock::duration TimeOut) {
     auto FlushCompleted = std::make_shared<std::promise<bool>>();
     auto FlushCompletedValue = FlushCompleted->get_future();
-    Executor.SendWork([ =, FlushCompleted{std::move(FlushCompleted)} ]() {
+    Executor.SendWork([=, FlushCompleted{std::move(FlushCompleted)}]() {
       std::vector<std::future<bool>> FlushResults;
       for (auto &CHandler : Handlers) {
         FlushResults.push_back(std::async(

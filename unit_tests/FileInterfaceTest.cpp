@@ -6,8 +6,8 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
-#include "Semaphore.hpp"
 #include "graylog_logger/FileInterface.hpp"
+#include "Semaphore.hpp"
 #include "graylog_logger/Log.hpp"
 #include <ciso646>
 #include <cstdio>
