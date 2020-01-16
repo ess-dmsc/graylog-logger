@@ -20,7 +20,7 @@ clangformat_os = "debian9"
 test_os = "ubuntu1804"
 
 container_build_nodes = [
-  'centos7': ContainerBuildNode.getDefaultContainerBuildNode('centos7'),
+  'centos7': ContainerBuildNode.getDefaultContainerBuildNode('centos7-gcc8'),
   'debian9': ContainerBuildNode.getDefaultContainerBuildNode('debian9'),
   'ubuntu1804': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu1804')
 ]
