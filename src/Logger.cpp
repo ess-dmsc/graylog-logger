@@ -25,21 +25,22 @@ Logger::Logger() {
 }
 
 void Logger::addLogHandler(const LogHandler_P &Handler) {
-  std::lock_guard<std::mutex> guard(VectorMutex);
-  if (dynamic_cast<ConsoleInterface *>(Handler.get()) != nullptr) {
-    bool replaced = false;
-    for (auto ptr : Handlers) {
-      if (dynamic_cast<ConsoleInterface *>(ptr.get()) != nullptr) {
-        ptr = Handler;
-        replaced = true;
+  Executor.SendWork([=]() {
+    if (dynamic_cast<ConsoleInterface *>(Handler.get()) != nullptr) {
+      bool replaced = false;
+      for (auto ptr : Handlers) {
+        if (dynamic_cast<ConsoleInterface *>(ptr.get()) != nullptr) {
+          ptr = Handler;
+          replaced = true;
+        }
       }
-    }
-    if (not replaced) {
+      if (not replaced) {
+        Handlers.push_back(Handler);
+      }
+    } else {
       Handlers.push_back(Handler);
     }
-  } else {
-    Handlers.push_back(Handler);
-  }
+  });
 }
 
 } // namespace Log

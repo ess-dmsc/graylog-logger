@@ -161,32 +161,16 @@ int main(int argc, char **argv) {
     Log::Msg(Severity(sevLevel), msg);
   }
 
-  std::vector<LogHandler_P> allInterfaces = Log::GetHandlers();
-  std::vector<LogHandler_P> graylogInt;
+  Log::FmtMsg(Severity::Info,
+              "A formatted string containing an int ({:s}), a float ({}) and "
+              "the string \"{}\".",
+              42, 3.14, "hello");
 
-  for (auto &ptr : allInterfaces) {
-    if (dynamic_cast<GraylogInterface *>(ptr.get()) != nullptr) {
-      graylogInt.push_back(ptr);
-    }
-  }
-  if (not graylogInt.empty()) {
-    int milisSleep = 20;
-    int waitLoops = std::lround((timeout * 1000) / milisSleep);
-    auto sleepTime = std::chrono::milliseconds(milisSleep);
-    bool continueLoop = true;
-    for (int i = 0; i < waitLoops and continueLoop; i++) {
-      std::this_thread::sleep_for(sleepTime);
-      continueLoop = false;
-      for (auto &ptr : graylogInt) {
-        if (not dynamic_cast<GraylogInterface *>(ptr.get())->emptyQueue()) {
-          continueLoop = true;
-        }
-      }
-    }
-    if (continueLoop) {
-      std::cout << "Reached timeout when sending message to Graylog-server."
-                << std::endl;
-    }
+  if (not Log::Flush(
+          std::chrono::milliseconds(static_cast<int>(timeout * 1000)))) {
+    std::cout
+        << "Reached timeout when trying to send message to Graylog-server."
+        << std::endl;
   }
 
   return 0;

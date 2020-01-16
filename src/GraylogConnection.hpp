@@ -9,12 +9,13 @@
 
 #pragma once
 
-#include "graylog_logger/ConcurrentQueue.hpp"
 #include "graylog_logger/ConnectionStatus.hpp"
 #include "graylog_logger/GraylogInterface.hpp"
 #include <array>
 #include <asio.hpp>
 #include <atomic>
+#include <concurrentqueue/blockingconcurrentqueue.h>
+#include <functional>
 #include <memory>
 #include <string>
 #include <thread>
@@ -29,12 +30,15 @@ struct QueryResult;
 class GraylogConnection::Impl {
 public:
   using Status = Log::Status;
-  Impl(std::string Host, int Port);
+  Impl(std::string Host, int Port, size_t MaxQueueLength);
   virtual ~Impl();
-  virtual void sendMessage(std::string Msg) { LogMessages.push(Msg); };
+  virtual void sendMessage(std::string Msg) {
+    auto MsgFunc = [=]() { return Msg; };
+    LogMessages.try_enqueue(MsgFunc);
+  };
   Status getConnectionStatus() const;
-  bool messageQueueEmpty() { return LogMessages.empty(); }
-  size_t messageQueueSize() { return LogMessages.size(); }
+  virtual bool flush(std::chrono::system_clock::duration TimeOut);
+  virtual size_t queueSize() { return LogMessages.size_approx(); }
 
 protected:
   enum class ReconnectDelay { LONG, SHORT };
@@ -52,7 +56,8 @@ protected:
   std::string HostPort;
 
   std::thread AsioThread;
-  ConcurrentQueue<std::string> LogMessages;
+  moodycamel::BlockingConcurrentQueue<std::function<std::string(void)>>
+      LogMessages;
 
 private:
   const size_t MessageAdditionLimit{3000};

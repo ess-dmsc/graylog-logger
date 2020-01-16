@@ -18,7 +18,7 @@ using namespace Log;
 
 class ConsoleInterfaceStandIn : public ConsoleInterface {
 public:
-  ConsoleInterfaceStandIn(int queueSize) : ConsoleInterface(queueSize){};
+  ConsoleInterfaceStandIn() : ConsoleInterface(){};
 };
 
 class FileInterfaceStandIn : public FileInterface {
@@ -53,11 +53,10 @@ LogMessage GetLogMsg() {
 
 TEST_F(QueueLength, ConsoleInterfaceTest) {
   std::atomic_int MsgCounter{0};
-  int QueueLength = 50;
   int TestLimit{50};
   testing::internal::CaptureStdout();
   {
-    ConsoleInterfaceStandIn CLogger(QueueLength);
+    ConsoleInterfaceStandIn CLogger;
     CLogger.setMessageStringCreatorFunction([&MsgCounter](auto Msg) {
       MsgCounter++;
       return "";

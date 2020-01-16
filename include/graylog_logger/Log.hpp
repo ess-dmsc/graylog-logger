@@ -10,8 +10,36 @@
 
 #pragma once
 
+#include "graylog_logger/LibConfig.hpp"
 #include "graylog_logger/LogUtil.hpp"
 #include <vector>
+
+#ifdef WITH_FMT
+#include "graylog_logger/Logger.hpp"
+namespace Log {
+
+/// \brief Submit a formatted message to the logging library.
+///
+/// The following fields will be added to the message by the function:
+///   - Timestamp
+///   - Process name
+///   - Process id
+///   - Thread id
+///   - Host name
+///
+/// \note If an exception is encountered when generating the formatted text
+/// string, a log message showing the `Format` string as well as the error
+/// message will be generated in its place.
+///
+/// \param[in] Level The severity level of the message.
+/// \param[in] Format The (fmtlib) format of the text message.
+/// \param[in] args The variables to be inserted into the format string.
+template <typename... Args>
+void FmtMsg(const Severity Level, const std::string Format, Args... args) {
+  Logger::Inst().fmt_log(Level, Format, args...);
+}
+} // namespace Log
+#endif
 
 namespace Log {
 /// \brief Submit a log message to the logging library.
@@ -105,6 +133,20 @@ void Msg(
     const int Level, const std::string &Message,
     const std::vector<std::pair<std::string, AdditionalField>> &ExtraFields);
 
+/// \brief Flush log messages in the queues of the log handlers.
+///
+/// \note Exact implementation depends on that of the currently used log
+/// handlers.
+/// \note For the built-in log handlers, flush only guarantees that log
+/// messages created before the call to Flush() have been handled. Log messages
+/// created after the call to Flush() can not be guaranteed to have been
+/// handled.
+/// \param[in] TimeOut The amount of time to wait for the queued messages to
+/// be flushed. Defaults to 500ms.
+/// \return Returns true if messages were flushed, false otherwise.
+bool Flush(std::chrono::system_clock::duration TimeOut =
+               std::chrono::milliseconds(500));
+
 /// \brief Add a default field of meta-data to every message.
 ///
 /// It is possible to override the value of the default message by passing
@@ -163,7 +205,7 @@ void AddLogHandler(const BaseLogHandler *Handler);
 /// \brief Remove all log message handlers.
 ///
 /// Clears the vector of handlers. If no other shared pointer for a handler
-/// existst, the handler is de-allocated.
+/// exists, the handler is de-allocated.
 void RemoveAllHandlers();
 
 /// \brief Get a copy of the vector containing the handlers.

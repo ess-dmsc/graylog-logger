@@ -10,15 +10,15 @@
 
 #pragma once
 
-#include "graylog_logger/ConcurrentQueue.hpp"
 #include <chrono>
 #include <functional>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace Log {
 
-typedef std::chrono::time_point<std::chrono::system_clock> system_time;
+using system_time = std::chrono::time_point<std::chrono::system_clock>;
 
 /// \brief Severity levels known by the system.
 ///
@@ -108,24 +108,31 @@ class BaseLogHandler {
 public:
   /// \brief Does minimal set-up of the this class.
   /// \param[in] MaxQueueLength The maximum number of log messages stored.
-  explicit BaseLogHandler(const size_t MaxQueueLength = 100);
+  BaseLogHandler() = default;
   virtual ~BaseLogHandler() = default;
+
   /// \brief Called by the logging library when a new log message is created.
-  /// \note If the queue of messages is full, any new messages are discarded
-  /// without any indication that this has been done.
+  ///
   /// \param[in] Message The log message.
-  virtual void addMessage(const LogMessage &Message);
+  virtual void addMessage(const LogMessage &Message) = 0;
+
+  /// \brief Empty the queue of messages. Might do nothing. See documentation
+  /// of derived classes for details.
+  /// \param[in] TimeOut Amount of time to wait queue to empty.
+  /// \return Returns true if queue was emptied before time out occurred.
+  virtual bool flush(std::chrono::system_clock::duration TimeOut) = 0;
+
   /// \brief Are there messages in the queue?
-  /// \note As messages can be added and removed by several different threads,
-  /// expect that the return value will change between two calls.
+  /// \note See derived classes for implementation details.
   /// \return true if there are no messages in the queue, otherwise
   /// false.
-  virtual bool emptyQueue();
+  virtual bool emptyQueue() = 0;
+
   /// \brief The number of messages in the queue.
-  /// \note As messages can be added and removed by several different threads,
-  /// expect that the return value will change between two calls.
+  /// \note See derived class for implementation details.
   /// \return The number of messages in the queue.
-  virtual size_t queueSize();
+  virtual size_t queueSize() = 0;
+
   /// \brief Used to set a custom log message to std::string formatting
   /// function.
   ///
@@ -137,16 +144,12 @@ public:
       std::function<std::string(const LogMessage &)> ParserFunction);
 
 protected:
-  size_t QueueLength;
-  /// \brief Pop messages from this queue if implementing a log message
-  /// consumer (handler).
-  ConcurrentQueue<LogMessage> MessageQueue;
   /// \brief Can be used to create strings from messages if set.
   std::function<std::string(const LogMessage &)> MessageParser{nullptr};
   /// \brief The default log message to std::string function.
   std::string messageToString(const LogMessage &Message);
 };
 
-typedef std::shared_ptr<BaseLogHandler> LogHandler_P;
+using LogHandler_P = std::shared_ptr<BaseLogHandler>;
 
 } // namespace Log

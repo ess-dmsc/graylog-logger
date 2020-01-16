@@ -10,8 +10,6 @@
 #include "graylog_logger/LoggingBase.hpp"
 #include <chrono>
 #include <ciso646>
-#include <fstream>
-#include <sstream>
 #include <sys/types.h>
 #include <thread>
 
@@ -96,79 +94,37 @@ std::string get_process_name() {
 #endif
 
 LoggingBase::LoggingBase() {
-  std::lock_guard<std::mutex> guard1(VectorMutex);
-  MinSeverity = Severity::Notice;
-  const int stringBufferSize = 100;
-  char stringBuffer[stringBufferSize];
-  int res;
-  res = gethostname(static_cast<char *>(stringBuffer), stringBufferSize);
-  std::lock_guard<std::mutex> guard2(BaseMsgMutex);
-  if (0 == res) {
-    BaseMsg.Host = std::string(static_cast<char *>(stringBuffer));
-  }
-  BaseMsg.ProcessId = getpid();
-  BaseMsg.ProcessName = get_process_name();
+  Executor.SendWork([=]() {
+    const int StringBufferSize = 100;
+    std::array<char, StringBufferSize> StringBuffer{};
+    const int res =
+        gethostname(static_cast<char *>(StringBuffer.data()), StringBufferSize);
+    if (0 == res) {
+      BaseMsg.Host = std::string(static_cast<char *>(StringBuffer.data()));
+    }
+    BaseMsg.ProcessId = getpid();
+    BaseMsg.ProcessName = get_process_name();
+  });
 }
 
-LoggingBase::~LoggingBase() {
-  std::lock_guard<std::mutex> guard(VectorMutex);
-  Handlers.clear();
-}
-
-void LoggingBase::log(const Severity Level, const std::string &Message) {
-  log(Level, Message, std::vector<std::pair<std::string, AdditionalField>>());
-}
-
-void LoggingBase::log(
-    const Severity Level, const std::string &Message,
-    const std::pair<std::string, AdditionalField> &ExtraField) {
-  log(Level, Message, std::vector<std::pair<std::string, AdditionalField>>{
-                          ExtraField,
-                      });
-}
-
-void LoggingBase::log(
-    const Severity Level, const std::string &Message,
-    const std::vector<std::pair<std::string, AdditionalField>> &ExtraFields) {
-  if (int(Level) > int(MinSeverity)) {
-    return;
-  }
-  BaseMsgMutex.lock();
-  LogMessage cMsg(BaseMsg);
-  BaseMsgMutex.unlock();
-  for (auto &fld : ExtraFields) {
-    cMsg.addField(fld.first, fld.second);
-  }
-  cMsg.Timestamp = std::chrono::system_clock::now();
-  cMsg.MessageString = Message;
-  cMsg.SeverityLevel = Level;
-  std::ostringstream ss;
-  ss << std::this_thread::get_id();
-  cMsg.ThreadId = ss.str();
-  std::lock_guard<std::mutex> guard(VectorMutex);
-  for (auto &ptr : Handlers) {
-    ptr->addMessage(cMsg);
-  }
-}
+LoggingBase::~LoggingBase() { LoggingBase::removeAllHandlers(); }
 
 void LoggingBase::addLogHandler(const LogHandler_P &Handler) {
-  std::lock_guard<std::mutex> guard(VectorMutex);
-  Handlers.push_back(Handler);
+  Executor.SendWork([=]() { Handlers.push_back(Handler); });
 }
 
 void LoggingBase::removeAllHandlers() {
-  std::lock_guard<std::mutex> guard(VectorMutex);
-  Handlers.clear();
+  Executor.SendWork([=]() { Handlers.clear(); });
 }
 
-std::vector<LogHandler_P> LoggingBase::getHandlers() {
-  std::lock_guard<std::mutex> guard(VectorMutex);
-  return Handlers;
-}
+std::vector<LogHandler_P> LoggingBase::getHandlers() { return Handlers; }
 
 void LoggingBase::setMinSeverity(Severity Level) {
-  std::lock_guard<std::mutex> guard(VectorMutex);
-  MinSeverity = Level;
+  auto WorkDone = std::make_shared<std::promise<void>>();
+  auto WorkDoneFuture = WorkDone->get_future();
+  Executor.SendWork(
+      [ =, WorkDone{std::move(WorkDone)} ]() { MinSeverity = Level; });
+  WorkDoneFuture.wait();
 }
 
 } // namespace Log

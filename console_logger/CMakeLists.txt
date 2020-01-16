@@ -1,4 +1,4 @@
-add_executable(console_logger ConsoleLogger.cpp getopt.h)
+add_executable(console_logger EXCLUDE_FROM_ALL ConsoleLogger.cpp getopt.h)
 
 target_link_libraries(console_logger GraylogLogger::graylog_logger_static)
 

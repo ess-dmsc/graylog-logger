@@ -7,6 +7,7 @@
 //
 
 #include "LogTestServer.hpp"
+#include "Semaphore.hpp"
 #include "graylog_logger/GraylogInterface.hpp"
 #include <ciso646>
 #include <cmath>
@@ -33,12 +34,13 @@ public:
       : GraylogInterface(host, port, queueLength){};
   MOCK_METHOD1(sendMessage, void(std::string));
   using GraylogInterface::logMsgToJSON;
+  void sendMessageBase(std::string Msg) { GraylogInterface::sendMessage(Msg); }
 };
 
 class GraylogConnectionStandIn : public GraylogConnection {
 public:
   GraylogConnectionStandIn(std::string host, int port, int queueLength = 100)
-      : GraylogConnection(host, port){};
+      : GraylogConnection(host, port, queueLength){};
   ~GraylogConnectionStandIn(){};
 };
 
@@ -266,7 +268,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldString) {
   std::string key = "yet_another_key";
   std::string value = "yet another value";
   testMsg.addField(key, value);
-  std::string jsonStr = con.logMsgToJSON(testMsg);
+  std::string jsonStr = GraylogInterfaceStandIn::logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   std::string tempStr;
   EXPECT_NO_THROW(tempStr = JsonObject["_" + key]);
@@ -279,7 +281,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldInt) {
   std::string key = "yet_another_key";
   std::int64_t value = -12431454;
   testMsg.addField(key, value);
-  std::string jsonStr = con.logMsgToJSON(testMsg);
+  std::string jsonStr = GraylogInterfaceStandIn::logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   std::int64_t tempVal = 0;
   EXPECT_NO_THROW(tempVal = JsonObject["_" + key]);
@@ -292,7 +294,7 @@ TEST(GraylogInterfaceCom, TestAdditionalFieldDouble) {
   std::string key = "yet_another_key";
   double value = 3.1415926535897932384626433832795028841;
   testMsg.addField(key, value);
-  std::string jsonStr = con.logMsgToJSON(testMsg);
+  std::string jsonStr = GraylogInterfaceStandIn::logMsgToJSON(testMsg);
   auto JsonObject = nlohmann::json::parse(jsonStr);
   double tempVal;
   EXPECT_NO_THROW(tempVal = JsonObject["_" + key]);
@@ -307,13 +309,13 @@ TEST(GraylogInterfaceCom, TestQueueSize) {
 }
 
 TEST(GraylogInterfaceCom, TestQueueSizeLimit) {
-  int MaxNrOfMessages = 100;
+  int MaxNrOfMessages = 64;
   GraylogInterface con("localhost", testPort, MaxNrOfMessages);
   LogMessage testMsg = GetPopulatedLogMsg();
-  for (int i = 0; i < MaxNrOfMessages + 10; ++i) {
+  for (int i = 0; i < MaxNrOfMessages * 4; ++i) {
     con.addMessage(testMsg);
   }
-  EXPECT_EQ(con.queueSize(), MaxNrOfMessages);
+  EXPECT_NEAR(con.queueSize(), MaxNrOfMessages, 20);
 }
 using std::chrono_literals::operator""ms;
 
@@ -328,7 +330,36 @@ TEST_F(GraylogConnectionCom, DISABLED_MultipleCloseConnectionTest) {
       logServer->CloseAllConnections();
       std::this_thread::sleep_for(20ms);
     }
-    std::this_thread::sleep_for(1000ms);
+    con.flush(10000ms);
     EXPECT_EQ(logServer->GetNrOfMessages(), NrOfMessages);
   }
+}
+
+TEST(GraylogInterface, OnInitialisationQueueEmpty) {
+  GraylogInterfaceStandIn cInter("localhost", testPort, 10);
+  ASSERT_EQ(cInter.queueSize(), 0);
+  ASSERT_TRUE(cInter.emptyQueue());
+}
+
+TEST(GraylogInterface, QueueSizeOneIsNotEmpty) {
+  GraylogInterfaceStandIn cInter("localhost", testPort, 10);
+  cInter.sendMessageBase("tst_msg");
+  cInter.sendMessageBase("tst_msg");
+  EXPECT_GE(cInter.queueSize(), 1);
+  EXPECT_LE(cInter.queueSize(), 2);
+  EXPECT_FALSE(cInter.emptyQueue());
+}
+
+using namespace std::chrono_literals;
+
+TEST(GraylogInterface, FlushSuccess) {
+  auto LogServer = std::make_unique<LogTestServer>(testPort);
+  GraylogInterfaceStandIn cInter("localhost", testPort, 10);
+  EXPECT_TRUE(cInter.flush(50ms));
+}
+
+TEST(GraylogInterface, FlushFail) {
+  GraylogInterfaceStandIn cInter("localhost", testPort, 10);
+  cInter.sendMessageBase("tst_msg");
+  EXPECT_FALSE(cInter.flush(50ms));
 }

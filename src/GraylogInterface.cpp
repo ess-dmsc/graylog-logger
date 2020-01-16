@@ -16,39 +16,35 @@
 
 namespace Log {
 
-GraylogConnection::GraylogConnection(std::string Host, int Port)
-    : Pimpl(std::make_unique<GraylogConnection::Impl>(std::move(Host), Port)) {}
+GraylogConnection::GraylogConnection(std::string Host, int Port,
+                                     size_t MaxQueueSize)
+    : Pimpl(std::make_unique<GraylogConnection::Impl>(std::move(Host), Port,
+                                                      MaxQueueSize)) {}
 
 void GraylogConnection::sendMessage(std::string Msg) {
-  Pimpl->sendMessage(Msg);
+  Pimpl->sendMessage(std::move(Msg));
+}
+
+bool GraylogConnection::flush(std::chrono::system_clock::duration TimeOut) {
+  return Pimpl->flush(TimeOut);
 }
 
 Status GraylogConnection::getConnectionStatus() const {
   return Pimpl->getConnectionStatus();
 }
 
-bool GraylogConnection::messageQueueEmpty() {
-  return Pimpl->messageQueueEmpty();
-}
+bool GraylogConnection::messageQueueEmpty() { return Pimpl->queueSize() == 0; }
 
-size_t GraylogConnection::messageQueueSize() {
-  return Pimpl->messageQueueSize();
-}
+size_t GraylogConnection::messageQueueSize() { return Pimpl->queueSize(); }
 
-GraylogConnection::~GraylogConnection() {}
+GraylogConnection::~GraylogConnection() = default;
 
 GraylogInterface::GraylogInterface(const std::string &Host, const int Port,
                                    const size_t MaxQueueLength)
-    : BaseLogHandler(MaxQueueLength), GraylogConnection(Host, Port) {}
-
-bool GraylogInterface::emptyQueue() { return messageQueueEmpty(); }
-
-size_t GraylogInterface::queueSize() { return messageQueueSize(); }
+    : GraylogConnection(Host, Port, MaxQueueLength) {}
 
 void GraylogInterface::addMessage(const LogMessage &Message) {
-  if (messageQueueSize() < BaseLogHandler::QueueLength) {
-    sendMessage(logMsgToJSON(Message));
-  }
+  sendMessage(logMsgToJSON(Message));
 }
 
 std::string GraylogInterface::logMsgToJSON(const LogMessage &Message) {
@@ -79,5 +75,13 @@ std::string GraylogInterface::logMsgToJSON(const LogMessage &Message) {
   }
   return JsonObject.dump();
 }
+
+bool GraylogInterface::flush(std::chrono::system_clock::duration TimeOut) {
+  return GraylogConnection::flush(TimeOut);
+}
+
+bool GraylogInterface::emptyQueue() { return messageQueueEmpty(); }
+
+size_t GraylogInterface::queueSize() { return messageQueueSize(); }
 
 } // namespace Log

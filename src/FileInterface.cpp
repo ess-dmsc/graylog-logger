@@ -16,7 +16,7 @@ namespace Log {
 
 FileInterface::FileInterface(std::string const &Name,
                              const size_t MaxQueueLength)
-    : BaseLogHandler(MaxQueueLength), FileStream(Name, std::ios::app) {
+    : BaseLogHandler(), FileStream(Name, std::ios::app) {
   if (FileStream.is_open() and FileStream.good()) {
     Log::Msg(Severity::Info, "Started logging to log file: \"" + Name + "\"");
   } else {
@@ -32,5 +32,19 @@ void FileInterface::addMessage(const LogMessage &Message) {
     }
   });
 }
+
+bool FileInterface::flush(std::chrono::system_clock::duration TimeOut) {
+  auto WorkDone = std::make_shared<std::promise<void>>();
+  auto WorkDoneFuture = WorkDone->get_future();
+  Executor.SendWork([ =, WorkDone{std::move(WorkDone)} ]() {
+    FileStream.flush();
+    WorkDone->set_value();
+  });
+  return std::future_status::ready == WorkDoneFuture.wait_for(TimeOut);
+}
+
+bool FileInterface::emptyQueue() { return Executor.size_approx() == 0; }
+
+size_t FileInterface::queueSize() { return Executor.size_approx(); }
 
 } // namespace Log

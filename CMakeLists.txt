@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 project("graylog-logger"
-  VERSION 1.2.0
+  VERSION 2.0.0
   DESCRIPTION "A simple logging library."  
   LANGUAGES CXX
 )
@@ -27,8 +27,10 @@ elseif(${CONAN} MATCHES "MANUAL")
     else()
         message(FATAL_ERROR "CONAN set to MANUAL but no file named conanbuildinfo.cmake found in build directory")
     endif()
+elseif(${CONAN} MATCHES "DISABLE")
+    message(STATUS "***Deactivating Conan support.***")
 else()
-    message(FATAL_ERROR "Unrecognised option for CONAN, use AUTO or MANUAL")
+    message(FATAL_ERROR "Unrecognised option for CONAN, use AUTO, MANUAL or DISABLE")
 endif()
 
 if (NOT WIN32)
@@ -39,12 +41,35 @@ else()
 endif(NOT WIN32)
 
 find_package(ASIO REQUIRED MODULE)
+find_package(nlohmann_json REQUIRED)
+find_package(Threads REQUIRED)
+find_package(ConcurrentQueue REQUIRED)
+
+find_package(GTest)
+find_package(GMock)
+find_package(fmt 6)
+find_package(GoogleBenchmark)
 
 add_subdirectory(src)
+add_subdirectory(console_logger)
 
-option(BUILD_EVERYTHING "Build UnitTests & Console Logger" ON)
+if(fmt_FOUND)
+    set(WITH_FMT 1)
+endif()
 
-IF(BUILD_EVERYTHING)
+configure_file(include/graylog_logger/LibConfig.hpp.in include/graylog_logger/LibConfig.hpp)
+
+if(GTest_FOUND AND GMock_FOUND)
+  message(STATUS "GTest and GMock found, adding unit tests.")
   add_subdirectory(unit_tests)
-  add_subdirectory(console_logger)
-ENDIF()
+else()
+  message(STATUS "Unable to find GTest and/or GMock. Skipping unit tests.")
+endif()
+
+if(GoogleBenchmark_FOUND AND fmt_FOUND)
+    message(STATUS "google-benchmark and fmtlib found, adding performance tests.")
+    add_subdirectory(performance_test)
+else()
+    message(STATUS "Unable to find google-benchmark and/or fmtlib. Skipping performance tests.")
+endif()
+

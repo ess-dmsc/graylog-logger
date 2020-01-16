@@ -23,14 +23,16 @@ set(UnitTest_SRC
 set(UnitTest_INC
   BaseLogHandlerStandIn.hpp
   LogTestServer.hpp
-)
+    Semaphore.hpp)
 
-add_executable(unit_tests ${UnitTest_SRC} ${UnitTest_INC})
+add_executable(unit_tests EXCLUDE_FROM_ALL ${UnitTest_SRC} ${UnitTest_INC})
 
 target_link_libraries(unit_tests
-        GraylogLogger::graylog_logger_static
-        CONAN_PKG::jsonformoderncpp
-        CONAN_PKG::gtest
-        ASIO::ASIO)
+    GraylogLogger::graylog_logger_static
+    nlohmann_json::nlohmann_json
+    GTest::GTest
+    ${GMOCK_BOTH_LIBRARIES}
+    ASIO::ASIO
+    )
         
 add_test(TestAll unit_tests)

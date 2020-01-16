@@ -13,10 +13,6 @@
 #include <ciso646>
 #include <utility>
 
-namespace {
-#define UNUSED_ARG(x) (void)x;
-} // namespace
-
 namespace Log {
 
 using std::chrono_literals::operator""ms;
@@ -55,10 +51,11 @@ void GraylogConnection::Impl::tryConnect(QueryResult AllEndpoints) {
   setState(Status::CONNECT);
 }
 
-GraylogConnection::Impl::Impl(std::string Host, int Port)
+GraylogConnection::Impl::Impl(std::string Host, int Port, size_t MaxQueueLength)
     : HostAddress(std::move(Host)), HostPort(std::to_string(Port)), Service(),
       Work(std::make_unique<asio::io_service::work>(Service)), Socket(Service),
-      Resolver(Service), ReconnectTimeout(Service, 10s) {
+      Resolver(Service), ReconnectTimeout(Service, 10s),
+      LogMessages(MaxQueueLength) {
   doAddressQuery();
   AsioThread = std::thread(&GraylogConnection::Impl::threadFunction, this);
 }
@@ -95,7 +92,7 @@ void GraylogConnection::Impl::connectHandler(const asio::error_code &Error,
 }
 
 void GraylogConnection::Impl::reConnect(ReconnectDelay Delay) {
-  auto HandlerGlue = [this](auto &Err) { this->doAddressQuery(); };
+  auto HandlerGlue = [this](auto & /* Err */) { this->doAddressQuery(); };
   switch (Delay) {
   case ReconnectDelay::SHORT:
     ReconnectTimeout.expires_after(100ms);
@@ -110,8 +107,7 @@ void GraylogConnection::Impl::reConnect(ReconnectDelay Delay) {
 }
 
 void GraylogConnection::Impl::receiveHandler(const asio::error_code &Error,
-                                             std::size_t BytesReceived) {
-  UNUSED_ARG(BytesReceived);
+                                             std::size_t /* BytesReceived */) {
   if (Error) {
     Socket.close();
     reConnect(ReconnectDelay::SHORT);
@@ -134,18 +130,26 @@ void GraylogConnection::Impl::trySendMessage() {
     asio::async_write(Socket, asio::buffer(MessageBuffer), HandlerGlue);
     return;
   }
-  std::string NewMessage;
-  bool PopResult = LogMessages.try_pop(NewMessage);
-  if (PopResult) {
+  std::function<std::string(void)> NewMessageFunc;
+  using namespace std::chrono_literals;
+  if (LogMessages.wait_dequeue_timed(NewMessageFunc, 10ms)) {
+    auto NewMessage = NewMessageFunc();
+    if (NewMessage.empty()) {
+      if (!MessageBuffer.empty()) {
+        asio::async_write(Socket, asio::buffer(MessageBuffer), HandlerGlue);
+      } else {
+        Service.post([this]() { this->trySendMessage(); });
+      }
+      return;
+    }
     std::copy(NewMessage.begin(), NewMessage.end(),
               std::back_inserter(MessageBuffer));
     MessageBuffer.push_back('\0');
     asio::async_write(Socket, asio::buffer(MessageBuffer), HandlerGlue);
   } else if (!MessageBuffer.empty()) {
     asio::async_write(Socket, asio::buffer(MessageBuffer), HandlerGlue);
-    return;
   } else {
-    Service.post([this]() { this->waitForMessage(); });
+    Service.post([this]() { this->trySendMessage(); });
   }
 }
 
@@ -164,19 +168,6 @@ void GraylogConnection::Impl::sentMessageHandler(const asio::error_code &Error,
     return;
   }
   trySendMessage();
-}
-
-void GraylogConnection::Impl::waitForMessage() {
-  if (not Socket.is_open()) {
-    return;
-  }
-  const int WaitTimeMS = 20;
-  std::string ThrowAwayMessage;
-  if (LogMessages.time_out_peek(ThrowAwayMessage, WaitTimeMS)) {
-    trySendMessage();
-    return;
-  }
-  Service.post([this]() { this->waitForMessage(); });
 }
 
 void GraylogConnection::Impl::doAddressQuery() {
@@ -208,6 +199,17 @@ void GraylogConnection::Impl::threadFunction() { Service.run(); }
 void GraylogConnection::Impl::setState(
     GraylogConnection::Impl::Status NewState) {
   ConnectionState = NewState;
+}
+
+bool GraylogConnection::Impl::flush(
+    std::chrono::system_clock::duration TimeOut) {
+  auto WorkDone = std::make_shared<std::promise<void>>();
+  auto WorkDoneFuture = WorkDone->get_future();
+  LogMessages.try_enqueue([WorkDone = std::move(WorkDone)]()->std::string {
+    WorkDone->set_value();
+    return {};
+  });
+  return std::future_status::ready == WorkDoneFuture.wait_for(TimeOut);
 }
 
 } // namespace Log
