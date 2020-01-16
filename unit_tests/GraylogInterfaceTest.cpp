@@ -6,9 +6,9 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
+#include "graylog_logger/GraylogInterface.hpp"
 #include "LogTestServer.hpp"
 #include "Semaphore.hpp"
-#include "graylog_logger/GraylogInterface.hpp"
 #include <ciso646>
 #include <cmath>
 #include <gmock/gmock.h>

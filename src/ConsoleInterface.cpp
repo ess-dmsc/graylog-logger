@@ -33,7 +33,7 @@ void ConsoleInterface::addMessage(const LogMessage &Message) {
 bool ConsoleInterface::flush(std::chrono::system_clock::duration TimeOut) {
   auto WorkDone = std::make_shared<std::promise<void>>();
   auto WorkDoneFuture = WorkDone->get_future();
-  Executor.SendWork([ =, WorkDone{std::move(WorkDone)} ]() {
+  Executor.SendWork([=, WorkDone{std::move(WorkDone)}]() {
     std::cout.flush();
     WorkDone->set_value();
   });

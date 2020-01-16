@@ -6,10 +6,10 @@
 //  Copyright © 2016 European Spallation Source. All rights reserved.
 //
 
+#include "graylog_logger/LoggingBase.hpp"
 #include "BaseLogHandlerStandIn.hpp"
 #include "graylog_logger/LibConfig.hpp"
 #include "graylog_logger/LogUtil.hpp"
-#include "graylog_logger/LoggingBase.hpp"
 #include <asio.hpp>
 #include <chrono>
 #include <ciso646>
