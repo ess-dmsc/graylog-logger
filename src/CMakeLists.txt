@@ -108,6 +108,8 @@ configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/GraylogLoggerConfig.cm
 )
 
 install(FILES
+   ${CMAKE_CURRENT_LIST_DIR}/../cmake/FindASIO.cmake
+   ${CMAKE_CURRENT_LIST_DIR}/../cmake/FindConcurrentQueue.cmake
    ${CMAKE_CURRENT_BINARY_DIR}/GraylogLoggerConfig.cmake
    ${CMAKE_CURRENT_BINARY_DIR}/GraylogLoggerConfigVersion.cmake
    DESTINATION ${INSTALL_CONFIGDIR}
