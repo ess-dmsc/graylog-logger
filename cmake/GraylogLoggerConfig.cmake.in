@@ -8,7 +8,9 @@ find_dependency(ASIO REQUIRED MODULE)
 find_dependency(nlohmann_json REQUIRED)
 find_dependency(ConcurrentQueue REQUIRED)
 
-if(fmt_FOUND)
+set(WITH_FMT @fmt_FOUND@)
+
+if(WITH_FMT)
     find_package(fmt 6 REQUIRED)
 endif()
 
