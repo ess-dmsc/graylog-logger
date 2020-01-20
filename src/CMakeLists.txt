@@ -84,7 +84,7 @@ install(TARGETS graylog_logger graylog_logger_static
 )
 
 install(DIRECTORY ../include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(FILES ${CMAKE_BINARY_DIR}/include/graylog_logger/LibConfig.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/graylog_logger/LibConfig.hpp)
+install(FILES ${CMAKE_BINARY_DIR}/include/graylog_logger/LibConfig.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/graylog_logger/)
 
 install(EXPORT graylog_logger-targets
   FILE
