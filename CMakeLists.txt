@@ -9,6 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
+
 # Conan - bring in dependencies with conan
 set(CONAN_PROFILE "default" CACHE STRING "Name of conan profile to use, uses default by default")
 set(CONAN "AUTO" CACHE STRING "conan options AUTO (conan must be in path), MANUAL (expects conanbuildinfo.cmake in build directory) or DISABLE")
