@@ -4,9 +4,7 @@ include(CMakeFindDependencyMacro)
 list(APPEND CMAKE_MODULE_PATH ${GraylogLogger_CMAKE_DIR})
 
 find_dependency(Threads REQUIRED)
-find_dependency(ASIO REQUIRED MODULE)
-find_dependency(nlohmann_json REQUIRED)
-find_dependency(ConcurrentQueue REQUIRED)
+find_dependency(concurrentqueue REQUIRED)
 
 set(WITH_FMT @fmt_FOUND@)
 

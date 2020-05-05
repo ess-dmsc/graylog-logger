@@ -1,9 +1,15 @@
 set(common_libs PUBLIC
     Threads::Threads
-    ConcurrentQueue::ConcurrentQueue
-    ASIO::ASIO
-    nlohmann_json::nlohmann_json
-    )
+    concurrentqueue::concurrentqueue
+    asio::asio
+)
+if (nlohmann_json_FOUND)
+    list(APPEND common_libs nlohmann_json::nlohmann_json)
+endif()
+
+if (jsonformoderncpp_FOUND)
+    list(APPEND common_libs jsonformoderncpp::jsonformoderncpp)
+endif()
 
 if(fmt_FOUND)
     message(STATUS "Found fmtlib, adding support for threaded formatting.")
@@ -39,8 +45,6 @@ set(Graylog_INC
     ../include/graylog_logger/MinimalApply.hpp
     ${CMAKE_BINARY_DIR}/include/graylog_logger/LibConfig.hpp
 )
-
-get_target_property(JSON_INCLUDE_DIR nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
 
 add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(GraylogLogger::graylog_logger ALIAS graylog_logger)
@@ -108,8 +112,7 @@ configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/GraylogLoggerConfig.cm
 )
 
 install(FILES
-   ${CMAKE_CURRENT_LIST_DIR}/../cmake/FindASIO.cmake
-   ${CMAKE_CURRENT_LIST_DIR}/../cmake/FindConcurrentQueue.cmake
+   ${CMAKE_CURRENT_LIST_DIR}/../cmake/Findconcurrentqueue.cmake
    ${CMAKE_CURRENT_BINARY_DIR}/GraylogLoggerConfig.cmake
    ${CMAKE_CURRENT_BINARY_DIR}/GraylogLoggerConfigVersion.cmake
    DESTINATION ${INSTALL_CONFIGDIR}

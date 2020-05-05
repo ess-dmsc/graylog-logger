@@ -26,13 +26,23 @@ set(UnitTest_INC
     Semaphore.hpp)
 
 add_executable(unit_tests EXCLUDE_FROM_ALL ${UnitTest_SRC} ${UnitTest_INC})
-
-target_link_libraries(unit_tests
+set(unit_test_libs PUBLIC 
     GraylogLogger::graylog_logger_static
-    nlohmann_json::nlohmann_json
     GTest::GTest
     ${GMOCK_BOTH_LIBRARIES}
-    ASIO::ASIO
+    asio::asio
+)
+
+if (nlohmann_json_FOUND)
+    list(APPEND unit_test_libs nlohmann_json::nlohmann_json)
+endif()
+
+if (jsonformoderncpp_FOUND)
+    list(APPEND unit_test_libs jsonformoderncpp::jsonformoderncpp)
+endif()
+
+target_link_libraries(unit_tests
+    ${unit_test_libs}
     )
         
 add_test(TestAll unit_tests)
