@@ -47,7 +47,7 @@ find_package(ConcurrentQueue REQUIRED)
 
 find_package(GTest)
 find_package(GMock)
-find_package(fmt 6)
+find_package(fmt)
 find_package(GoogleBenchmark)
 
 add_subdirectory(src)
