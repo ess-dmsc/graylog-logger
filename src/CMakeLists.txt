@@ -1,6 +1,5 @@
-set(common_libs PUBLIC
+set(common_libs
     Threads::Threads
-    concurrentqueue::concurrentqueue
     asio::asio
 )
 if (nlohmann_json_FOUND)
@@ -48,7 +47,8 @@ set(Graylog_INC
 
 add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(GraylogLogger::graylog_logger ALIAS graylog_logger)
-target_link_libraries(graylog_logger ${common_libs})
+target_link_libraries(graylog_logger PRIVATE ${common_libs})
+target_link_libraries(graylog_logger PUBLIC concurrentqueue::concurrentqueue)
 target_include_directories(graylog_logger
   PUBLIC
     $<INSTALL_INTERFACE:include>
@@ -60,7 +60,8 @@ target_include_directories(graylog_logger
 
 add_library(graylog_logger_static STATIC ${Graylog_SRC} ${Graylog_INC} ${Graylog_private_INC})
 add_library(GraylogLogger::graylog_logger_static ALIAS graylog_logger_static)
-target_link_libraries(graylog_logger_static ${common_libs})
+target_link_libraries(graylog_logger_static PRIVATE ${common_libs})
+target_link_libraries(graylog_logger_static PUBLIC concurrentqueue::concurrentqueue)
 target_include_directories(graylog_logger_static
   PUBLIC
     $<INSTALL_INTERFACE:include>
