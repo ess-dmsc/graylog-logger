@@ -4,12 +4,12 @@ include(CMakeFindDependencyMacro)
 list(APPEND CMAKE_MODULE_PATH ${GraylogLogger_CMAKE_DIR})
 
 find_dependency(Threads REQUIRED)
-find_package(concurrentqueue REQUIRED)
+find_dependency(concurrentqueue REQUIRED)
 
 set(WITH_FMT @fmt_FOUND@)
 
 if(WITH_FMT)
-    find_package(fmt REQUIRED)
+    find_dependency(fmt REQUIRED)
 endif()
 
 if(NOT TARGET GraylogLogger::graylog_logger)
