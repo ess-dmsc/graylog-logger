@@ -1,18 +1,22 @@
-set(common_libs
+set(common_private_libs
     Threads::Threads
     asio::asio
 )
 if (nlohmann_json_FOUND)
-    list(APPEND common_libs nlohmann_json::nlohmann_json)
+    list(APPEND common_private_libs nlohmann_json::nlohmann_json)
 endif()
 
 if (jsonformoderncpp_FOUND)
-    list(APPEND common_libs jsonformoderncpp::jsonformoderncpp)
+    list(APPEND common_private_libs jsonformoderncpp::jsonformoderncpp)
 endif()
+
+set(common_public_libs
+    concurrentqueue::concurrentqueue
+)
 
 if(fmt_FOUND)
     message(STATUS "Found fmtlib, adding support for threaded formatting.")
-    list(APPEND common_libs fmt::fmt)
+    list(APPEND common_public_libs fmt::fmt)
 else()
     message(STATUS "Unable to find fmtlib. There will be no support for threaded formatting.")
 endif()
@@ -47,8 +51,8 @@ set(Graylog_INC
 
 add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(GraylogLogger::graylog_logger ALIAS graylog_logger)
-target_link_libraries(graylog_logger PRIVATE ${common_libs})
-target_link_libraries(graylog_logger PUBLIC concurrentqueue::concurrentqueue)
+target_link_libraries(graylog_logger PRIVATE ${common_private_libs})
+target_link_libraries(graylog_logger PUBLIC ${common_public_libs})
 target_include_directories(graylog_logger
   PUBLIC
     $<INSTALL_INTERFACE:include>
@@ -60,8 +64,8 @@ target_include_directories(graylog_logger
 
 add_library(graylog_logger_static STATIC ${Graylog_SRC} ${Graylog_INC} ${Graylog_private_INC})
 add_library(GraylogLogger::graylog_logger_static ALIAS graylog_logger_static)
-target_link_libraries(graylog_logger_static PRIVATE ${common_libs})
-target_link_libraries(graylog_logger_static PUBLIC concurrentqueue::concurrentqueue)
+target_link_libraries(graylog_logger_static PRIVATE ${common_private_libs})
+target_link_libraries(graylog_logger_static PUBLIC ${common_public_libs})
 target_include_directories(graylog_logger_static
   PUBLIC
     $<INSTALL_INTERFACE:include>
