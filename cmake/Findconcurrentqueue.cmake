@@ -16,9 +16,9 @@ if(ConcurrentQueue_FOUND)
     set(ConcurrentQueue_INCLUDE_DIRS ${ConcurrentQueue_INCLUDE_DIR})
 endif()
 
-if(ConcurrentQueue_FOUND AND NOT TARGET ConcurrentQueue::ConcurrentQueue)
-    add_library(ConcurrentQueue::ConcurrentQueue INTERFACE IMPORTED)
-    set_target_properties(ConcurrentQueue::ConcurrentQueue PROPERTIES
+if(ConcurrentQueue_FOUND AND NOT TARGET concurrentqueue::concurrentqueue)
+    add_library(concurrentqueue::concurrentqueue INTERFACE IMPORTED)
+    set_target_properties(concurrentqueue::concurrentqueue PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${ConcurrentQueue_INCLUDE_DIR}"
             )
 endif()

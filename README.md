@@ -65,6 +65,9 @@ cmake ..
 make install
 ```
 
+#### Making a conan package
+If you are creating a conan package of this library you should disable CMake from running Conan by providing the following argument to CMake: `-DCONAN=DISABLE`. Furthermore, you must also use the `cmake_find_package` generator for CMake to be able to find the dependencies.
+
 #### System installed dependencies
 If using conan is not an option, it is possible to build the library using system installed dependencies. This requires a bit more work though and might not be as reliable.
 
