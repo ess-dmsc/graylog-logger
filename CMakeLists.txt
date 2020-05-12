@@ -7,7 +7,7 @@ project("graylog-logger"
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 # Conan - bring in dependencies with conan
 set(CONAN_PROFILE "default" CACHE STRING "Name of conan profile to use, uses default by default")
@@ -40,14 +40,26 @@ else()
     add_definitions(-D_WIN32_WINNT=0x0A00)
 endif(NOT WIN32)
 
-find_package(ASIO REQUIRED MODULE)
-find_package(nlohmann_json REQUIRED)
+find_package(asio REQUIRED)
+find_package(nlohmann_json QUIET)
+if (NOT nlohmann_json_FOUND)
+	message(STATUS "Unable to find system installed version of jsonformoderncpp. Attempting to find Conan provided version.")
+	find_package(jsonformoderncpp REQUIRED)
+endif()
+
 find_package(Threads REQUIRED)
 find_package(ConcurrentQueue REQUIRED)
 
 find_package(GTest)
 find_package(GMock)
-find_package(fmt 6)
+find_package(fmt CONFIG)
+if (NOT fmt_FOUND)
+	message(STATUS "Unable to find fmt using config-module. Attempting again using built-in find-module.")
+	find_package(fmt MODULE)
+	if (NOT fmt_FOUND)
+		message(STATUS "Unable to find fmt using built-in find-module.")
+	endif()
+endif()
 find_package(GoogleBenchmark)
 
 add_subdirectory(src)

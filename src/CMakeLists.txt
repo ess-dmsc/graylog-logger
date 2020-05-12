@@ -1,13 +1,22 @@
-set(common_libs PUBLIC
+set(common_private_libs
     Threads::Threads
-    ConcurrentQueue::ConcurrentQueue
-    ASIO::ASIO
-    nlohmann_json::nlohmann_json
-    )
+    asio::asio
+)
+if (nlohmann_json_FOUND)
+    list(APPEND common_private_libs nlohmann_json::nlohmann_json)
+endif()
+
+if (jsonformoderncpp_FOUND)
+    list(APPEND common_private_libs jsonformoderncpp::jsonformoderncpp)
+endif()
+
+set(common_public_libs
+    concurrentqueue::concurrentqueue
+)
 
 if(fmt_FOUND)
     message(STATUS "Found fmtlib, adding support for threaded formatting.")
-    list(APPEND common_libs fmt::fmt)
+    list(APPEND common_public_libs fmt::fmt)
 else()
     message(STATUS "Unable to find fmtlib. There will be no support for threaded formatting.")
 endif()
@@ -40,11 +49,10 @@ set(Graylog_INC
     ${CMAKE_BINARY_DIR}/include/graylog_logger/LibConfig.hpp
 )
 
-get_target_property(JSON_INCLUDE_DIR nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
-
 add_library(graylog_logger SHARED ${Graylog_SRC} ${Graylog_INC})
 add_library(GraylogLogger::graylog_logger ALIAS graylog_logger)
-target_link_libraries(graylog_logger ${common_libs})
+target_link_libraries(graylog_logger PRIVATE ${common_private_libs})
+target_link_libraries(graylog_logger PUBLIC ${common_public_libs})
 target_include_directories(graylog_logger
   PUBLIC
     $<INSTALL_INTERFACE:include>
@@ -56,7 +64,8 @@ target_include_directories(graylog_logger
 
 add_library(graylog_logger_static STATIC ${Graylog_SRC} ${Graylog_INC} ${Graylog_private_INC})
 add_library(GraylogLogger::graylog_logger_static ALIAS graylog_logger_static)
-target_link_libraries(graylog_logger_static ${common_libs})
+target_link_libraries(graylog_logger_static PRIVATE ${common_private_libs})
+target_link_libraries(graylog_logger_static PUBLIC ${common_public_libs})
 target_include_directories(graylog_logger_static
   PUBLIC
     $<INSTALL_INTERFACE:include>
@@ -108,8 +117,7 @@ configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/GraylogLoggerConfig.cm
 )
 
 install(FILES
-   ${CMAKE_CURRENT_LIST_DIR}/../cmake/FindASIO.cmake
-   ${CMAKE_CURRENT_LIST_DIR}/../cmake/FindConcurrentQueue.cmake
+   ${CMAKE_CURRENT_LIST_DIR}/../cmake/Findconcurrentqueue.cmake
    ${CMAKE_CURRENT_BINARY_DIR}/GraylogLoggerConfig.cmake
    ${CMAKE_CURRENT_BINARY_DIR}/GraylogLoggerConfigVersion.cmake
    DESTINATION ${INSTALL_CONFIGDIR}
