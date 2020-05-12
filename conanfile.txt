@@ -12,3 +12,4 @@ gtest:shared=False
 [generators]
 cmake
 virtualrunenv
+cmake_find_package
