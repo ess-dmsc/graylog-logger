@@ -48,7 +48,7 @@ if (NOT nlohmann_json_FOUND)
 endif()
 
 find_package(Threads REQUIRED)
-find_package(ConcurrentQueue REQUIRED)
+find_package(concurrentqueue REQUIRED)
 
 find_package(GTest)
 find_package(GMock)
