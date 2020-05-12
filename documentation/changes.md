@@ -1,5 +1,13 @@
 ## Changes
 
+### Version 2.0.2
+* Made important CMkae changes required for properly making Conan packages. (ed-alertedh)
+* Made minor changes to the code to prevent issues when using a `using namespace std;` statement.
+* Minor documentation changes.
+
+### Version 2.0.1
+* Fixed faulty CMake code that did not properly import dependencies.
+
 ### Version 2.0.0
 * Added performance tests.
 * Replaced the home-brewed concurrent queue with a *much* faster open source one.
