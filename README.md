@@ -48,9 +48,8 @@ When using conan to provide the dependencies, all the optional and required depe
 First, add the required conan repositories:
 
 ```
-conan remote add community https://api.bintray.com/conan/conan-community/conan
-conan remote add ess-dmsc https://api.bintray.com/conan/ess-dmsc/conan
-conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+conan remote add ecdc https://artifactoryconan.esss.dk/artifactory/api/conan/ecdc
+conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan
 ```
 
 To checkout and build the library, run the following commands:
