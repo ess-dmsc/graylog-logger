@@ -1,10 +1,10 @@
 [requires]
-gtest/1.8.1@bincrafters/stable
-asio/1.13.0@bincrafters/stable
-jsonformoderncpp/3.6.1@vthiery/stable
-google-benchmark/1.4.1-dm3@ess-dmsc/testing
+gtest/1.10.0
+asio/1.13.0
+nlohmann_json/3.9.1
+benchmark/1.5.2
 concurrentqueue/8f7e861@ess-dmsc/stable
-fmt/6.0.0@bincrafters/stable
+fmt/6.2.0
 
 [options]
 gtest:shared=False
