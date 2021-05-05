@@ -15,7 +15,7 @@
 namespace Log {
 
 std::string ConsoleStringCreator(const LogMessage &Message) {
-    std::array<std::string, 8> sevToStr = {{"EMERGENCY", "ALERT", "CRITICAL",
+  std::array<std::string, 8> sevToStr = {{"EMERGENCY", "ALERT", "CRITICAL",
                                           "ERROR", "WARNING", "Notice", "Info",
                                           "Debug"}};
   return sevToStr.at(int(Message.SeverityLevel)) + std::string(": ") +
