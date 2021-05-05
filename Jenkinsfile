@@ -113,7 +113,7 @@ builders = pipeline_builder.createBuilders { container ->
             ]) {
               container.sh """
                 cd ${project}
-                git push https://${USERNAME}:${PASSWORD}@github.com/ess-dmsc/${pipeline_builder.project}.git HEAD:${CHANGE_BRANCH}
+                git push https://$USERNAME:$PASSWORD@github.com/ess-dmsc/${pipeline_builder.project}.git HEAD:${CHANGE_BRANCH}
               """
             } // withCredentials
           } catch (e) {
