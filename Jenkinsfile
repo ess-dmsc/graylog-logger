@@ -106,7 +106,7 @@ builders = pipeline_builder.createBuilders { container ->
           try {
             withCredentials([
               usernamePassword(
-              credentialsId: 'cow-bot-username',
+              credentialsId: 'cow-bot-username-with-token',
               usernameVariable: 'USERNAME',
               passwordVariable: 'PASSWORD'
               )
