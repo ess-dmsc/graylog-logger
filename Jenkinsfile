@@ -85,13 +85,12 @@ builders = pipeline_builder.createBuilders { container ->
           }
           try {
             // Do clang-format of C++ files
+            container.setupLocalGitUser(pipeline_builder.project)
             container.sh """
               clang-format -version
               cd ${project}
               find . \\\\( -name '*.cpp' -or -name '*.cxx' -or -name '*.h' -or -name '*.hpp' \\\\) \\
               -exec clang-format -i {} +
-              git config user.email 'dm-jenkins-integration@esss.se'
-              git config user.name 'cow-bot'
               git status -s
               git add -u
               git commit -m 'GO FORMAT YOURSELF (clang-format)'
