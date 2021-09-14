@@ -18,6 +18,21 @@
 #include "graylog_logger/Logger.hpp"
 namespace Log {
 
+template<typename T> struct convert {
+  using type = T;
+};
+
+template<> struct convert<char const*> {
+  using type = std::string;
+};
+
+template<> struct convert<char *> {
+  using type = std::string;
+};
+
+template<typename T>
+using charStarToString = typename convert<T>::type;
+
 /// \brief Submit a formatted message to the logging library.
 ///
 /// The following fields will be added to the message by the function:
@@ -36,7 +51,7 @@ namespace Log {
 /// \param[in] args The variables to be inserted into the format string.
 template <typename... Args>
 void FmtMsg(const Severity Level, const std::string Format, Args... args) {
-  Logger::Inst().fmt_log(Level, Format, args...);
+  Logger::Inst().fmt_log<charStarToString<Args>...>(Level, Format, args...);
 }
 } // namespace Log
 #endif

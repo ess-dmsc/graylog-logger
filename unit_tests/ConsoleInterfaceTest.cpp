@@ -8,6 +8,7 @@
 
 #include "graylog_logger/ConsoleInterface.hpp"
 #include "Semaphore.hpp"
+#include "graylog_logger/LoggingBase.hpp"
 #include <ciso646>
 #include <gtest/gtest.h>
 
@@ -52,8 +53,24 @@ TEST(ConsoleInterface, OnInitialisationQueueEmpty) {
 
 class ConsoleInterfaceStandIn : public ConsoleInterface {
 public:
+  void addMessage(LogMessage const &) override { MsgCtr++; }
+  int MsgCtr{0};
   using ConsoleInterface::Executor;
 };
+
+TEST(LoggingBase, AddConsoleHandlerTest) {
+  LoggingBase log;
+  auto standIn = std::make_shared<ConsoleInterfaceStandIn>();
+  ASSERT_EQ(standIn.use_count(), 1);
+  log.addLogHandler(standIn);
+  ASSERT_EQ(standIn.use_count(), 2);
+  ASSERT_EQ(standIn->MsgCtr, 0);
+  log.log({}, "Msg");
+  Semaphore Signal;
+  standIn->Executor.SendWork([&]() { Signal.notify(); });
+  Signal.wait();
+  ASSERT_EQ(standIn->MsgCtr, 1);
+}
 
 TEST(ConsoleInterface, QueueSizeOneIsNotEmpty) {
   ConsoleInterfaceStandIn cInter;

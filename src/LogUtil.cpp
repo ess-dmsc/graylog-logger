@@ -30,9 +30,9 @@ std::string BaseLogHandler::messageToString(const LogMessage &Message) {
   size_t BytesWritten =
       std::strftime(static_cast<char *>(TimeBuffer.data()), TimeBufferSize,
                     "%F %T", std::localtime(&cTime));
-  std::array<std::string, 8> sevToStr = {{"EMERGENCY", "ALERT", "CRITICAL",
+  std::array<std::string, 9> sevToStr = {{"EMERGENCY", "ALERT", "CRITICAL",
                                           "ERROR", "WARNING", "Notice", "Info",
-                                          "Debug"}};
+                                          "Debug", "Trace"}};
   return std::string(static_cast<char *>(TimeBuffer.data()), BytesWritten) +
          std::string(" (") + Message.Host + std::string(") ") +
          sevToStr.at(int(Message.SeverityLevel)) + std::string(": ") +

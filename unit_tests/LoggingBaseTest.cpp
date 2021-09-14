@@ -51,14 +51,14 @@ TEST(LoggingBase, ClearHandlersTest) {
 
 TEST(LoggingBase, LogSeveritiesTest) {
   LoggingBase log;
-  log.setMinSeverity(Severity::Debug);
+  log.setMinSeverity(Severity::Trace);
   auto standIn = std::make_shared<BaseLogHandlerStandIn>();
   log.addLogHandler(standIn);
   log.flush(10s);
   std::vector<Severity> testSeverities = {
       Severity::Alert,     Severity::Critical, Severity::Debug,
       Severity::Emergency, Severity::Error,    Severity::Informational,
-      Severity::Notice,    Severity::Warning};
+      Severity::Notice,    Severity::Warning,  Severity::Trace};
   for (auto sev : testSeverities) {
     log.log(sev, "");
     log.flush(10s);
@@ -68,13 +68,13 @@ TEST(LoggingBase, LogSeveritiesTest) {
 
 TEST(LoggingBase, LogIntSeveritiesTest) {
   LoggingBase log;
-  log.setMinSeverity(Severity::Debug);
+  log.setMinSeverity(Severity::Trace);
   auto standIn = std::make_shared<BaseLogHandlerStandIn>();
   log.addLogHandler(standIn);
   std::vector<Severity> testSeverities = {
       Severity::Alert,     Severity::Critical, Severity::Debug,
       Severity::Emergency, Severity::Error,    Severity::Informational,
-      Severity::Notice,    Severity::Warning};
+      Severity::Notice,    Severity::Warning,  Severity::Trace};
   for (auto sev : testSeverities) {
     log.log(Severity(int(sev)), "");
     log.flush(10s);
