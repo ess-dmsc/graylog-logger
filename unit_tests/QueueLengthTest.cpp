@@ -16,9 +16,9 @@
 
 using namespace Log;
 
-class ConsoleInterfaceStandIn : public ConsoleInterface {
+class ConsoleInterfaceStandIn2 : public ConsoleInterface {
 public:
-  ConsoleInterfaceStandIn() : ConsoleInterface(){};
+  ConsoleInterfaceStandIn2() : ConsoleInterface(){};
 };
 
 class FileInterfaceStandIn : public FileInterface {
@@ -56,7 +56,7 @@ TEST_F(QueueLength, ConsoleInterfaceTest) {
   int TestLimit{50};
   testing::internal::CaptureStdout();
   {
-    ConsoleInterfaceStandIn CLogger;
+    ConsoleInterfaceStandIn2 CLogger;
     CLogger.setMessageStringCreatorFunction([&MsgCounter](auto Msg) {
       MsgCounter++;
       return "";

@@ -1,5 +1,8 @@
 ## Changes
 
+### Version 2.1.1
+* Fixed threading issues.
+
 ### Version 2.1.0
 * Added the `Trace` severity level.
 * Added code for converting `char*` to `std::string` when using `Log::FmtMsg`. This is done in order to prevent use after stack return bugs.

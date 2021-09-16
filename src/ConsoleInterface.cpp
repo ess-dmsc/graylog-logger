@@ -25,9 +25,11 @@ std::string ConsoleStringCreator(const LogMessage &Message) {
 ConsoleInterface::ConsoleInterface() {
   BaseLogHandler::setMessageStringCreatorFunction(ConsoleStringCreator);
 }
+
+using std::string_literals::operator""s;
 void ConsoleInterface::addMessage(const LogMessage &Message) {
   Executor.SendWork(
-      [=]() { std::cout << BaseLogHandler::MessageParser(Message) << "\n"; });
+      [=]() { std::cout << BaseLogHandler::MessageParser(Message) + "\n"s; });
 }
 
 bool ConsoleInterface::flush(std::chrono::system_clock::duration TimeOut) {

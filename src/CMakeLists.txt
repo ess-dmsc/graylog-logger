@@ -38,6 +38,7 @@ set(Graylog_INC
     ../include/graylog_logger/ConsoleInterface.hpp
     ../include/graylog_logger/FileInterface.hpp
     GraylogConnection.hpp
+    Semaphore.hpp
     ../include/graylog_logger/GraylogInterface.hpp
     ../include/graylog_logger/Log.hpp
     ../include/graylog_logger/Logger.hpp

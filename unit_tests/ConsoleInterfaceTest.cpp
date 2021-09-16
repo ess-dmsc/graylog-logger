@@ -9,6 +9,7 @@
 #include "graylog_logger/ConsoleInterface.hpp"
 #include "Semaphore.hpp"
 #include "graylog_logger/LoggingBase.hpp"
+#include <atomic>
 #include <ciso646>
 #include <gtest/gtest.h>
 
@@ -53,23 +54,28 @@ TEST(ConsoleInterface, OnInitialisationQueueEmpty) {
 
 class ConsoleInterfaceStandIn : public ConsoleInterface {
 public:
-  void addMessage(LogMessage const &) override { MsgCtr++; }
-  int MsgCtr{0};
+  void addMessage(LogMessage const &) override { GotMsg = true; }
+  std::atomic_bool GotMsg{false};
   using ConsoleInterface::Executor;
 };
 
+class TempLoggingBase : public LoggingBase {
+public:
+  using LoggingBase::Executor;
+};
+
 TEST(LoggingBase, AddConsoleHandlerTest) {
-  LoggingBase log;
+  TempLoggingBase log;
   auto standIn = std::make_shared<ConsoleInterfaceStandIn>();
   ASSERT_EQ(standIn.use_count(), 1);
   log.addLogHandler(standIn);
   ASSERT_EQ(standIn.use_count(), 2);
-  ASSERT_EQ(standIn->MsgCtr, 0);
+  ASSERT_FALSE(standIn->GotMsg);
   log.log({}, "Msg");
   Semaphore Signal;
-  standIn->Executor.SendWork([&]() { Signal.notify(); });
+  log.Executor.SendWork([&]() { Signal.notify(); });
   Signal.wait();
-  ASSERT_EQ(standIn->MsgCtr, 1);
+  ASSERT_TRUE(standIn->GotMsg);
 }
 
 TEST(ConsoleInterface, QueueSizeOneIsNotEmpty) {
