@@ -18,20 +18,13 @@
 #include "graylog_logger/Logger.hpp"
 namespace Log {
 
-template<typename T> struct convert {
-  using type = T;
-};
+template <typename T> struct convert { using type = T; };
 
-template<> struct convert<char const*> {
-  using type = std::string;
-};
+template <> struct convert<char const *> { using type = std::string; };
 
-template<> struct convert<char *> {
-  using type = std::string;
-};
+template <> struct convert<char *> { using type = std::string; };
 
-template<typename T>
-using charStarToString = typename convert<T>::type;
+template <typename T> using charStarToString = typename convert<T>::type;
 
 /// \brief Submit a formatted message to the logging library.
 ///
