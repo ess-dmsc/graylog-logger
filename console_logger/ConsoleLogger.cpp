@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
         try {
           port = std::stoi(value);
         } catch (std::invalid_argument &e) {
-          std::cout << "Unable to convert port to int." << std::endl;
+          std::cout << "Unable to convert port to int.\n";
           PrintAlternatives();
           return 0;
         }
@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
         try {
           timeout = std::stof(value);
         } catch (std::invalid_argument &e) {
-          std::cout << "Unable to convert time to float." << std::endl;
+          std::cout << "Unable to convert time to float.\n";
           PrintAlternatives();
           return 0;
         }
@@ -106,12 +106,12 @@ int main(int argc, char **argv) {
         try {
           sevLevel = std::stoi(value);
         } catch (std::invalid_argument &e) {
-          std::cout << "Unable to convert level to int." << std::endl;
+          std::cout << "Unable to convert level to int.\n";
           PrintAlternatives();
           return 0;
         }
         if (sevLevel < 0 or sevLevel > 7) {
-          std::cout << "Level is not a value between 0 and 7." << std::endl;
+          std::cout << "Level is not a value between 0 and 7.\n";
           PrintAlternatives();
           return 0;
         }
@@ -128,8 +128,7 @@ int main(int argc, char **argv) {
         extraField = value.substr(splitLoc + 1, value.size() - 1);
         if (extraKey.empty() or extraField.strVal.empty()) {
           extraKey = "";
-          std::cout << "Unable to parse extra field: \"" << value << "\""
-                    << std::endl;
+          std::cout << "Unable to parse extra field: \"" << value << "\"\n";
         }
       }
       break;
@@ -169,8 +168,7 @@ int main(int argc, char **argv) {
   if (not Log::Flush(
           std::chrono::milliseconds(static_cast<int>(timeout * 1000)))) {
     std::cout
-        << "Reached timeout when trying to send message to Graylog-server."
-        << std::endl;
+        << "Reached timeout when trying to send message to Graylog-server.\n";
   }
 
   return 0;
@@ -196,6 +194,5 @@ void PrintAlternatives() {
                "field parameter requires\n";
   std::cout << "that the key and value of the field is separated using the "
                "colon character.\n\n";
-  std::cout << "Example: ./console_logger -t2.0 -m\"This is a log message.\""
-            << std::endl;
+  std::cout << "Example: ./console_logger -t2.0 -m\"This is a log message.\"\n";
 }

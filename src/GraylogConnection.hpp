@@ -46,7 +46,7 @@ protected:
   void threadFunction();
   void setState(Status NewState);
 
-  Status ConnectionState{Status::ADDR_LOOKUP};
+  std::atomic<Status> ConnectionState{Status::ADDR_LOOKUP};
 
   std::atomic_bool closeThread{false};
 
