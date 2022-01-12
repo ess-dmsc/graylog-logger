@@ -35,6 +35,7 @@ enum class Severity : int {
   Informational = 6,
   Info = 6,
   Debug = 7,
+  Trace = 8,
 };
 
 /// \brief Used to store multiple different types for the extra fields provided

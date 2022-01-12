@@ -185,8 +185,8 @@ void PrintAlternatives() {
   std::cout << "To prevent the application from doing this, use the -f and -a "
                "flags but do not\n";
   std::cout << "provide a file name or address. The level paramater is a value "
-               "between 0  and 7\n";
-  std::cout << "with 0 being \"Emergency\" and 7 indicating a debug message. "
+               "between 0  and 8\n";
+  std::cout << "with 0 being \"Emergency\" and 8 indicating a trace message. "
                "The default level\n";
   std::cout << "is 7 (debug). The default file name is \"messages.log\". The "
                "default address\n";

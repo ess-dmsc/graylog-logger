@@ -8,6 +8,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "graylog_logger/LoggingBase.hpp"
+#include "Semaphore.hpp"
 #include <chrono>
 #include <ciso646>
 #include <sys/types.h>
@@ -110,11 +111,21 @@ LoggingBase::LoggingBase() {
 LoggingBase::~LoggingBase() { LoggingBase::removeAllHandlers(); }
 
 void LoggingBase::addLogHandler(const LogHandler_P &Handler) {
-  Executor.SendWork([=]() { Handlers.push_back(Handler); });
+  Semaphore Check;
+  Executor.SendWork([=, &Check]() {
+    Handlers.push_back(Handler);
+    Check.notify();
+  });
+  Check.wait();
 }
 
 void LoggingBase::removeAllHandlers() {
-  Executor.SendWork([=]() { Handlers.clear(); });
+  Semaphore Check;
+  Executor.SendWork([=, &Check]() {
+    Handlers.clear();
+    Check.notify();
+  });
+  Check.wait();
 }
 
 std::vector<LogHandler_P> LoggingBase::getHandlers() { return Handlers; }
