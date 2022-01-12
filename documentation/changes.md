@@ -1,5 +1,9 @@
 ## Changes
 
+### Version 2.1.2
+* Fixed bug triggered when replacing console interfaces.
+* Fixed race condition issues.
+
 ### Version 2.1.1
 * Fixed threading issues.
 
