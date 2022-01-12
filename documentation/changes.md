@@ -1,7 +1,22 @@
 ## Changes
 
+### Version 2.1.1
+* Fixed threading issues.
+
+### Version 2.1.0
+* Added the `Trace` severity level.
+* Added code for converting `char*` to `std::string` when using `Log::FmtMsg`. This is done in order to prevent use after stack return bugs.
+* Minor unit test fixes.
+
+### Version 2.0.4
+* Conan package updates.
+* Build system (CI) changes.
+
+### Version 2.0.3
+* CMake fixes.
+
 ### Version 2.0.2
-* Made important CMkae changes required for properly making Conan packages. (ed-alertedh)
+* Made important CMake changes required for properly making Conan packages. (ed-alertedh)
 * Made minor changes to the code to prevent issues when using a `using namespace std;` statement.
 * Minor documentation changes.
 

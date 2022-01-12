@@ -17,6 +17,7 @@ namespace Log {
 class ConsoleInterface : public BaseLogHandler {
 public:
   explicit ConsoleInterface();
+  virtual ~ConsoleInterface() = default;
   void addMessage(const LogMessage &Message) override;
   /// \brief Waits for all messages created before the call to flush to be
   /// printed and then flushes the output stream.

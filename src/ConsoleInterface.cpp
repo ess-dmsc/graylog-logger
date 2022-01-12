@@ -15,9 +15,9 @@
 namespace Log {
 
 std::string ConsoleStringCreator(const LogMessage &Message) {
-  std::array<std::string, 8> sevToStr = {{"EMERGENCY", "ALERT", "CRITICAL",
+  std::array<std::string, 9> sevToStr = {{"EMERGENCY", "ALERT", "CRITICAL",
                                           "ERROR", "WARNING", "Notice", "Info",
-                                          "Debug"}};
+                                          "Debug", "Trace"}};
   return sevToStr.at(int(Message.SeverityLevel)) + std::string(": ") +
          Message.MessageString;
 }
@@ -25,9 +25,11 @@ std::string ConsoleStringCreator(const LogMessage &Message) {
 ConsoleInterface::ConsoleInterface() {
   BaseLogHandler::setMessageStringCreatorFunction(ConsoleStringCreator);
 }
+
+using std::string_literals::operator""s;
 void ConsoleInterface::addMessage(const LogMessage &Message) {
   Executor.SendWork(
-      [=]() { std::cout << BaseLogHandler::MessageParser(Message) << "\n"; });
+      [=]() { std::cout << BaseLogHandler::MessageParser(Message) + "\n"s; });
 }
 
 bool ConsoleInterface::flush(std::chrono::system_clock::duration TimeOut) {

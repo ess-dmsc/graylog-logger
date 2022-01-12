@@ -191,14 +191,14 @@ GraylogConnection::Impl::~Impl() {
 
 GraylogConnection::Impl::Status
 GraylogConnection::Impl::getConnectionStatus() const {
-  return ConnectionState;
+  return ConnectionState.load(std::memory_order_relaxed);
 }
 
 void GraylogConnection::Impl::threadFunction() { Service.run(); }
 
 void GraylogConnection::Impl::setState(
     GraylogConnection::Impl::Status NewState) {
-  ConnectionState = NewState;
+  ConnectionState.store(NewState, std::memory_order_relaxed);
 }
 
 bool GraylogConnection::Impl::flush(
