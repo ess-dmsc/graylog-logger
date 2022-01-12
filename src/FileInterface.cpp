@@ -28,7 +28,8 @@ FileInterface::FileInterface(std::string const &Name,
 void FileInterface::addMessage(const LogMessage &Message) {
   Executor.SendWork([=]() {
     if (FileStream.good() and FileStream.is_open()) {
-      FileStream << BaseLogHandler::messageToString(Message) + std::string("\n");
+      FileStream << BaseLogHandler::messageToString(Message) +
+                        std::string("\n");
     }
   });
 }

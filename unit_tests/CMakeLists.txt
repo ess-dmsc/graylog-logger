@@ -18,7 +18,7 @@ set(UnitTest_SRC
   LogTestServer.hpp
   QueueLengthTest.cpp
   RunTests.cpp
-)
+    LoggerTest.cpp)
 
 set(UnitTest_INC
   BaseLogHandlerStandIn.hpp

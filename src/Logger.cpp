@@ -28,7 +28,7 @@ void Logger::addLogHandler(const LogHandler_P &Handler) {
   Executor.SendWork([=]() {
     if (dynamic_cast<ConsoleInterface *>(Handler.get()) != nullptr) {
       bool replaced = false;
-      for (auto ptr : Handlers) {
+      for (auto &ptr : Handlers) {
         if (dynamic_cast<ConsoleInterface *>(ptr.get()) != nullptr) {
           ptr = Handler;
           replaced = true;

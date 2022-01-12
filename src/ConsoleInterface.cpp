@@ -26,8 +26,11 @@ ConsoleInterface::ConsoleInterface() {
   BaseLogHandler::setMessageStringCreatorFunction(ConsoleStringCreator);
 }
 void ConsoleInterface::addMessage(const LogMessage &Message) {
-  Executor.SendWork(
-                    [=]() { printf("%s", (BaseLogHandler::MessageParser(Message) + std::string("\n")).c_str()); });
+  Executor.SendWork([=]() {
+    printf(
+        "%s",
+        (BaseLogHandler::MessageParser(Message) + std::string("\n")).c_str());
+  });
 }
 
 bool ConsoleInterface::flush(std::chrono::system_clock::duration TimeOut) {

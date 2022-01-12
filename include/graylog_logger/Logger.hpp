@@ -29,7 +29,7 @@ public:
   using LoggingBase::fmt_log;
 #endif
 
-private:
+protected:
   Logger();
   ~Logger() = default;
 };
