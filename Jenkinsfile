@@ -157,7 +157,6 @@ node {
   }
 
   builders['macOS'] = get_macos_pipeline()
-  builders['windows10'] = get_win10_pipeline()
   try {
     parallel builders
     } catch (e) {
@@ -208,47 +207,3 @@ def get_macos_pipeline()
         }
     }
 }
-
-def get_win10_pipeline() {
-    return {
-        node('windows10') {
-
-        // Use custom location to avoid Win32 path length issues
-            ws('c:\\jenkins\\') {
-                cleanWs()
-                dir("${project}") {
-                    stage("win10: Checkout") {
-                      checkout scm
-                    }  // stage
-
-                    stage("win10: Setup") {
-                          bat """if exist _build rd /q /s _build
-                        mkdir _build
-                        """
-                    } // stage
-
-                    stage("win10: Install") {
-                      bat """cd _build
-                    conan.exe \
-                        install ..\\conanfile.txt  \
-                        --settings build_type=Release \
-                        --build=outdated"""
-                    }  // stage
-
-                    stage("win10: Build") {
-                           bat """cd _build
-                        cmake .. -G \"Visual Studio 15 2017 Win64\" -DCMAKE_BUILD_TYPE=Release -DCONAN=MANUAL -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE
-                        cmake --build . --target unit_tests --config Release
-                        """
-                    }  // stage
-                    
-                    stage("win10: Test") {
-                           bat """cd _build
-                        activate_run.bat && unit_tests\\Release\\unit_tests.exe && deactivate_run.bat
-                        """
-                    }  // stage
-                }  // dir
-            }  // ws
-        }  // node
-    }  // return
-} // def
