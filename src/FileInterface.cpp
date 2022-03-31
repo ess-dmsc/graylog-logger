@@ -35,7 +35,7 @@ void FileInterface::addMessage(const LogMessage &Message) {
 }
 
 void FileInterface::setMessageStringCreatorFunction(
-                                                       std::function<std::string(const LogMessage &)> ParserFunction) {
+    std::function<std::string(const LogMessage &)> ParserFunction) {
   Executor.SendWork([=]() {
     BaseLogHandler::setMessageStringCreatorFunction(ParserFunction);
   });

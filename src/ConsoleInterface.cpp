@@ -36,7 +36,7 @@ void ConsoleInterface::addMessage(const LogMessage &Message) {
 }
 
 void ConsoleInterface::setMessageStringCreatorFunction(
-                                                       std::function<std::string(const LogMessage &)> ParserFunction) {
+    std::function<std::string(const LogMessage &)> ParserFunction) {
   Executor.SendWork([=]() {
     BaseLogHandler::setMessageStringCreatorFunction(ParserFunction);
   });

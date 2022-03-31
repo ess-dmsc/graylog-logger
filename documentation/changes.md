@@ -2,7 +2,7 @@
 
 
 ### Version 2.1.3
-* Fixed race condition.
+* Fixed multiple (benign) race conditions.
 
 ### Version 2.1.2
 * Fixed bug triggered when replacing console interfaces.
