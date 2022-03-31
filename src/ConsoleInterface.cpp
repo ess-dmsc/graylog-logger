@@ -35,6 +35,13 @@ void ConsoleInterface::addMessage(const LogMessage &Message) {
   });
 }
 
+void ConsoleInterface::setMessageStringCreatorFunction(
+                                                       std::function<std::string(const LogMessage &)> ParserFunction) {
+  Executor.SendWork([=]() {
+    BaseLogHandler::setMessageStringCreatorFunction(ParserFunction);
+  });
+}
+
 bool ConsoleInterface::flush(std::chrono::system_clock::duration TimeOut) {
   auto WorkDone = std::make_shared<std::promise<void>>();
   auto WorkDoneFuture = WorkDone->get_future();

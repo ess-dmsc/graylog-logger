@@ -140,8 +140,11 @@ public:
   /// \note Use of this functionality can result in crashes if the function
   /// uses resources that are de-allocated before the logging system is
   /// de-allocated.
+  /// \note This function should be re-implemented in a thread safe manner
+  ///  by all children that uses threaded message processing.
+  ///
   /// \param[in] ParserFunction The new custom message parsing function.
-  void setMessageStringCreatorFunction(
+  virtual void setMessageStringCreatorFunction(
       std::function<std::string(const LogMessage &)> ParserFunction);
 
 protected:

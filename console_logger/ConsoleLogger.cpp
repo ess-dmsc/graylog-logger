@@ -161,7 +161,7 @@ int main(int argc, char **argv) {
   }
 
   Log::FmtMsg(Severity::Info,
-              "A formatted string containing an int ({:s}), a float ({}) and "
+              "A formatted string containing an int ({}), a float ({}) and "
               "the string \"{}\".",
               42, 3.14, "hello");
 
