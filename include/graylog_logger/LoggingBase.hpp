@@ -36,7 +36,7 @@ public:
   virtual void
   log(const Severity Level, const std::string &Message,
       const std::vector<std::pair<std::string, AdditionalField>> &ExtraFields) {
-    if (int(Level) > int(MinSeverity)) {
+    if (int(Level) > int(MinSeverity.load(std::memory_order_relaxed))) {
       return;
     }
     auto ThreadId = std::this_thread::get_id();
@@ -67,7 +67,7 @@ public:
 #ifdef WITH_FMT
   template <typename... Args>
   void fmt_log(const Severity Level, std::string Format, Args... args) {
-    if (int(Level) > int(MinSeverity)) {
+    if (int(Level) > int(MinSeverity.load(std::memory_order_relaxed))) {
       return;
     }
     auto ThreadId = std::this_thread::get_id();
@@ -131,7 +131,7 @@ public:
   }
 
 protected:
-  Severity MinSeverity{Severity::Notice};
+  std::atomic<Severity> MinSeverity{Severity::Notice};
   std::vector<LogHandler_P> Handlers;
   LogMessage BaseMsg;
   ThreadedExecutor Executor;

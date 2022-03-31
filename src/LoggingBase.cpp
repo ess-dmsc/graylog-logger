@@ -134,7 +134,7 @@ void LoggingBase::setMinSeverity(Severity Level) {
   auto WorkDone = std::make_shared<std::promise<void>>();
   auto WorkDoneFuture = WorkDone->get_future();
   Executor.SendWork(
-      [=, WorkDone{std::move(WorkDone)}]() { MinSeverity = Level; });
+      [=, WorkDone{std::move(WorkDone)}]() { MinSeverity.store(Level, std::memory_order_relaxed); });
   WorkDoneFuture.wait();
 }
 
