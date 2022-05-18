@@ -12,7 +12,7 @@
 
 namespace minimal {
 template <class F, class... Args>
-constexpr decltype(auto) invoke(F &&f, Args &&... args) {
+constexpr decltype(auto) invoke(F &&f, Args &&...args) {
   return std::forward<F>(f)(std::forward<Args>(args)...);
 }
 

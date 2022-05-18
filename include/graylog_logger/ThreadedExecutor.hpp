@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include <moodycamel/concurrentqueue.h>
 #include <functional>
 #include <future>
 #include <memory>
+#include <moodycamel/concurrentqueue.h>
 #include <thread>
 
 namespace Log {
