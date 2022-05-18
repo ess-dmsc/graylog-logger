@@ -34,6 +34,13 @@ void FileInterface::addMessage(const LogMessage &Message) {
   });
 }
 
+void FileInterface::setMessageStringCreatorFunction(
+    std::function<std::string(const LogMessage &)> ParserFunction) {
+  Executor.SendWork([=]() {
+    BaseLogHandler::setMessageStringCreatorFunction(ParserFunction);
+  });
+}
+
 bool FileInterface::flush(std::chrono::system_clock::duration TimeOut) {
   auto WorkDone = std::make_shared<std::promise<void>>();
   auto WorkDoneFuture = WorkDone->get_future();

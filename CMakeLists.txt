@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 project("graylog-logger"
-  VERSION 2.1.2
+  VERSION 2.1.3
   DESCRIPTION "A simple logging library."  
   LANGUAGES CXX
 )

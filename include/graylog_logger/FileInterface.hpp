@@ -40,6 +40,10 @@ public:
   /// number of messages in the queue.
   size_t queueSize() override;
 
+  /// \brief See parent class for documentation.
+  void setMessageStringCreatorFunction(
+      std::function<std::string(const LogMessage &)> ParserFunction) override;
+
 protected:
   std::ofstream FileStream;
   ThreadedExecutor Executor; // Must be last
