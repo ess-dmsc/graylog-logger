@@ -18,7 +18,7 @@ set(UnitTest_SRC
   LogTestServer.hpp
   QueueLengthTest.cpp
   RunTests.cpp
-    LoggerTest.cpp)
+  LoggerTest.cpp)
 
 set(UnitTest_INC
   BaseLogHandlerStandIn.hpp
@@ -29,7 +29,8 @@ add_executable(unit_tests EXCLUDE_FROM_ALL ${UnitTest_SRC} ${UnitTest_INC})
 set(unit_test_libs PUBLIC 
     GraylogLogger::graylog_logger_static
     GTest::GTest
-    ${GMOCK_BOTH_LIBRARIES}
+    GTest::gmock
+    GTest::gmock_main
     asio::asio
 )
 
