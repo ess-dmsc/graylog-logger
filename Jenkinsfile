@@ -125,19 +125,13 @@ builders = pipeline_builder.createBuilders { container ->
         }  // stage
 
     pipeline_builder.stage("${container.key}: cppcheck") {
-      def test_output = "cppcheck.txt"
+      def test_output = "cppcheck.xml"
       container.sh """
         cd ${pipeline_builder.project}
-        cppcheck --enable=all --inconclusive --template="{file},{line},{severity},{id},{message}" src/ 2> ${test_output}
+        cppcheck --enable=all --inconclusive --template="{file},{line},{severity},{id},{message}" --xml --xml-version=2 src/ 2> ${test_output}
       """
       container.copyFrom("${pipeline_builder.project}/${test_output}", '.')
-      step([
-        $class: 'WarningsPublisher',
-        parserConfigurations: [[
-          parserName: 'Cppcheck Parser',
-          pattern: 'cppcheck.txt'
-        ]]
-      ])
+      recordIssues(tools: [cppCheck(pattern: 'cppcheck.xml')])
     }  // stage
   }  // if
 }  // createBuilders
