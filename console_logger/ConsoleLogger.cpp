@@ -35,15 +35,15 @@ int main(int argc, char **argv) {
   float timeout = 1.0;
   std::string extraKey;
   AdditionalField extraField;
-  static struct option long_options[]{
-      {"help", no_argument, nullptr, 'h'},
-      {"file", optional_argument, nullptr, 'f'},
-      {"address", optional_argument, nullptr, 'a'},
-      {"port", required_argument, nullptr, 'p'},
-      {"time", required_argument, nullptr, 't'},
-      {"level", required_argument, nullptr, 'l'},
-      {"message", required_argument, nullptr, 'm'},
-      {"extra", optional_argument, nullptr, 'e'},
+  static struct option long_options[] {
+    {"help", no_argument, nullptr, 'h'},
+        {"file", optional_argument, nullptr, 'f'},
+        {"address", optional_argument, nullptr, 'a'},
+        {"port", required_argument, nullptr, 'p'},
+        {"time", required_argument, nullptr, 't'},
+        {"level", required_argument, nullptr, 'l'},
+        {"message", required_argument, nullptr, 'm'},
+        {"extra", optional_argument, nullptr, 'e'},
   };
   int option_index = 0;
   while (true) {
