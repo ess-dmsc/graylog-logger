@@ -69,7 +69,7 @@ builders = pipeline_builder.createBuilders { container ->
       container.sh """
         cd build
         . ./activate_run.sh
-        ./unit_tests/unit_tests --gtest_output=xml:${test_output}
+        ./unit_tests/unit_tests --gtest_output=xml:${test_output} --gtest_filter=-'GraylogConnectionCom.IPv6ConnectionTest'
       """
       container.copyFrom('build', '.')
       junit "build/${test_output}"
