@@ -103,16 +103,15 @@ builders = pipeline_builder.createBuilders { container ->
           // Push any changes resulting from formatting
           try {
             withCredentials([
-              usernamePassword(
-              credentialsId: 'cow-bot-username-with-token',
-              usernameVariable: 'USERNAME',
-              passwordVariable: 'PASSWORD'
+              gitUsernamePassword(
+                credentialsId: 'dmsc-gitlab-username-with-token',
+                gitToolName: 'Default'
               )
             ]) {
               withEnv(["PROJECT=${pipeline_builder.project}"]) {
                 container.sh '''
                   cd $PROJECT
-                  git push https://$USERNAME:$PASSWORD@github.com/ess-dmsc/$PROJECT.git HEAD:$CHANGE_BRANCH
+                  git push https://github.com/ess-dmsc/$PROJECT.git HEAD:$CHANGE_BRANCH
                 '''
               }  // withEnv
             }  // withCredentials
