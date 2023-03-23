@@ -35,7 +35,7 @@ std::string get_process_name() {
   buf.resize(260);
   do {
     size_t len =
-        GetModuleFileNameW(nullptr, &buf[0], static_cast<size_t>(buf.size()));
+                GetModuleFileNameW(nullptr,     &buf[0], static_cast<size_t>(buf.size()));
     if (len < buf.size()) {
       buf.resize(len);
       break;
