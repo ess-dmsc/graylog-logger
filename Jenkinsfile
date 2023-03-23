@@ -20,7 +20,7 @@ clangformat_os = "debian11"
 test_os = "ubuntu2204"
 
 container_build_nodes = [
-  'centos7': ContainerBuildNode.getDefaultContainerBuildNode('centos7-gcc8'),
+  'centos7': ContainerBuildNode.getDefaultContainerBuildNode('centos7-gcc11'),
   'debian11': ContainerBuildNode.getDefaultContainerBuildNode('debian11'),
   'ubuntu2204': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu2204')
 ]
@@ -148,7 +148,10 @@ node {
     }
   }
 
-  builders['macOS'] = get_macos_pipeline()
+  if (env.ENABLE_MACOS_BUILDS.toUpperCase() == 'TRUE') {
+    builders['macOS'] = get_macos_pipeline()
+  }
+
   try {
     parallel builders
     } catch (e) {

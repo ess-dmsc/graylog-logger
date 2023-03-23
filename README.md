@@ -43,16 +43,7 @@ Due to the use of ASIO, the library should compile on most \*nix systems and Win
 There are two methods for building this library. They are described below.
 
 #### Using conan
-When using conan to provide the dependencies, all the optional and required dependencies are provided automatically. Follow the instructions below.
-
-First, add the required conan repositories:
-
-```
-conan remote add ecdc https://artifactoryconan.esss.dk/artifactory/api/conan/ecdc
-conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan
-```
-
-To checkout and build the library, run the following commands:
+When using conan to provide the dependencies, all the optional and required dependencies are provided automatically. To checkout and build the library, run the following commands:
 
 ```
 git clone https://github.com/ess-dmsc/graylog-logger.git
