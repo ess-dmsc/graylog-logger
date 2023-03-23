@@ -104,7 +104,7 @@ builders = pipeline_builder.createBuilders { container ->
           try {
             withCredentials([
               gitUsernamePassword(
-                credentialsId: 'dmsc-gitlab-username-with-token',
+                credentialsId: 'cow-bot-username-with-token',
                 gitToolName: 'Default'
               )
             ]) {
