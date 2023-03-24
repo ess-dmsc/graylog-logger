@@ -100,6 +100,7 @@ builders = pipeline_builder.createBuilders { container ->
             // Clean up
           }
 
+          container.copyFrom(pipeline_builder.project, 'clang-formatted-code')
           // Push any changes resulting from formatting
           try {
             withCredentials([
@@ -109,8 +110,8 @@ builders = pipeline_builder.createBuilders { container ->
               )
             ]) {
               withEnv(["PROJECT=${pipeline_builder.project}"]) {
-                container.sh '''
-                  cd $PROJECT
+                sh '''
+                  cd clang-formatted-code
                   git push https://github.com/ess-dmsc/$PROJECT.git HEAD:$CHANGE_BRANCH
                 '''
               }  // withEnv
