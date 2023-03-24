@@ -100,17 +100,18 @@ builders = pipeline_builder.createBuilders { container ->
             // Clean up
           }
 
+          container.copyFrom(pipeline_builder.project, 'clang-formatted-code')
           // Push any changes resulting from formatting
           try {
             withCredentials([
               gitUsernamePassword(
-                credentialsId: 'dmsc-gitlab-username-with-token',
+                credentialsId: 'cow-bot-username-with-token',
                 gitToolName: 'Default'
               )
             ]) {
               withEnv(["PROJECT=${pipeline_builder.project}"]) {
-                container.sh '''
-                  cd $PROJECT
+                sh '''
+                  cd clang-formatted-code
                   git push https://github.com/ess-dmsc/$PROJECT.git HEAD:$CHANGE_BRANCH
                 '''
               }  // withEnv
