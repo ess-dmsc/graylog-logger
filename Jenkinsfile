@@ -149,10 +149,6 @@ node {
     }
   }
 
-  if (env.ENABLE_MACOS_BUILDS.toUpperCase() == 'TRUE') {
-    builders['macOS'] = get_macos_pipeline()
-  }
-
   try {
     parallel builders
     } catch (e) {
@@ -165,41 +161,4 @@ def failure_function(exception_obj, failureMessage) {
     def toEmails = [[$class: 'DevelopersRecipientProvider']]
     emailext body: '${DEFAULT_CONTENT}\n\"' + failureMessage + '\"\n\nCheck console output at $BUILD_URL to view the results.', recipientProviders: toEmails, subject: '${DEFAULT_SUBJECT}'
     throw exception_obj
-}
-
-def get_macos_pipeline()
-{
-    return {
-        stage("macOS") {
-            node ("macos") {
-                // Delete workspace when build is done
-                cleanWs()
-
-                dir("${project}/code") {
-                    try {
-                        checkout scm
-                    } catch (e) {
-                        failure_function(e, 'MacOSX / Checkout failed')
-                    }
-                }
-
-                dir("${project}/build") {
-                    try {
-                        sh "conan install --build=outdated ../code"
-                        sh "source activate_run.sh && cmake ../code"
-                    } catch (e) {
-                        failure_function(e, 'MacOSX / CMake failed')
-                    }
-
-                    try {
-                        sh "source activate_run.sh && make all unit_tests"
-                        sh "source activate_run.sh && ./unit_tests/unit_tests"
-                    } catch (e) {
-                        failure_function(e, 'MacOSX / build+test failed')
-                    }
-                }
-
-            }
-        }
-    }
 }
