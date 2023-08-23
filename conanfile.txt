@@ -1,10 +1,10 @@
 [requires]
-gtest/1.11.0
-asio/1.22.1
-nlohmann_json/3.10.5
-benchmark/1.6.1
-concurrentqueue/1.0.3
-fmt/8.1.1
+gtest/1.14.0
+asio/1.28.1
+nlohmann_json/3.11.2
+benchmark/1.8.2
+concurrentqueue/1.0.4
+fmt/10.1.0
 
 [options]
 gtest*:shared=False
