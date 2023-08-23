@@ -17,7 +17,7 @@ properties([[
 ]]);
 
 container_build_nodes = [
-  'ubuntu2204': new ContainerBuildNode('dockerregistry.esss.dk/ecdc_group/build-node-images/ubuntu22.04-build-node:4.0.0', 'bash -e')
+  'ubuntu2204': new ContainerBuildNode('dockerregistry.esss.dk/ecdc_group/build-node-images/ubuntu22.04-build-node:4.0.0-dev', 'bash -e')
 ]
 
 pipeline_builder = new PipelineBuilder(this, container_build_nodes)
