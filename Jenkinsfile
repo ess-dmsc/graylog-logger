@@ -16,13 +16,8 @@ properties([[
   ]
 ]]);
 
-clangformat_os = "debian11"
-test_os = "ubuntu2204"
-
 container_build_nodes = [
-  'centos7': ContainerBuildNode.getDefaultContainerBuildNode('centos7-gcc11'),
-  'debian11': ContainerBuildNode.getDefaultContainerBuildNode('debian11'),
-  'ubuntu2204': ContainerBuildNode.getDefaultContainerBuildNode('ubuntu2204')
+  'ubuntu2204': new ContainerBuildNode('dockerregistry.esss.dk/ecdc_group/build-node-images/ubuntu22.04-build-node:4.0.0', 'bash -e')
 ]
 
 pipeline_builder = new PipelineBuilder(this, container_build_nodes)
@@ -37,102 +32,62 @@ builders = pipeline_builder.createBuilders { container ->
     container.copyTo(pipeline_builder.project, pipeline_builder.project)
   }  // stage
 
+  pipeline_builder.stage("${container.key}: check formatting") {
+    if (!env.CHANGE_ID) {
+      // Ignore non-PRs
+      return
+    }
+
+    // Do clang-format of C++ files
+    container.sh """
+      ci/check-formatting
+    """
+  }  // stage
+
   pipeline_builder.stage("${container.key}: get dependencies") {
     container.sh """
-      mkdir build
-      cd build
-      conan install --build outdated ../${pipeline_builder.project}
+      conan install --output-folder=build --build=outdated .
     """
   }  // stage
 
   pipeline_builder.stage("${container.key}: configure") {
     container.sh """
       cd build
-      . ./activate_run.sh
-      cmake ../${pipeline_builder.project} -DBUILD_EVERYTHING=ON
+      cmake .. \
+        -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_EVERYTHING=ON
     """
   }  // stage
 
   pipeline_builder.stage("${container.key}: build") {
     container.sh """
       cd build
-      . ./activate_run.sh
       make all unit_tests > ${container.key}-build.log
     """
     container.copyFrom("build/${container.key}-build.log", "${container.key}-build.log")
     archiveArtifacts "${container.key}-build.log"
   }  // stage
 
-  if (container.key == test_os) {
-    pipeline_builder.stage("${container.key}: test") {
-      def test_output = "TestResults.xml"
-      container.sh """
-        cd build
-        . ./activate_run.sh
-        ./unit_tests/unit_tests --gtest_output=xml:${test_output} --gtest_filter=-'GraylogConnectionCom.IPv6ConnectionTest'
-      """
-      container.copyFrom('build', '.')
-      junit "build/${test_output}"
-    }  // stage
-  }  // if
+  pipeline_builder.stage("${container.key}: test") {
+    def test_output = "TestResults.xml"
+    container.sh """
+      cd build
+      ./unit_tests/unit_tests --gtest_output=xml:${test_output} --gtest_filter=-'GraylogConnectionCom.IPv6ConnectionTest'
+    """
+    container.copyFrom('build', '.')
+    junit "build/${test_output}"
+  }  // stage
 
-  if (container.key == clangformat_os) {
-    pipeline_builder.stage("${container.key}: Formatting") {
-          if (!env.CHANGE_ID) {
-            // Ignore non-PRs
-            return
-          }
-          try {
-            // Do clang-format of C++ files
-            container.setupLocalGitUser(pipeline_builder.project)
-            container.sh """
-              clang-format -version
-              cd ${project}
-              find . \\\\( -name '*.cpp' -or -name '*.cxx' -or -name '*.h' -or -name '*.hpp' \\\\) \\
-              -exec clang-format -i {} +
-              git status -s
-              git add -u
-              git commit -m 'GO FORMAT YOURSELF (clang-format)'
-            """
-          } catch (e) {
-           // Okay to fail as there could be no badly formatted files to commit
-          } finally {
-            // Clean up
-          }
-
-          container.copyFrom(pipeline_builder.project, 'clang-formatted-code')
-          // Push any changes resulting from formatting
-          try {
-            withCredentials([
-              gitUsernamePassword(
-                credentialsId: 'cow-bot-username-with-token',
-                gitToolName: 'Default'
-              )
-            ]) {
-              withEnv(["PROJECT=${pipeline_builder.project}"]) {
-                sh '''
-                  cd clang-formatted-code
-                  git push https://github.com/ess-dmsc/$PROJECT.git HEAD:$CHANGE_BRANCH
-                '''
-              }  // withEnv
-            }  // withCredentials
-          } catch (e) {
-            // Okay to fail; there may be nothing to push
-          } finally {
-            // Clean up
-          }
-        }  // stage
-
-    pipeline_builder.stage("${container.key}: cppcheck") {
-      def test_output = "cppcheck.xml"
-      container.sh """
-        cd ${pipeline_builder.project}
-        cppcheck --enable=all --inconclusive --template="{file},{line},{severity},{id},{message}" --xml --xml-version=2 src/ 2> ${test_output}
-      """
-      container.copyFrom("${pipeline_builder.project}/${test_output}", '.')
-      recordIssues(tools: [cppCheck(pattern: 'cppcheck.xml')])
-    }  // stage
-  }  // if
+  pipeline_builder.stage("${container.key}: cppcheck") {
+    def test_output = "cppcheck.xml"
+    container.sh """
+      cd ${pipeline_builder.project}
+      cppcheck --enable=all --inconclusive --template="{file},{line},{severity},{id},{message}" --xml --xml-version=2 src/ 2> ${test_output}
+    """
+    container.copyFrom("${pipeline_builder.project}/${test_output}", '.')
+    recordIssues(tools: [cppCheck(pattern: 'cppcheck.xml')])
+  }  // stage
 }  // createBuilders
 
 node {
