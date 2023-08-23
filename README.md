@@ -2,7 +2,7 @@
 
 # Graylog logger
 
-This is a simple logging library which can be used to send log messages to a Graylog server. This is done by creating messages in the [GELF](http://docs.graylog.org/en/2.1/pages/gelf.html) format and sending them to a Graylog server via TCP. For testing purposes a [Vagrant](https://www.vagrantup.com/) machine running Graylog can be used. A simple Vagrantfile for creating this set-up can be [found here](https://github.com/ess-dmsc/graylog-machine). The argument for creating yet another logging library instead of writing a plugin/sink/handler for an already existing one is that a relatively light weight solution was desired. The library has functionality for writing log messages to console and file as well. By default the library will only write log messages to console.
+This is a simple logging library which can be used to send log messages to a Graylog server. This is done by creating messages in the [GELF](http://docs.graylog.org/en/2.1/pages/gelf.html) format and sending them to a Graylog server via TCP. The argument for creating yet another logging library instead of writing a plugin/sink/handler for an already existing one is that a relatively light weight solution was desired. The library has functionality for writing log messages to console and file as well. By default the library will only write log messages to console.
 
 The repository is split into four parts:
 
@@ -11,7 +11,7 @@ The repository is split into four parts:
 * A simple console application which uses the logging library.
 * Some benchmarking code which is used for profiling and optimising the code as well as test for performance regression.
 
-A sister project to this library is the Python logging handler [GraylogHandler](https://github.com/ess-dmsc/graylog-handler).
+A sister project to this libraris the Python logging handler [GraylogHandler](https://github.com/ess-dmsc/graylog-handler).
 
 - Further documentation can be [found here.](documentation/README.md)
 
@@ -22,7 +22,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 
-The logging library has the following (requried) external dependencies:
+The logging library has the following (required) external dependencies:
 
 * [moodycamel::ConcurrentQueue](https://github.com/cameron314/concurrentqueue) For message passing to and within the logging library.
 * [JSONForModernCPP](https://github.com/nlohmann/json) For generating graylog GELF messages.
@@ -48,15 +48,11 @@ When using conan to provide the dependencies, all the optional and required depe
 ```
 git clone https://github.com/ess-dmsc/graylog-logger.git
 cd graylog-logger
-mkdir build
+conan install . --output-folder=build --build=missing
 cd build
-conan install .. --build=outdated
-cmake ..
+cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 make install
 ```
-
-#### Making a conan package
-If you are creating a conan package of this library you should disable CMake from running Conan by providing the following argument to CMake: `-DCONAN=DISABLE`. Furthermore, you must also use the `cmake_find_package` generator for CMake to be able to find the dependencies.
 
 #### System installed dependencies
 If using conan is not an option, it is possible to build the library using system installed dependencies. This requires a bit more work though and might not be as reliable.
@@ -68,7 +64,7 @@ git clone https://github.com/ess-dmsc/graylog-logger.git
 cd graylog-logger
 mkdir build
 cd build
-cmake .. -DCONAN=DISABLE -DCMAKE_PREFIX_PATH=/path/to/dir/containing/the/concurrentqueue/directory/
+cmake .. -DCMAKE_PREFIX_PATH=/path/to/dir/containing/the/concurrentqueue/directory/
 make install
 ```
 

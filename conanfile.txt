@@ -7,9 +7,8 @@ concurrentqueue/1.0.3
 fmt/8.1.1
 
 [options]
-gtest:shared=False
+gtest*:shared=False
 
 [generators]
-cmake
-virtualrunenv
-cmake_find_package
+CMakeDeps
+CMakeToolchain
