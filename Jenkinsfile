@@ -1,4 +1,4 @@
-@Library('ecdc-pipeline')
+@Library('ecdc-pipeline-conan2')
 import ecdcpipeline.ContainerBuildNode
 import ecdcpipeline.PipelineBuilder
 
@@ -38,7 +38,6 @@ builders = pipeline_builder.createBuilders { container ->
       return
     }
 
-    // Do clang-format of C++ files
     container.sh """
       ci/check-formatting
     """
@@ -106,14 +105,14 @@ node {
 
   try {
     parallel builders
-    } catch (e) {
-      pipeline_builder.handleFailureMessages()
-      throw e
+  } catch (e) {
+    pipeline_builder.handleFailureMessages()
+    throw e
   }
 }
 
 def failure_function(exception_obj, failureMessage) {
-    def toEmails = [[$class: 'DevelopersRecipientProvider']]
-    emailext body: '${DEFAULT_CONTENT}\n\"' + failureMessage + '\"\n\nCheck console output at $BUILD_URL to view the results.', recipientProviders: toEmails, subject: '${DEFAULT_SUBJECT}'
-    throw exception_obj
+  def toEmails = [[$class: 'DevelopersRecipientProvider']]
+  emailext body: '${DEFAULT_CONTENT}\n\"' + failureMessage + '\"\n\nCheck console output at $BUILD_URL to view the results.', recipientProviders: toEmails, subject: '${DEFAULT_SUBJECT}'
+  throw exception_obj
 }
