@@ -14,24 +14,30 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 set(CONAN_PROFILE "default" CACHE STRING "Name of conan profile to use, uses default by default")
 set(CONAN "AUTO" CACHE STRING "conan options AUTO (conan must be in path), MANUAL (expects conanbuildinfo.cmake in build directory) or DISABLE")
 
-if(${CONAN} MATCHES "AUTO")
-  include(${PROJECT_SOURCE_DIR}/cmake/conan.cmake)
-    conan_cmake_run(CONANFILE conanfile.txt
-            PROFILE ${CONAN_PROFILE}
-            BASIC_SETUP NO_OUTPUT_DIRS KEEP_RPATHS CMAKE_TARGETS
-            BUILD_TYPE "None"
-            BUILD outdated)
-elseif(${CONAN} MATCHES "MANUAL")
-    if(EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-        include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-        conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS TARGETS)
+if(NOT DEFINED CONAN_RUN)
+    if(${CONAN} MATCHES "AUTO")
+        if(NOT DEFINED ENV{CONAN_EXPORTED})
+            include(${PROJECT_SOURCE_DIR}/cmake/conan.cmake)
+            conan_cmake_run(CONANFILE conanfile.txt
+                    PROFILE ${CONAN_PROFILE}
+                    BASIC_SETUP NO_OUTPUT_DIRS KEEP_RPATHS CMAKE_TARGETS
+                    BUILD_TYPE "None"
+                    BUILD outdated)
+        else()
+            message(STATUS "Skipping conan_cmake_run because we are inside conan create.")
+        endif()
+    elseif(${CONAN} MATCHES "MANUAL")
+        if(EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+            include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+            conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS TARGETS)
+        else()
+            message(FATAL_ERROR "CONAN set to MANUAL but no file named conanbuildinfo.cmake found in build directory")
+        endif()
+    elseif(${CONAN} MATCHES "DISABLE")
+        message(STATUS "***Deactivating Conan support.***")
     else()
-        message(FATAL_ERROR "CONAN set to MANUAL but no file named conanbuildinfo.cmake found in build directory")
+        message(FATAL_ERROR "Unrecognised option for CONAN, use AUTO, MANUAL or DISABLE")
     endif()
-elseif(${CONAN} MATCHES "DISABLE")
-    message(STATUS "***Deactivating Conan support.***")
-else()
-    message(FATAL_ERROR "Unrecognised option for CONAN, use AUTO, MANUAL or DISABLE")
 endif()
 
 if (NOT WIN32)

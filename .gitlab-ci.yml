@@ -1,0 +1,118 @@
+default:
+  tags:
+    - docker
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
+
+variables:
+  ALMALINUX9_IMAGE: "registry.esss.lu.se/ecdc/ess-dmsc/docker-almalinux9-conan:1.2.0"
+  CENTOS7_IMAGE: "registry.esss.lu.se/ecdc/ess-dmsc/build-nodes/centos7:1.0"
+  BUILD_DIR: "build"
+
+stages:
+  - test
+  - build
+  - unit-tests
+  - publish
+
+cppcheck:
+  stage: test 
+  image: $ALMALINUX9_IMAGE
+  script:
+    - >
+      cppcheck \
+        --xml \
+        --inline-suppr \
+        --suppress=unusedFunction \
+        --suppress=missingInclude \
+        --enable=all \
+        --inconclusive \
+        --xml-version=2 \
+        src/ 2> CppCheckResults.xml
+    - pip install --user cppcheck-codequality
+    - python3 -m cppcheck_codequality --input-file=CppCheckResults.xml --output-file=CppCheckResults.json
+  artifacts:
+    reports:
+      codequality: CppCheckResults.json
+    paths:
+      - CppCheckResults.json
+
+
+.conan-config: &conan-config
+  before_script:
+    - |
+      if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        if [[ "$ID" == "centos" ]]; then
+            CONAN_PROFILE=linux_x86_64_gcc11_legacy
+            echo 'source /opt/rh/devtoolset-11/enable' >> ~/.bashrc
+            source ~/.bashrc
+        fi
+      fi
+    - conan config install $ESS_CONAN_CONFIG_URL
+
+build:
+  stage: build
+  image: $CENTOS7_IMAGE
+  cache:
+    key: "$CI_COMMIT_SHA-$CONTAINER_IMAGE"
+    paths:
+      - $BUILD_DIR/
+  <<: *conan-config
+  script:
+    - mkdir -p $BUILD_DIR && cd $BUILD_DIR
+    - conan install --build missing ..
+    - conan info ../conanfile.txt > CONAN_INFO
+    - cmake .. -DBUILD_EVERYTHING=ON
+    - make -j$(nproc) all;
+  artifacts:
+    paths:
+      - $BUILD_DIR
+
+unit-tests:
+  stage: unit-tests
+  image: $CENTOS7_IMAGE
+  dependencies:
+    - build
+  <<: *conan-config
+  script:
+    - cd $BUILD_DIR
+    - chmod +x activate_run.sh
+    - ./activate_run.sh
+    - cmake .. -DBUILD_EVERYTHING=ON
+    - make all unit_tests
+    - ./unit_tests/unit_tests --gtest_output=xml:TestResults.xml --gtest_filter=-'GraylogConnectionCom.IPv6ConnectionTest'
+    - mv TestResults.xml ../TestResults.xml
+  artifacts:
+    reports:
+      junit: TestResults.xml
+    paths:
+      - TestResults.xml
+
+publish:
+  stage: publish
+  image: $CENTOS7_IMAGE
+  dependencies:
+    - build
+  <<: *conan-config
+  script:
+    - ls
+    - cd $BUILD_DIR
+    - ls 
+    - cd ..
+    - |
+      packageNameAndVersion=$(conan inspect --attribute name --attribute version . | awk -F': ' '{print $2}' | paste -sd'/')
+    - conan create . ess-dmsc/stable --build=missing --profile=linux_x86_64_gcc11_legacy
+    - conan user $ESS_ARTIFACTORY_ECDC_CONAN_USER --remote=ecdc-conan-virtual --password=$ESS_ARTIFACTORY_ECDC_CONAN_TOKEN
+    - conan upload "${packageNameAndVersion}"@ess-dmsc/stable --all --confirm --remote ecdc-conan-virtual
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: always
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
