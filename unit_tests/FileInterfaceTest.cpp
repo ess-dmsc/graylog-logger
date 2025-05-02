@@ -41,18 +41,18 @@ std::string FileTestStringCreator(const LogMessage &msg) {
 class FileInterfaceStandIn : public FileInterface {
 public:
   explicit FileInterfaceStandIn(const std::string &fileName)
-      : FileInterface(fileName){};
+      : FileInterface(fileName) {};
   ~FileInterfaceStandIn() override = default;
   using FileInterface::Executor;
 };
 
 class FileInterfaceTest : public ::testing::Test {
 public:
-  static void SetUpTestCase(){
+  static void SetUpTestCase() {
 
   };
 
-  static void TearDownTestCase(){
+  static void TearDownTestCase() {
 
   };
 
@@ -70,7 +70,9 @@ public:
 };
 
 TEST_F(FileInterfaceTest, LogFileCreationTest) {
-  { FileInterfaceStandIn flInt(usedFileName); }
+  {
+    FileInterfaceStandIn flInt(usedFileName);
+  }
   ASSERT_TRUE(fileExists(usedFileName));
 }
 
@@ -92,14 +94,18 @@ using std::chrono_literals::operator""ms;
 TEST_F(FileInterfaceTest, OpenFileMessages) {
   Log::SetMinimumSeverity(Log::Severity::Info);
   testing::internal::CaptureStdout();
-  { FileInterfaceStandIn flInt(usedFileName); }
+  {
+    FileInterfaceStandIn flInt(usedFileName);
+  }
   std::this_thread::sleep_for(100ms);
   auto StdOutputString = testing::internal::GetCapturedStdout();
   EXPECT_NE(StdOutputString.find("Started logging to log file"),
             std::string::npos);
   EXPECT_EQ(StdOutputString.find("Unable to open log file"), std::string::npos);
   testing::internal::CaptureStdout();
-  { FileInterfaceStandIn flInt(""); }
+  {
+    FileInterfaceStandIn flInt("");
+  }
   std::this_thread::sleep_for(100ms);
   StdOutputString = testing::internal::GetCapturedStdout();
   EXPECT_EQ(StdOutputString.find("Started logging to log file"),

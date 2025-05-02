@@ -32,9 +32,9 @@ public:
   /// \return Returns true if message queue is empty.
   bool emptyQueue() override;
 
-  /// \brief Number of queued messages.
-  /// \return Due to multiple threads accessing this queue, shows approximate
-  /// number of messages in the queue.
+  ///  \brief Number of queued messages.
+  ///  \return Due to multiple threads accessing this queue, shows approximate
+  ///  number of messages in the queue.
   size_t queueSize() override;
 
   /// \brief See parent class for documentation.

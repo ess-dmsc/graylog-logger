@@ -31,7 +31,7 @@ MATCHER(IsJSON, "") {
 class GraylogInterfaceStandIn : public GraylogInterface {
 public:
   GraylogInterfaceStandIn(std::string host, int port, int queueLength)
-      : GraylogInterface(host, port, queueLength){};
+      : GraylogInterface(host, port, queueLength) {};
   MOCK_METHOD1(sendMessage, void(std::string));
   using GraylogInterface::logMsgToJSON;
   void sendMessageBase(std::string Msg) { GraylogInterface::sendMessage(Msg); }
@@ -40,8 +40,8 @@ public:
 class GraylogConnectionStandIn : public GraylogConnection {
 public:
   GraylogConnectionStandIn(std::string host, int port, int queueLength = 100)
-      : GraylogConnection(host, port, queueLength){};
-  ~GraylogConnectionStandIn(){};
+      : GraylogConnection(host, port, queueLength) {};
+  ~GraylogConnectionStandIn() {};
 };
 
 const int testPort = 2526;
@@ -55,7 +55,7 @@ public:
 
   static void TearDownTestCase() { logServer.reset(); };
 
-  virtual void SetUp(){};
+  virtual void SetUp() {};
 
   virtual void TearDown() {
     logServer->CloseAllConnections();

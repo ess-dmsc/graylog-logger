@@ -15,13 +15,13 @@ using namespace Log;
 
 class LogMessageTesting : public ::testing::Test {
 public:
-  static void SetUpTestCase(){};
+  static void SetUpTestCase() {};
 
-  static void TearDownTestCase(){};
+  static void TearDownTestCase() {};
 
-  virtual void SetUp(){};
+  virtual void SetUp() {};
 
-  virtual void TearDown(){};
+  virtual void TearDown() {};
 };
 
 TEST_F(LogMessageTesting, AddDoubleExtraField) {

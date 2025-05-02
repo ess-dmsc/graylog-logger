@@ -18,24 +18,24 @@ using namespace Log;
 
 class ConsoleInterfaceStandIn2 : public ConsoleInterface {
 public:
-  ConsoleInterfaceStandIn2() : ConsoleInterface(){};
+  ConsoleInterfaceStandIn2() : ConsoleInterface() {};
 };
 
 class FileInterfaceStandIn : public FileInterface {
 public:
   FileInterfaceStandIn(int queueSize)
-      : FileInterface("messages.log", queueSize){};
+      : FileInterface("messages.log", queueSize) {};
 };
 
 class QueueLength : public ::testing::Test {
 public:
-  static void SetUpTestCase(){};
+  static void SetUpTestCase() {};
 
-  static void TearDownTestCase(){};
+  static void TearDownTestCase() {};
 
-  virtual void SetUp(){};
+  virtual void SetUp() {};
 
-  virtual void TearDown(){};
+  virtual void TearDown() {};
 };
 
 LogMessage GetLogMsg() {
