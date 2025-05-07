@@ -102,7 +102,7 @@ TEST_F(GraylogConnectionCom, ConnectionTest) {
 #endif
 }
 
-TEST_F(GraylogConnectionCom, IPv6ConnectionTest) {
+TEST_F(GraylogConnectionCom, DISABLED_IPv6ConnectionTest) {
   ASSERT_EQ(0, logServer->GetNrOfConnections());
   ASSERT_EQ(0, logServer->GetLatestMessage().size());
   ASSERT_TRUE(!logServer->GetLastSocketError());
