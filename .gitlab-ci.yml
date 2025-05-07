@@ -10,17 +10,19 @@ workflow:
 
 variables:
   ALMALINUX9_IMAGE: "registry.esss.lu.se/ecdc/ess-dmsc/docker-almalinux9-conan:1.2.0"
-  CENTOS7_IMAGE: "registry.esss.lu.se/ecdc/ess-dmsc/build-nodes/centos7:1.0"
-  BUILD_DIR: "build"
+  CENTOS7_IMAGE: "registry.esss.lu.se/ecdc/ess-dmsc/docker-centos7-conan:1.0.0"
+  CONAN_CONFIG_REPO: "http://github.com/ess-dmsc/conan-configuration.git"
+  CONAN_USER_HOME: "$CI_PROJECT_DIR/.conan"
+  CONAN_REMOTE: "ecdc-conan-virtual"
 
 stages:
-  - test
+  - cppcheck
   - build
-  - unit-tests
+  - test
   - publish
 
 cppcheck:
-  stage: test 
+  stage: cppcheck 
   image: $ALMALINUX9_IMAGE
   script:
     - >
@@ -41,52 +43,33 @@ cppcheck:
     paths:
       - CppCheckResults.json
 
-
-.conan-config: &conan-config
-  before_script:
-    - |
-      if [ -f /etc/os-release ]; then
-        . /etc/os-release
-        if [[ "$ID" == "centos" ]]; then
-            CONAN_PROFILE=linux_x86_64_gcc11_legacy
-            echo 'source /opt/rh/devtoolset-11/enable' >> ~/.bashrc
-            source ~/.bashrc
-        fi
-      fi
-    - conan config install $ESS_CONAN_CONFIG_URL
-
 build:
   stage: build
   image: $CENTOS7_IMAGE
   cache:
     key: "$CI_COMMIT_SHA-$CONTAINER_IMAGE"
-    paths:
-      - $BUILD_DIR/
-  <<: *conan-config
   script:
-    - mkdir -p $BUILD_DIR && cd $BUILD_DIR
-    - conan install --build missing ..
-    - conan info ../conanfile.txt > CONAN_INFO
-    - cmake .. -DBUILD_EVERYTHING=ON
-    - make -j$(nproc) all;
+    - conan install --build missing .
+    - conan info conanfile.txt > CONAN_INFO
+    - cmake -B build/Release -S . -DCMAKE_TOOLCHAIN_FILE=build/Release/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+    - cmake --build build/Release
   artifacts:
     paths:
-      - $BUILD_DIR
+      - .conan
+      - build
 
 unit-tests:
-  stage: unit-tests
+  stage: test
   image: $CENTOS7_IMAGE
   dependencies:
     - build
-  <<: *conan-config
   script:
-    - cd $BUILD_DIR
-    - chmod +x activate_run.sh
-    - ./activate_run.sh
-    - cmake .. -DBUILD_EVERYTHING=ON
-    - make all unit_tests
-    - ./unit_tests/unit_tests --gtest_output=xml:TestResults.xml --gtest_filter=-'GraylogConnectionCom.IPv6ConnectionTest'
-    - mv TestResults.xml ../TestResults.xml
+    - cmake --build build/Release --target unit_tests --target performance_test
+    - cd build/Release/
+    - ctest
+    - ./performance_test/performance_test
+    - ./unit_tests/unit_tests --gtest_output=xml:TestResults.xml
+    - mv TestResults.xml  $CI_PROJECT_DIR/TestResults.xml
   artifacts:
     reports:
       junit: TestResults.xml
@@ -98,17 +81,11 @@ publish:
   image: $CENTOS7_IMAGE
   dependencies:
     - build
-  <<: *conan-config
   script:
-    - ls
-    - cd $BUILD_DIR
-    - ls 
-    - cd ..
-    - |
-      packageNameAndVersion=$(conan inspect --attribute name --attribute version . | awk -F': ' '{print $2}' | paste -sd'/')
-    - conan create . ess-dmsc/stable --build=missing --profile=linux_x86_64_gcc11_legacy
-    - conan user $ESS_ARTIFACTORY_ECDC_CONAN_USER --remote=ecdc-conan-virtual --password=$ESS_ARTIFACTORY_ECDC_CONAN_TOKEN
-    - conan upload "${packageNameAndVersion}"@ess-dmsc/stable --all --confirm --remote ecdc-conan-virtual
+    - conan config install $CONAN_CONFIG_REPO
+    - conan create . ess-dmsc/stable --build=graylog-logger -pr=linux_x86_64_gcc11_legacy
+    - conan user $ESS_ARTIFACTORY_ECDC_CONAN_USER --remote=$CONAN_REMOTE --password=$ESS_ARTIFACTORY_ECDC_CONAN_TOKEN
+    - conan upload graylog-logger --all -r=$CONAN_REMOTE --confirm
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
