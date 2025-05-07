@@ -68,10 +68,11 @@ doxygen
 cmake --build build/Release --target unit_tests --target performance_test
 
 # unit tests
-ctest --test-dir build/Release/
+cd build/Release
+ctest
 
 # performance tests
-./build/Release/performance_test/performance_test
+./performance_test/performance_test
 ```
 
 ## Deployment

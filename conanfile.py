@@ -8,7 +8,17 @@ class GraylogLoggerConan(ConanFile):
     url = "https://gitlab.esss.lu.se/ecdc/ess-dmsc/graylog-logger"
     description = "A simple logging library with support for pushing messages to a graylog-logger service."
     settings = "os", "compiler", "build_type", "arch"
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "console_logger/*", "unit_tests/*", "performance_test/*", "conanfile.py"
+    exports_sources = [
+        "CMakeLists.txt",
+        "src/*",
+        "include/*",
+        "cmake/*",
+        "console_logger/*",
+        "unit_tests/*",
+        "performance_test/*",
+        "conanfile.py",
+        "LICENSE.md",
+    ]
     default_options = {
         "gtest:shared": False,
     }
