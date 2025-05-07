@@ -1,5 +1,16 @@
-add_executable(performance_test EXCLUDE_FROM_ALL PerformanceTest.cpp DummyLogHandler.h DummyLogHandler.cpp)
+find_package(benchmark REQUIRED)
+find_package(fmt REQUIRED)
 
-target_link_libraries(performance_test GraylogLogger::graylog_logger_static fmt::fmt ${GoogleBenchmark_LIB})
+add_executable(performance_test EXCLUDE_FROM_ALL
+    PerformanceTest.cpp
+    DummyLogHandler.h
+    DummyLogHandler.cpp
+)
 
-target_include_directories(performance_test PRIVATE ${GoogleBenchmark_INCLUDE_DIR})
+target_link_libraries(performance_test
+    PRIVATE
+        GraylogLogger::graylog_logger_static
+        fmt::fmt
+        benchmark::benchmark
+        benchmark::benchmark_main
+)

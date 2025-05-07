@@ -1,19 +1,20 @@
+@PACKAGE_INIT@
+
 get_filename_component(GraylogLogger_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
 include(CMakeFindDependencyMacro)
 
-list(APPEND CMAKE_MODULE_PATH ${GraylogLogger_CMAKE_DIR})
+list(APPEND CMAKE_MODULE_PATH "${GraylogLogger_CMAKE_DIR}")
 
+# Required dependencies (all provided by Conan or system)
 find_dependency(Threads REQUIRED)
 find_dependency(concurrentqueue REQUIRED)
+find_dependency(fmt REQUIRED)
 
-set(WITH_FMT @fmt_FOUND@)
-
-if(WITH_FMT)
-    find_dependency(fmt REQUIRED)
-endif()
-
+# Import our targets
 if(NOT TARGET GraylogLogger::graylog_logger)
     include("${GraylogLogger_CMAKE_DIR}/GraylogLoggerTargets.cmake")
 endif()
 
+# Optional convenience variable
 set(GraylogLogger_LIBRARIES GraylogLogger::graylog_logger)

@@ -1,5 +1,7 @@
 ## Changes
 
+### Version 2.1.6
+* Streamline Conan build and packaging
 
 ### Version 2.1.3
 * Fixed multiple (benign) race conditions.

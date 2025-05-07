@@ -1,3 +1,10 @@
 .DS_Store
 build/*
 */build/*
+
+# Conan
+CMakeUserPresets.json
+conan.lock
+conanbuildinfo.txt
+conaninfo.txt
+graph_info.json

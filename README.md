@@ -1,8 +1,10 @@
-[![DOI](https://zenodo.org/badge/80732581.svg)](https://zenodo.org/badge/latestdoi/80732581)
-
 # Graylog logger
 
-This is a simple logging library which can be used to send log messages to a Graylog server. This is done by creating messages in the [GELF](http://docs.graylog.org/en/2.1/pages/gelf.html) format and sending them to a Graylog server via TCP. For testing purposes a [Vagrant](https://www.vagrantup.com/) machine running Graylog can be used. A simple Vagrantfile for creating this set-up can be [found here](https://github.com/ess-dmsc/graylog-machine). The argument for creating yet another logging library instead of writing a plugin/sink/handler for an already existing one is that a relatively light weight solution was desired. The library has functionality for writing log messages to console and file as well. By default the library will only write log messages to console.
+This is a simple logging library which can be used to send log messages to a Graylog server. 
+This is done by creating messages in the [GELF](http://docs.graylog.org/en/2.1/pages/gelf.html) format and sending them to a Graylog server via TCP. 
+The argument for creating yet another logging library instead of writing a plugin/sink/handler for an already existing one is that a relatively light weight solution was desired. 
+The library has functionality for writing log messages to console and file as well. 
+By default the library will only write log messages to console.
 
 The repository is split into four parts:
 
@@ -11,65 +13,45 @@ The repository is split into four parts:
 * A simple console application which uses the logging library.
 * Some benchmarking code which is used for profiling and optimising the code as well as test for performance regression.
 
-A sister project to this library is the Python logging handler [GraylogHandler](https://github.com/ess-dmsc/graylog-handler).
-
 - Further documentation can be [found here.](documentation/README.md)
 
-## Getting Started
+## Installation
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-
-The logging library has the following (requried) external dependencies:
-
-* [moodycamel::ConcurrentQueue](https://github.com/cameron314/concurrentqueue) For message passing to and within the logging library.
-* [JSONForModernCPP](https://github.com/nlohmann/json) For generating graylog GELF messages.
-* [ASIO](http://think-async.com) For networking.
-
-This library can also make use of the following (optional) dependencies:
-
-* [libfmt](https://github.com/fmtlib/fmt) For doing fast (multi-threaded) string formatting.
-* [GTest](https://github.com/google/googletest) For unit testing.
-* [google-benchmark](https://github.com/google/benchmark) For benchmarking.
-
-You will also need CMake (version ≥ 3.9) to build the project. The project makes use of library and language features provided by C++14. It might be possible to link to the library using compilers that only supports C++11 though this has not been tested.
-
-Due to the use of ASIO, the library should compile on most \*nix systems and Windows 10 with no issues though only limited testing has been done.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
+See deployment for notes on how to deploy the project on a live system.
 
 
-### Installing
-There are two methods for building this library. They are described below.
+## Requirements
 
-#### Using conan
-When using conan to provide the dependencies, all the optional and required dependencies are provided automatically. To checkout and build the library, run the following commands:
+- **C++14 compiler** (we provide conan profiles for gcc11)
+- **CMake 3.15+**
+- **Conan 1.66+**
 
+## Docker image
+
+
+## Dependencies
+
+All dependencies are listed in [`conanfile.py`](./conanfile.py) and automatically installed via Conan.
+
+#### Install Conan configuration
+```
+conan config install http://github.com/ess-dmsc/conan-configuration.git
+```
+
+#### Build with Conan
 ```
 git clone https://github.com/ess-dmsc/graylog-logger.git
 cd graylog-logger
-mkdir build
-cd build
-conan install .. --build=outdated
-cmake ..
-make install
+conan install . --build=missing -pr=linux_x86_64_gcc11
+cmake -B build/Release -S . -DCMAKE_TOOLCHAIN_FILE=build/Release/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build build/Release
 ```
 
-#### Making a conan package
-If you are creating a conan package of this library you should disable CMake from running Conan by providing the following argument to CMake: `-DCONAN=DISABLE`. Furthermore, you must also use the `cmake_find_package` generator for CMake to be able to find the dependencies.
-
-#### System installed dependencies
-If using conan is not an option, it is possible to build the library using system installed dependencies. This requires a bit more work though and might not be as reliable.
-
-Run the following commands:
+#### Making a Conan package
 
 ```
-git clone https://github.com/ess-dmsc/graylog-logger.git
-cd graylog-logger
-mkdir build
-cd build
-cmake .. -DCONAN=DISABLE -DCMAKE_PREFIX_PATH=/path/to/dir/containing/the/concurrentqueue/directory/
-make install
+conan create . ess-dmsc/testing -pr=linux_x86_64_gcc11
 ```
 
 #### Documentation
@@ -81,15 +63,20 @@ doxygen
 ```
 
 ## Running the tests
-If compiled, the unit tests are run by running the ```unit_tests``` application in the ```unit_tests``` directory of the ```build```directory.
+
+```
+cmake --build build/Release --target unit_tests --target performance_test
+
+# unit tests
+ctest --test-dir build/Release/
+
+# performance tests
+./build/Release/performance_test/performance_test
+```
 
 ## Deployment
 
 Examples illustrating how the library can be used can be found in the [examples.md](documentation/examples.md) file.
-
-## Built With
-* [CMAKE](https://cmake.org/) - Cross platform makefile generation
-* [Conan](https://conan.io/) - Package manager for C++
 
 ## Contributing
 
@@ -112,4 +99,3 @@ See also the list of [contributors](https://github.com/ess-dmsc/graylog-logger/g
 ## License
 
 This project is licensed under the BSD-2 License - see the [LICENSE.md](LICENSE.md) file for details
-

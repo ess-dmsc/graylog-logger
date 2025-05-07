@@ -1,9 +1,9 @@
 from conans import ConanFile
-from conan.tools.cmake import CMake, CMakeToolchain
+from conan.tools.cmake import CMake, CMakeToolchain, cmake_layout
 
 class GraylogLoggerConan(ConanFile):
     name = "graylog-logger"
-    version = "2.1.5"
+    version = "2.1.6"
     license = "BSD 2-Clause"
     url = "https://gitlab.esss.lu.se/ecdc/ess-dmsc/graylog-logger"
     description = "A simple logging library with support for pushing messages to a graylog-logger service."
@@ -22,25 +22,14 @@ class GraylogLoggerConan(ConanFile):
         "fmt/8.1.1",
     )
     
-    generators = ("cmake_find_package")
+    generators = "CMakeDeps", "CMakeToolchain"
 
     def layout(self):
-        self.folders.source = "."
-        self.folders.build = "."
-
-    def generate(self):
-        tc = CMakeToolchain(self)
-        tc.variables["BUILD_EVERYTHING"] = "ON"
-        tc.variables["CONAN_RUN"] = "ON" 
-        tc.generate()
-
-    def _configure_cmake(self):
-        cmake = CMake(self)
-        cmake.configure()
-        return cmake
+        cmake_layout(self)
         
     def build(self):
-        cmake = self._configure_cmake()
+        cmake = CMake(self)
+        cmake.configure()
         cmake.build()
 
     def package(self):
@@ -49,4 +38,6 @@ class GraylogLoggerConan(ConanFile):
         self.copy("LICENSE.*", dst="licenses", src=self.source_folder)
 
     def package_info(self):
+        self.cpp_info.set_property("cmake_target_name", "GraylogLogger::graylog_logger")
         self.cpp_info.libs = ["graylog_logger"]
+        self.cpp_info.set_property("cmake_file_name", "graylog-logger")

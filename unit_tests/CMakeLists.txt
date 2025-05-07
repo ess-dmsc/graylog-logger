@@ -1,7 +1,5 @@
 include_directories("../src" "../tests")
 
-enable_testing()
-
 if (NOT CMAKE_MODULE_PATH)
     set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake_modules)
 endif()
